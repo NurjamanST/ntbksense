@@ -21,7 +21,7 @@
         if ( 'ntbksense_page_ntbksense-landing-page' !== $screen->id ) {
             return;
         }
-        ?>
+?>
         <!-- bootstrap 5 -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
@@ -123,86 +123,40 @@
                 });
             });
         </script>
-        <?php
+<?php
     });
 
-// START: Generate 100 dummy data entries
-    $data = [];
-    $templates = ['Sales', 'Video', 'Default', 'Lead Gen'];
-    $parameter = ['Parameter 1', 'Parameter 2', 'Parameter 3', 'Parameter 4', 'Parameter 5'];
-    $parameter2 = ['Value 1', 'Value 2', 'Value 3', 'Value 4', 'Value 5'];
-    $statuses = ['Aktif', 'Tidak Aktif'];
-    $devices = ['Desktop', 'Mobile', 'Desktop, Mobile','Chrome, Firefox', 'Safari', 'Edge'];
-    $gambar = ['logotasik.png'];
+    // START: Generate 100 dummy data entries
+        $data = [];
+        $templates = ['Sales', 'Video', 'Default', 'Lead Gen'];
+        $parameter = ['Parameter 1', 'Parameter 2', 'Parameter 3', 'Parameter 4', 'Parameter 5'];
+        $parameter2 = ['Value 1', 'Value 2', 'Value 3', 'Value 4', 'Value 5'];
+        $statuses = ['Aktif', 'Tidak Aktif'];
+        $devices = ['Desktop', 'Mobile', 'Desktop, Mobile','Chrome, Firefox', 'Safari', 'Edge'];
+        $gambar = ['logotasik.png'];
 
-    for ($i = 1; $i <= 3; $i++) {
-        $random_timestamp = time() - rand(0, 365 * 24 * 60 * 60); // Random date in the last year
-        $data[] = [
-            'id'        => $i,
-            'template'  => $templates[array_rand($templates)],
-            'title'     => 'Whatch Now #' . $i,
-            'url_public'    => 'https://developer.wordpress.org/plugins/',
-            'url_ads'    => 'https://developer.wordpress.org/plugins/',
-            'text_mode_key'    => 'n^t*b@k%sense',
-            'parameter' => $parameter[array_rand($parameter)] . "=" . $parameter2[array_rand($parameter2)],
-            'status'    => $statuses[array_rand($statuses)],
-            'device'    => $devices[array_rand($devices)],
-            'date'      => date('Y-m-d H:i:s', $random_timestamp),
-            'gambar'    => $gambar[array_rand($gambar)],
-        ];
-    }
-// END: Generate 100 dummy data entries
+        for ($i = 1; $i <= 3; $i++) {
+            $random_timestamp = time() - rand(0, 365 * 24 * 60 * 60); // Random date in the last year
+            $data[] = [
+                'id'        => $i,
+                'template'  => $templates[array_rand($templates)],
+                'title'     => 'Whatch Now #' . $i,
+                'url_public'    => 'https://developer.wordpress.org/plugins/',
+                'url_ads'    => 'https://developer.wordpress.org/plugins/',
+                'text_mode_key'    => 'n^t*b@k%sense',
+                'parameter' => $parameter[array_rand($parameter)] . "=" . $parameter2[array_rand($parameter2)],
+                'status'    => $statuses[array_rand($statuses)],
+                'device'    => $devices[array_rand($devices)],
+                'date'      => date('Y-m-d H:i:s', $random_timestamp),
+                'gambar'    => $gambar[array_rand($gambar)],
+            ];
+        }
+    // END: Generate 100 dummy data entries
 
 ?>
 <div class="wrap" id="ntbksense-landing-page-wrapper">
-
-    <!-- START: Navbar Kustom -->
-        <div class="ntb-navbar">
-            <div class="ntb-navbar-left">
-                <span class="ntb-navbar-title">NTBKSense</span>
-                <span class="ntb-navbar-version">v1.0.0</span>
-            </div>
-            <div class="ntb-navbar-right">
-                <!-- Beranda -->
-                <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense')); ?>" class="ntb-navbar-icon">
-                    <span class="dashicons dashicons-admin-home"></span>
-                </a>
-                <!-- Landing Page -->
-                <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>" class="ntb-navbar-icon">
-                    <span class="dashicons dashicons-admin-page"></span>
-                </a>
-                <!-- Table Builder -->
-                <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-table-builder')); ?>" class="ntb-navbar-icon">
-                    <span class="dashicons dashicons-editor-table"></span>
-                </a>
-                <!-- Setting -->
-                <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-settings')); ?>" class="ntb-navbar-icon">
-                    <span class="dashicons dashicons-admin-generic"></span>
-                </a>
-                <!-- Laporan -->
-                <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-laporan')); ?>" class="ntb-navbar-icon">
-                    <span class="dashicons dashicons-chart-bar"></span>
-                </a>             
-                <!-- Auto Post -->
-                <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-auto-post')); ?>" class="ntb-navbar-icon">
-                    <span class="dashicons dashicons-admin-post"></span>
-                </a>
-                <!-- Lisensi -->
-                <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-lisensi')); ?>" class="ntb-navbar-icon">
-                    <span class="dashicons dashicons-admin-network"></span>
-                </a>
-                <!-- Privacy Policy Generator -->
-                <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-privacy-policy')); ?>" class="ntb-navbar-icon">
-                    <span class="dashicons dashicons-shield-alt"></span>
-                </a>             
-                <!-- Maintenance -->
-                <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-maintenance')); ?>" class="ntb-navbar-icon">
-                    <span class="dashicons dashicons-admin-tools"></span>
-                </a>
-    
-            </div>
-        </div>
-    <!-- END: Navbar Kustom -->
+    <!-- Navbar -->
+    <?php include NTBKSENSE_PLUGIN_DIR."admin/views/Layout/navbar.php"; ?>
 
     <!-- START: Breadcrumb Kustom -->
         <div class="ntb-breadcrumb">
@@ -216,7 +170,9 @@
         <hr>
         <!-- Tombol Aksi Utama -->
         <div class="ntb-actions-bar">
-            <a href="#" class="button ntb-btn-primary"><span class="dashicons dashicons-plus-alt"></span>LP Baru</a>
+            <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-create-landing')); ?>" class="button ntb-btn-primary">
+                <span class="dashicons dashicons-plus-alt"></span>LP Baru
+            </a>
             <a href="#" class="button ntb-btn-danger"><span class="dashicons dashicons-trash"></span>Hapus</a>
             <a href="#" class="button ntb-btn-success"><span class="dashicons dashicons-upload"></span>Ekspor</a>
             <a href="#" class="button"><span class="dashicons dashicons-download"></span>Impor</a>
@@ -316,9 +272,9 @@
 <style>
     /* General Layout & Main Content Box */
         #ntbksense-landing-page-wrapper {
-            background-color: #f0f0f1;
+            background-color: #ffffffff;
             padding: 0;
-            margin-left: 0px 0px 0px -20px; /* Override default .wrap margin */
+            margin: 0px 0px 0px -15px; /* Override default .wrap margin */
         }
         .ntb-main-content {
             background: #fff;

@@ -18,6 +18,9 @@ class NTBKSense_Admin {
     public function __construct($plugin_name, $version) {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
+        
+        // **PERBAIKAN:** Mendaftarkan AJAX action hook di constructor
+        add_action('wp_ajax_ntbksense_get_published_posts', array($this, 'ajax_get_published_posts'));
     }
 
     public function enqueue_styles() {
@@ -35,13 +38,13 @@ class NTBKSense_Admin {
         $parent_slug = 'ntbksense';
 
         add_menu_page(
-            __('NTBKSense Beranda', 'ntbksense'),
-            'NTBKSense',
-            'manage_options',
-            $parent_slug,
-            array($this, 'render_beranda_page'),
-            'dashicons-shortcode',
-            65
+            __('NTBKSense Beranda', 'ntbksense'), // Judul halaman
+            'NTBKSense', // Teks menu
+            'manage_options', // Kemampuan yang dibutuhkan
+            $parent_slug, // Slug unik untuk menu ini
+            array($this, 'render_beranda_page'), // Callback untuk merender halaman ini
+            'dashicons-shortcode', // Ikon menu
+            65 // Posisi menu (65 untuk menempatkannya di bawah menu utama WordPress)
         );
 
         // Loop untuk membuat sub-menu secara dinamis
@@ -70,6 +73,51 @@ class NTBKSense_Admin {
                 array($this, $callback_method)
             );
         }
+
+        // **TAMBAHKAN INI:** Submenu tersembunyi untuk Template Builder
+        add_submenu_page(
+            null, // Tidak ada parent slug, jadi tersembunyi
+            __('Template Builder', 'ntbksense'),
+            __('Template Builder', 'ntbksense'),
+            'manage_options',
+            'ntbksense-create-landing', // Slug unik untuk halaman ini
+            array($this, 'render_create_landing_page') // Callback baru
+        );
+    }
+
+    /**
+     * Handler untuk AJAX request untuk mendapatkan URL artikel.
+     */
+    public function ajax_get_published_posts() {
+        // Verifikasi nonce untuk keamanan
+        check_ajax_referer('ntb_get_articles_nonce', 'security');
+
+        // **PERBAIKAN:** Ambil jumlah dari permintaan AJAX, default ke -1 (semua)
+        $count = isset($_POST['count']) ? intval($_POST['count']) : -1;
+
+        $args = array(
+            'post_type'      => 'post',
+            'post_status'    => 'publish',
+            'posts_per_page' => $count, // Gunakan jumlah yang dinamis
+            'fields'         => 'ids', 
+        );
+
+        $post_ids = get_posts($args);
+        $urls = [];
+
+        if (!empty($post_ids)) {
+            foreach ($post_ids as $post_id) {
+                $urls[] = get_permalink($post_id);
+            }
+        }
+
+        if (!empty($urls)) {
+            wp_send_json_success($urls);
+        } else {
+            wp_send_json_error(['message' => 'Tidak ada artikel yang diterbitkan ditemukan.']);
+        }
+
+        wp_die(); // Wajib di akhir AJAX handler
     }
 
     /**
@@ -209,14 +257,23 @@ class NTBKSense_Admin {
     }
 
     // Callback untuk merender halaman-halaman admin
-    public function render_beranda_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-beranda.php'; }
-    public function render_landing_page_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-landing-page.php'; }
-    public function render_table_builder_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-table-builder.php'; }
+    public function render_beranda_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Beranda/ntbksense-beranda.php'; }
+        /*>>*/ 
+    public function render_landing_page_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/LandingPage/ntbksense-landing-page.php'; }
+        /*>>*/ public function render_create_landing_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/LandingPage/ntbksense-create-landing.php'; }
     public function render_settings_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-settings.php'; }
+        /*>>*/ 
     public function render_laporan_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-laporan.php'; }
+        /*>>*/ 
     public function render_auto_post_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-auto-post.php'; }
+        /*>>*/ 
     public function render_lisensi_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-lisensi.php'; }
+        /*>>*/ 
     public function render_privacy_policy_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-privacy-policy.php'; }
+        /*>>*/ 
     public function render_maintenance_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-maintenance.php'; }
+        /*>>*/ 
+    public function render_template_builder_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-template-builder.php'; }
+        /*>>*/ 
 }
 ?>
