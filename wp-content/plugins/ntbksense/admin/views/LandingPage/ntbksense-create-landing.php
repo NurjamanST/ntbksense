@@ -4,10 +4,10 @@
 // =========================================================================
 
 /**
- * Tampilan untuk halaman admin Buat LP Baru (Template Builder).
+ * Tampilan untuk halaman admin Buat LP Baru ( Create Landing Page )
  */
 
-// Menambahkan aset khusus untuk halaman builder
+// Menambahkan aset khusus untuk halaman ini
 add_action('admin_footer', function() {
     $screen = get_current_screen();
     if ( 'admin_page_ntbksense-create-landing' !== $screen->id ) {
@@ -223,7 +223,8 @@ add_action('admin_footer', function() {
             <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>">Landing Page</a> &gt; <span>Buat LP Baru</span>
         </div>
     <!-- END: Breadcrumb Kustom -->
-     <div class="ntb-main-content">
+
+    <div class="ntb-main-content">
         <h1 class="wp-heading-inline">Buat LP Baru</h1>
         <p>
             Halaman ini digunakan untuk membuat Landing Page baru dengan berbagai opsi konfigurasi, 
@@ -231,11 +232,11 @@ add_action('admin_footer', function() {
             Note : <span class="text-danger">*</span> menandakan bidang yang wajib diisi.
         </p>
         <hr class="wp-header-end">
-    
+
         <form method="post" action="">
             <!-- Aksi Keamanan WordPress -->
             <?php wp_nonce_field('ntb_save_lp_action', 'ntb_save_lp_nonce'); ?>
-    
+
             <div class="ntb-form-container">
                 <div class="row">
                     <!-- Kiri -->
@@ -288,7 +289,7 @@ add_action('admin_footer', function() {
                                     </select>
                                 </div>
                             </div>
-    
+
                             <!-- Kolom Kanan -->
                             <div class="col-md-6">
                                 <div class="ntb-form-group">
@@ -359,7 +360,7 @@ add_action('admin_footer', function() {
                                 </div>
                                 <!-- URL Gambar -->
                                 <div class="ntb-form-group">
-                                     <div class="ntb-simple-view">
+                                        <div class="ntb-simple-view">
                                         <label>URL Gambar (Long screenshot) <a href="#" class="sample-link">Sample</a></label>
                                         <div id="ntb-image-urls-container">
                                             <div class="input-group">
@@ -436,7 +437,7 @@ add_action('admin_footer', function() {
                         <!-- Bawah -->
                         <div class="row mt-3">
                             <div class="col-md-12">
-                                  <div class="ntb-form-group">
+                                    <div class="ntb-form-group">
                                     <div class="ntb-field-header">
                                         <label for="daftar_artikel">Daftar URL Artikel <span class="text-danger">*</span></label>
                                         <div class="d-flex gap-2">
@@ -463,9 +464,8 @@ add_action('admin_footer', function() {
                         </div>
                     </div>
                 </div>
-    
             </div>
-    
+
             <div class="ntb-form-footer">
                 <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>" class="button">Kembali</a>
                 <button type="submit" class="button button-primary">
@@ -473,8 +473,8 @@ add_action('admin_footer', function() {
                 </button>
             </div>
         </form>
-     </div>
-     <!-- START: Modal untuk Dapatkan Artikel -->
+    </div>
+    <!-- START: Modal untuk Dapatkan Artikel -->
     <div class="modal fade" id="getArticlesModal" tabindex="-1" aria-labelledby="getArticlesModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -502,6 +502,11 @@ add_action('admin_footer', function() {
 </div>
 
 <style>
+    #ntb-lp-builder {
+        background-color: #ffffffff;
+        padding: 0;
+        margin: 0px 0px 0px -20px; /* Override default .wrap margin */
+    }
     .ntb-main-content {
             background: #fff;
             border: 1px solid #c3c4c7;
@@ -510,27 +515,20 @@ add_action('admin_footer', function() {
             padding: 20px;
             margin: 20px;
     }
-    /* Navbar Styling */
-        .ntb-navbar {
+    .ntb-main-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0px 0px 20px 0px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
-            background-color: #ffffff;
-            border-bottom: 1px solid #c3c4c7;
-        }
-        .ntb-navbar-title { font-size: 16px; font-weight: 600; color: #1d2327; }
-        .ntb-navbar-version { font-size: 12px; color: #646970; margin-left: 8px; background-color: #f0f0f1; padding: 2px 6px; border-radius: 4px; }
-        .ntb-navbar-right .ntb-navbar-icon { color: #50575e; text-decoration: none; margin-left: 15px; }
-        .ntb-navbar-right .ntb-navbar-icon .dashicons { font-size: 20px; vertical-align: middle; }
-
+            gap: 8px;
+    }
     /* Breadcrumb Styling */
         .ntb-breadcrumb { padding: 15px 20px; color: #50575e; font-size: 14px; border-bottom: 1px solid #e0e0e0; }
         .ntb-breadcrumb a { text-decoration: none; color: #0073aa; }
         .ntb-breadcrumb a:hover { text-decoration: underline; }
         .ntb-breadcrumb span { color: #1d2327; font-weight: 600; }
 
-    #ntb-lp-builder { margin: 0px 0px 0px -15px; }
     .ntb-form-container { background: #fff; border-radius: 20px; padding: 0px; margin-top: 10px; }
     .ntb-form-group { margin-bottom: 1rem; }
     .ntb-form-group label { margin-bottom: 0.5rem; display: block;font-size: 12px;font-weight: 600; }
