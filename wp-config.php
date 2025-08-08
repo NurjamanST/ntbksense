@@ -26,7 +26,7 @@ define( 'DB_NAME', 'ntbksense' );
 define( 'DB_USER', 'root' );
 
 /** Database password */
-define( 'DB_PASSWORD', '' );
+define( 'DB_PASSWORD', 'root' );
 
 /** Database hostname */
 define( 'DB_HOST', 'localhost' );
@@ -37,10 +37,17 @@ define( 'DB_CHARSET', 'utf8' );
 /** The database collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
 
+// if ( !defined('WP_CLI') ) {
+//     define( 'WP_SITEURL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] );
+//     define( 'WP_HOME',    $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] );
+// }
+
 if ( !defined('WP_CLI') ) {
-    define( 'WP_SITEURL', $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] );
-    define( 'WP_HOME',    $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] );
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    define( 'WP_SITEURL', $scheme . '://' . $_SERVER['HTTP_HOST'] );
+    define( 'WP_HOME',    $scheme . '://' . $_SERVER['HTTP_HOST'] );
 }
+
 
 
 
