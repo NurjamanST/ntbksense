@@ -128,6 +128,17 @@
 
     // START: Generate 100 dummy data entries
         $data = [];
+
+        $templates = ['Universal (Long screenshot)', 'Video (Long screenshot)'];
+        $redirect_options = ['isi Manual (Rekomendasi)', 'Opsi Lain'];
+        $desc_options = ['isi Manual (Rekomendasi)', 'Ambil dari Judul'];
+        $traffic_options = ['Izinkan Semua Trafik', 'Blokir Trafik Tertentu'];
+        $video_options = ['On', 'Off'];
+        $protection_options = ['Pause Debugger', 'Nonaktif'];
+        $refresh_options = ['Ketika halaman dimuat', 'Setelah Interval Tertentu'];
+        $title_options = ['isi Manual (Rekomendasi)', 'Gunakan Judul Post'];
+        $devices = ['Semua Perangkat (kecuali Bot)', 'Desktop', 'Mobile', 'Chrome, Firefox'];
+        
         $templates = ['Sales', 'Video', 'Default', 'Lead Gen'];
         $parameter = ['Parameter 1', 'Parameter 2', 'Parameter 3', 'Parameter 4', 'Parameter 5'];
         $parameter2 = ['Value 1', 'Value 2', 'Value 3', 'Value 4', 'Value 5'];
@@ -154,7 +165,7 @@
     // END: Generate 100 dummy data entries
 
 ?>
-<div class="wrap" id="ntbksense-landing-page-wrapper">
+<div class="wrap" id="ntbksense-wrapper">
     <!-- Navbar -->
     <?php include NTBKSENSE_PLUGIN_DIR."admin/views/Layout/navbar.php"; ?>
 
@@ -271,10 +282,10 @@
 
 <style>
     /* General Layout & Main Content Box */
-        #ntbksense-landing-page-wrapper {
+        #ntbksense-wrapper {
             background-color: #ffffffff;
             padding: 0;
-            margin: 0px 0px 0px -15px; /* Override default .wrap margin */
+            margin: 0px 0px 0px -20px; /* Override default .wrap margin */
         }
         .ntb-main-content {
             background: #fff;
@@ -292,20 +303,6 @@
             align-items: center;
             gap: 8px;
         }
-
-    /* Navbar Styling */
-        .ntb-navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #ffffff;
-            border-bottom: 1px solid #c3c4c7;
-        }
-        .ntb-navbar-title { font-size: 16px; font-weight: 600; color: #1d2327; }
-        .ntb-navbar-version { font-size: 12px; color: #646970; margin-left: 8px; background-color: #f0f0f1; padding: 2px 6px; border-radius: 4px; }
-        .ntb-navbar-right .ntb-navbar-icon { color: #50575e; text-decoration: none; margin-left: 15px; }
-        .ntb-navbar-right .ntb-navbar-icon .dashicons { font-size: 20px; vertical-align: middle; }
 
     /* Breadcrumb Styling */
         .ntb-breadcrumb { padding: 15px 20px; color: #50575e; font-size: 14px; border-bottom: 1px solid #e0e0e0; }

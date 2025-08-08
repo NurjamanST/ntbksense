@@ -74,14 +74,24 @@ class NTBKSense_Admin {
             );
         }
 
-        // **TAMBAHKAN INI:** Submenu tersembunyi untuk Template Builder
+        // **TAMBAHKAN INI:** Submenu tersembunyi untuk "Create LP"
         add_submenu_page(
             null, // Tidak ada parent slug, jadi tersembunyi
-            __('Template Builder', 'ntbksense'),
-            __('Template Builder', 'ntbksense'),
+            __('"Create LP"', 'ntbksense'),
+            __('"Create LP"', 'ntbksense'),
             'manage_options',
             'ntbksense-create-landing', // Slug unik untuk halaman ini
             array($this, 'render_create_landing_page') // Callback baru
+        );
+
+        // **PERUBAHAN DI SINI:** Submenu tersembunyi untuk "Edit LP"
+        add_submenu_page(
+            null, // null berarti tersembunyi dari menu
+            __('Edit Landing Page', 'ntbksense'),
+            __('Edit Landing Page', 'ntbksense'),
+            'manage_options',
+            'ntbksense-edit-lp', // Slug yang kita gunakan di link
+            array($this, 'render_edit_landing_page') // Callback untuk merender file edit
         );
     }
 
@@ -261,6 +271,7 @@ class NTBKSense_Admin {
         /*>>*/ 
     public function render_landing_page_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/LandingPage/ntbksense-landing-page.php'; }
         /*>>*/ public function render_create_landing_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/LandingPage/ntbksense-create-landing.php'; }
+        /*>>*/ public function render_edit_landing_page() {require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/LandingPage/ntbksense-edit-landing.php';}
     public function render_settings_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-settings.php'; }
         /*>>*/ 
     public function render_laporan_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-laporan.php'; }

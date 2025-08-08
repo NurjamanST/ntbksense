@@ -45,3 +45,18 @@
         </div>
     </div>
 <!-- END: Navbar Kustom -->
+ <style>
+    /* Navbar Styling */
+        .ntb-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 25px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #c3c4c7;
+        }
+        .ntb-navbar-title { font-size: 16px; font-weight: 600; color: #1d2327; }
+        .ntb-navbar-version { font-size: 12px; color: #646970; margin-left: 8px; background-color: #f0f0f1; padding: 2px 6px; border-radius: 4px; }
+        .ntb-navbar-right .ntb-navbar-icon { color: #50575e; text-decoration: none; margin-left: 15px; }
+        .ntb-navbar-right .ntb-navbar-icon .dashicons { font-size: 20px; vertical-align: middle; }
+ </style>
