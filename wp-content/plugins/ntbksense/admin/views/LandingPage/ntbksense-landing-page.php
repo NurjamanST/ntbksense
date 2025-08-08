@@ -1,6 +1,6 @@
 <?php
 // =========================================================================
-// FILE: ntbksense/admin/views/ntbksense-landing-page.php
+// FILE: ntbksense/admin/views/LandingPage/ntbksense-landing-page.php
 // =========================================================================
 
 /**

@@ -51,7 +51,7 @@ class NTBKSense_Admin {
         $submenus = [
             'beranda' => ['title' => 'Beranda', 'slug_suffix' => ''],
             'landing-page' => ['title' => 'Landing Page', 'slug_suffix' => '-landing-page'],
-            'table-builder' => ['title' => 'Table Builder', 'slug_suffix' => '-table-builder'],
+            'template-builder' => ['title' => 'Template Builder', 'slug_suffix' => '-template-builder'],
             'settings' => ['title' => 'Setting', 'slug_suffix' => '-settings'],
             'laporan' => ['title' => 'Laporan', 'slug_suffix' => '-laporan'],
             'auto-post' => ['title' => 'Auto Post', 'slug_suffix' => '-auto-post'],
@@ -284,7 +284,7 @@ class NTBKSense_Admin {
         /*>>*/ 
     public function render_maintenance_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-maintenance.php'; }
         /*>>*/ 
-    public function render_template_builder_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-template-builder.php'; }
+    public function render_template_builder_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Template/ntbksense-template-builder.php'; }
         /*>>*/ 
 }
 ?>
