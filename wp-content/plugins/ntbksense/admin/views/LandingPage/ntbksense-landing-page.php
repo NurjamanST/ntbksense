@@ -238,7 +238,7 @@ for ($i = 1; $i <= 3; $i++) {
             <tbody>
                 <?php
                 // Kodingan cURL asli lo, TIDAK DIUBAH
-                $ApiUrl = 'http://ntbksenseapi.test/api/landing_page/read.landing.php';
+                $ApiUrl = esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/read.landing.php');
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $ApiUrl);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

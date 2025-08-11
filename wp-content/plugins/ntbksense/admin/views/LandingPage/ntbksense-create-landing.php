@@ -600,10 +600,10 @@ add_action('admin_footer', function () {
                                         <label for="daftar_artikel">Daftar URL Artikel <span class="text-danger">*</span></label>
                                         <div class="d-flex gap-2">
                                             <!-- Tombol Dapatkan URL Artikel dengan ID dan nonce -->
-                                            <button id="ntb-get-articles-btn" class="btn btn-danger btn-sm ntb-header-btn" type="button" data-nonce="<?php echo wp_create_nonce('ntb_get_articles_nonce'); ?>">
+                                            <button id="ntb-get-articles-btn" class="btn btn-warning btn-sm ntb-header-btn" type="button" data-nonce="<?php echo wp_create_nonce('ntb_get_articles_nonce'); ?>">
                                                 <span class="dashicons dashicons-admin-links"></span> Dapatkan URL Artikel
                                             </button>
-                                            <button class="btn btn-success btn-sm ntb-header-btn" type="button">
+                                            <button class="btn btn-primary btn-sm ntb-header-btn" type="button">
                                                 <span class="dashicons dashicons-search"></span> Dapatkan Link SEO
                                             </button>
                                         </div>

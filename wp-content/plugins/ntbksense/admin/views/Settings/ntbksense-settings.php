@@ -90,9 +90,34 @@ add_action('admin_footer', function() {
             a(".prev-tab").click(function(){let e=a(this).data("prev");a(`button[data-bs-target="${e}"]`).trigger("click"),a("html, body").animate({scrollTop:0},100)});
             
             // Inisialisasi Select2 jika ada
-            // a("#allowed_countries").select2({allowClear:!0,width:"100%",closeOnSelect:!1});
+            a("#akses_lokasi").select2({
+                placeholder: "Pilih Negara",
+                width: "100%"
+            });
             
             // Handler untuk submit form via AJAX
+            // Logika untuk menampilkan/menyembunyikan pilihan negara
+            function toggleCountrySelector() {
+                if (a("#akses_lokasi_mode").val() === 'off') {
+                    a("#akses_lokasi_countries_wrapper").hide();
+                } else {
+                    a("#akses_lokasi_countries_wrapper").show();
+                }
+            }
+            a("#akses_lokasi_mode").on('change', toggleCountrySelector);
+            toggleCountrySelector();
+            
+            // **NEW:** Logika untuk menampilkan/menyembunyikan textarea ASN
+            function toggleAsnTextarea() {
+                if (a("#akses_asn_mode").val() === 'off') {
+                    a("#akses_asn_list_wrapper").hide();
+                } else {
+                    a("#akses_asn_list_wrapper").show();
+                }
+            }
+            a("#akses_asn_mode").on('change', toggleAsnTextarea);
+            toggleAsnTextarea();
+            
             a("#settingsForm").submit(async function(e){
                 e.preventDefault();
                 
@@ -104,7 +129,10 @@ add_action('admin_footer', function() {
                     sembunyikan_anchor:a("#sembunyikan_anchor").is(":checked")?1:0,
                     sembunyikan_elemen_blank:a("#sembunyikan_elemen_blank").is(":checked")?1:0,
                     tampilkan_close_ads:a("#tampilkan_close_ads").is(":checked")?1:0,
-                    auto_scroll:a("#auto_scroll").is(":checked")?1:0
+                    auto_scroll:a("#auto_scroll").is(":checked")?1:0,
+                    detektor_perangkat_tinggi: a("#detektor_perangkat_tinggi").is(":checked")?1:0,
+                    detektor_perangkat_sedang: a("#detektor_perangkat_sedang").is(":checked")?1:0,
+                    detektor_perangkat_rendah: a("#detektor_perangkat_rendah").is(":checked")?1:0,
                 };
 
                 // Menggabungkan data form yang diserialisasi dengan data checkbox
@@ -184,6 +212,8 @@ if (!isset($options['tampilkan_close_ads'])) {
     $options['tampilkan_close_ads'] = 1;
 }
 
+// Daftar negara untuk dropdown
+$countries = ["Indonesia", "Malaysia", "Singapore", "United States", "United Kingdom", "Australia"];
 ?>
 <div class="wrap" id="ntbksense-settings-wrapper">
     <!-- Navbar -->
@@ -321,30 +351,162 @@ if (!isset($options['tampilkan_close_ads'])) {
                                 </div>
                             </div>
                             <div class="ntb-settings-section">
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" value="1" id="sembunyikan_vinyet" <?php checked($options['sembunyikan_vinyet'] ?? 0, 1); ?>>
+                                <div class="form-check my-3 d-flex align-items-center">
+                                    <input class="form-check-input mt-1" type="checkbox" value="1" id="sembunyikan_vinyet" <?php checked($options['sembunyikan_vinyet'] ?? 0, 1); ?>>
                                     <label class="form-check-label" for="sembunyikan_vinyet">Sembunyikan iklan vinyet.</label>
                                 </div>
-                                <div class="form-check mb-2">
+                                <div class="form-check mb-3  d-flex align-items-center">
                                     <input class="form-check-input" type="checkbox" value="1" id="sembunyikan_anchor" <?php checked($options['sembunyikan_anchor'] ?? 0, 1); ?>>
                                     <label class="form-check-label" for="sembunyikan_anchor">Sembunyikan iklan anchor.</label>
                                 </div>
-                                <div class="form-check mb-2">
+                                <div class="form-check mb-3  d-flex align-items-center">
                                     <input class="form-check-input" type="checkbox" value="1" id="sembunyikan_elemen_blank" <?php checked($options['sembunyikan_elemen_blank'] ?? 0, 1); ?>>
                                     <label class="form-check-label" for="sembunyikan_elemen_blank">Sembunyikan elemen iklan (jika blank).</label>
                                 </div>
-                                <div class="form-check mb-2">
+                                <div class="form-check mb-3  d-flex align-items-center">
                                     <input class="form-check-input" type="checkbox" value="1" id="tampilkan_close_ads" <?php checked($options['tampilkan_close_ads'] ?? 0, 1); ?>>
                                     <label class="form-check-label" for="tampilkan_close_ads">Tampilkan Tombol Close ADS.</label>
                                 </div>
-                                <div class="form-check mb-2">
+                                <div class="form-check mb-3  d-flex align-items-center">
                                     <input class="form-check-input" type="checkbox" value="1" id="auto_scroll" <?php checked($options['auto_scroll'] ?? 0, 1); ?>>
                                     <label class="form-check-label" for="auto_scroll">Auto Scroll.</label>
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Tab: Advance Content -->
+                        <div class="tab-pane fade" id="advance" role="tabpanel" aria-labelledby="advance-tab">
+                            <div class="ntb-settings-section">
+                                <div class="mb-3">
+                                    <label for="jenis_pengalihan" class="form-label">Jenis Pengalihan</label>
+                                    <select id="jenis_pengalihan" name="jenis_pengalihan" class="form-select">
+                                        <option>302 Temporary - PHP</option>
+                                        <option>Javascript</option>
+                                    </select>
+                                    <small class="form-text text-muted">
+                                    <b>302 (Temporary - PHP):</b> Pengalihan menggunakan header PHP. lebih cepat dan direkomendasikan untuk perubahan URL sementara.<br>
+                                    <b>Javascript:</b> Redirect berbasis skrip yang dapat memungkinkan Google Analytics melacak data kunjungan.</small>
+                                </div>
+                            </div>
+                            <div class="ntb-settings-section">
+                                <!-- **MODIFIED:** Akses Lokasi Section -->
+                                <div class="mb-3">
+                                    <label for="akses_lokasi_mode" class="form-label">Akses Lokasi</label>
+                                    <select id="akses_lokasi_mode" name="akses_lokasi_mode" class="form-select mb-2">
+                                        <option value="off" <?php selected($options['akses_lokasi_mode'] ?? 'off', 'off'); ?>>Off</option>
+                                        <option value="termasuk" <?php selected($options['akses_lokasi_mode'] ?? '', 'termasuk'); ?>>Termasuk</option>
+                                        <option value="kecualikan" <?php selected($options['akses_lokasi_mode'] ?? '', 'kecualikan'); ?>>Kecualikan</option>
+                                    </select>
+                                    <div id="akses_lokasi_countries_wrapper">
+                                        <select id="akses_lokasi_countries" name="akses_lokasi_countries[]" class="form-select" multiple="multiple">
+                                            <?php
+                                            $selected_countries = $options['akses_lokasi_countries'] ?? [];
+                                            foreach ($countries as $country) {
+                                                if (in_array($country, $selected_countries)) {
+                                                    $selected_attr = 'selected';
+                                                } else {
+                                                    $selected_attr = '';
+                                                }
+                                                echo '<option value="' . esc_attr($country) . '" ' . $selected_attr . '>' . esc_html($country) . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <small class="form-text text-muted mt-2">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><span class="text-primary">&bull;</span> <strong>**Termasuk**</strong> &rarr; Hanya berlaku untuk negara yang dipilih.</li>
+                                            <li><span class="text-primary">&bull;</span> <strong>**Kecualikan**</strong> &rarr; Berlaku untuk *semua negara kecuali* negara yang dipilih.</li>
+                                        </ul>
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="ntb-settings-section">
+                                <div class="mb-3">
+                                    <label for="blokir_ip_address" class="form-label">Blokir IP address</label>
+                                    <textarea id="blokir_ip_address" name="blokir_ip_address" class="form-control" rows="4"><?php echo esc_textarea($options['blokir_ip_address'] ?? "192.168.1.1\n192.168.1.12"); ?></textarea>
+                                    <small class="form-text text-muted">Masukkan satu IP per baris untuk memblokir akses dari IP tertentu.<br>
+                                    Contoh:<br>
+                                    192.168.1.1<br>
+                                    203.0.113.42<br>
+                                    Anda juga bisa memblokir rentang IP dengan format CIDR. Contoh: <code>192.0.2.0/24</code></small>
+                                </div>
+                            </div>
+                            <!-- **MODIFIED:** Akses ASN Section -->
+                            <div class="ntb-settings-section">
+                                <div class="mb-3">
+                                    <label for="akses_asn_mode" class="form-label">Akses ASN</label>
+                                    <select id="akses_asn_mode" name="akses_asn_mode" class="form-select">
+                                        <option value="off" <?php selected($options['akses_asn_mode'] ?? 'off', 'off'); ?>>Off</option>
+                                        <option value="termasuk" <?php selected($options['akses_asn_mode'] ?? '', 'termasuk'); ?>>Termasuk</option>
+                                        <option value="kecualikan" <?php selected($options['akses_asn_mode'] ?? '', 'kecualikan'); ?>>Kecualikan</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3" id="akses_asn_list_wrapper">
+                                    <textarea id="akses_asn_list" name="akses_asn_list" class="form-control" rows="4" placeholder="Masukkan satu ASN per baris, Contoh:&#10;15169&#10;45566"><?php echo esc_textarea($options['akses_asn_list'] ?? ''); ?></textarea>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <strong>Apa itu ASN?</strong><br>
+                                    ASN (Autonomous System Number) adalah nomor unik yang digunakan untuk mengidentifikasi jaringan internet milik perusahaan, penyedia layanan internet (ISP), atau organisasi tertentu. Contoh ASN:<br>
+                                    - 15169 &rarr; Google<br>
+                                    - 45566 &rarr; Indosat<br>
+                                    - 32934 &rarr; Facebook<br>
+                                    <strong>Cara penggunaan:</strong><br>
+                                    - Pilih mode Kecualikan untuk memblokir semua ASN kecuali yang terdaftar di daftar ini.<br>
+                                    - Pilih mode Termasuk untuk hanya mengizinkan ASN yang terdaftar di daftar ini.<br>
+                                    - Masukkan satu ASN per baris.<br>
+                                    <strong>Bagaimana cara mengetahui ASN?.</strong><br>
+                                    Anda bisa mencari ASN suatu IP menggunakan layanan seperti: <a href="https://ipinfo.io" target="_blank">ipinfo.io</a> or <a href="https://bgpview.io" target="_blank">bgpview.io</a>.
+                                </small>
+                            </div>
+                            <div class="ntb-settings-section">
+                                <h5 class="section-title">Detektor Perangkat</h5>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="1" id="detektor_perangkat_tinggi" <?php checked($options['detektor_perangkat_tinggi'] ?? 0, 1); ?>>
+                                    <label class="form-check-label" for="detektor_perangkat_tinggi"><strong>Akurasi lebih tinggi</strong> (dibanding metode user-agent standar).</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="1" id="detektor_perangkat_sedang" <?php checked($options['detektor_perangkat_sedang'] ?? 1, 1); ?>>
+                                    <label class="form-check-label" for="detektor_perangkat_sedang"><strong>Memungkinkan penargetan (redirect)</strong> yang lebih tepat berdasarkan jenis perangkat.</label>
+                                </div>
+                                 <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="1" id="detektor_perangkat_rendah" <?php checked($options['detektor_perangkat_rendah'] ?? 1, 1); ?>>
+                                    <label class="form-check-label" for="detektor_perangkat_rendah"><strong>Mendukung lebih banyak</strong> jenis perangkat.</label>
+                                </div>
+                                <p class="mt-3"><strong>Kekurangan:</strong><br>Membutuhkan lebih banyak sumber daya server, terutama pada situs dengan traffic tinggi.<br>Bisa meningkatkan waktu loading jika tidak dikonfigurasi dengan baik.<br>Menggunakan caching dapat mengurangi beban, tetapi perlu dikonfigurasi dengan benar.</p>
+                                <p><strong>Catatan:</strong><br>Jika opsi ini <strong>TIDAK</strong> dalam bentuk isian, akan mengembalikan metode deteksi lawas yang lebih ringan tetapi kurang akurat.<br>Jika Anda memiliki traffic terbatas, pertimbangkan untuk menggunakan caching atau metode deteksi yang lebih sederhana.</p>
+                            </div>
+                             <div class="ntb-settings-section">
+                                <div class="mb-3">
+                                    <label for="simpan_log" class="form-label">Simpan Log ke Database</label>
+                                    <select id="simpan_log" name="simpan_log" class="form-select">
+                                        <option <?php selected($options['simpan_log'] ?? 'Aktifkan', 'Aktifkan'); ?>>Aktifkan</option>
+                                        <option <?php selected($options['simpan_log'] ?? '', 'Nonaktifkan'); ?>>Nonaktifkan</option>
+                                    </select>
+                                    <small class="form-text text-muted">Jika diaktifkan, setiap redirect akan dicatat di database.<br><strong>Keuntungan:</strong> Memberikan data analitik yang berharga soal traffic.<br><strong>Kekurangan:</strong> Database bisa cepat penuh jika traffic tinggi.</small>
+                                </div>
+                            </div>
+                            <div class="ntb-settings-section">
+                                <h5 class="section-title">Simpan Durasi Kunjungan</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="simpan_durasi" class="form-label">Simpan Durasi Kunjungan</label>
+                                        <select id="simpan_durasi" name="simpan_durasi" class="form-select">
+                                            <option <?php selected($options['simpan_durasi'] ?? 'Tidak (Default)', 'Tidak (Default)'); ?>>Tidak (Default)</option>
+                                            <option <?php selected($options['simpan_durasi'] ?? '', 'Ya'); ?>>Ya</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="interval_durasi" class="form-label">Interval</label>
+                                         <div class="input-group">
+                                            <input type="number" id="interval_durasi" name="interval_durasi" class="form-control" value="<?php echo esc_attr($options['interval_durasi'] ?? 5); ?>">
+                                            <span class="input-group-text">Detik</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted mt-2 d-block">Jika diaktifkan, setiap traffic akan dicatat durasi kunjungannya.</small>
+                            </div>
+                        </div>
                         <!-- Placeholder untuk tab lain -->
-                        <div class="tab-pane fade" id="advance" role="tabpanel" aria-labelledby="advance-tab"><p>Pengaturan Advance akan muncul di sini.</p></div>
                         <div class="tab-pane fade" id="header-footer" role="tabpanel" aria-labelledby="header-footer-tab"><p>Pengaturan Header & Footer akan muncul di sini.</p></div>
                         <div class="tab-pane fade" id="plugin" role="tabpanel" aria-labelledby="plugin-tab"><p>Pengaturan Plugin akan muncul di sini.</p></div>
                         <div class="tab-pane fade" id="keamanan" role="tabpanel" aria-labelledby="keamanan-tab"><p>Pengaturan Keamanan akan muncul di sini.</p></div>
