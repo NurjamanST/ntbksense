@@ -12,6 +12,7 @@
 add_action('admin_footer', function() {
     // Periksa apakah kita berada di halaman yang benar sebelum memuat aset
     $screen = get_current_screen();
+    // Periksa apakah ini adalah halaman Template Builder
     if ( 'ntbksense_page_ntbksense-template-builder' !== $screen->id ) {
         return;
     }
@@ -74,6 +75,7 @@ add_action('admin_footer', function() {
 
 // --- START: Data Dummy untuk Template ---
 $template_data = [];
+$template_name = ['Template Kustom', 'Template Baru', 'Template Default', 'Template Premium', 'Template Spesial'];
 $statuses = ['<span class="badge bg-success">Aktif</span>', '<span class="badge bg-secondary">Tidak Aktif</span>'];
 $bs_versions = ['5.3.1', '5.2.0', '4.6.0'];
 
@@ -82,7 +84,7 @@ for ($i = 1; $i <= 100; $i++) {
     $updated_timestamp = $created_timestamp + rand(0, 5 * 24 * 60 * 60); // Update acak dalam 5 hari setelah dibuat
     $template_data[] = [
         'id'                => $i,
-        'name'              => 'Template Kustom #' . $i,
+        'name'              => $template_name[array_rand($template_name)] . " " . $i,
         'status'            => $statuses[array_rand($statuses)],
         'bootstrap_version' => $bs_versions[array_rand($bs_versions)],
         'created_date'      => date('Y/m/d H:i', $created_timestamp),
@@ -132,11 +134,17 @@ for ($i = 1; $i <= 100; $i++) {
                         <tr>
                             <td><input type="checkbox" name="template_id[]" value="<?php echo esc_attr($item['id']); ?>" /></td>
                             <td>
-                                <strong><a href="#"><?php echo esc_html($item['name']); ?></a></strong>
+                                <strong><a style="text-decoration:none;" href="#"><?php echo esc_html($item['name']); ?></a></strong>
                                 <div class="row-actions">
-                                    <a href="#">Edit</a> | 
-                                    <a href="#" class="text-danger">Hapus</a> | 
-                                    <a href="#">Duplikat</a>
+                                    <a style="text-decoration:none;" href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-edit-tb&id=' . $item['id'])); ?>" class="text-primary">
+                                        <span class="dashicons dashicons-edit"></span>
+                                    </a>
+                                    <!-- <a style="text-decoration:none;" href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-duplicate-tb&id=' . $item['id'])); ?>" class="text-secondary">
+                                        <span class="dashicons dashicons-admin-page"></span>
+                                    </a> -->
+                                    <a style="text-decoration:none;" href="<?php echo esc_url(wp_nonce_url(admin_url('admin.php?page=ntbksense-template_builder&action=delete&id=' . $item['id']), 'ntb_delete_lp_nonce')); ?>" class="text-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus Template Builder ini?');">
+                                        <span class="dashicons dashicons-trash"></span>
+                                    </a>
                                 </div>
                             </td>
                             <td><?php echo $item['status']; // Badge HTML, tidak perlu di-escape ?></td>
@@ -241,10 +249,10 @@ for ($i = 1; $i <= 100; $i++) {
     .ntb-breadcrumb span { color: #1d2327; font-weight: 600; }
 
     /* Action Buttons Bar */
-    .ntb-actions-bar { margin-bottom: 20px; }
-    .ntb-actions-bar .button { margin-right: 5px; display: inline-flex; align-items: center; gap: 5px; }
-    .ntb-actions-bar .button .dashicons { font-size: 18px; line-height: 1; }
-    .ntb-btn-primary { background: #007bff !important; border-color: #007bff !important; color: white !important; }
+        .ntb-actions-bar { margin-bottom: 20px; }
+        .ntb-actions-bar .button { margin-right: 5px; display: inline-flex; align-items: center; gap: 5px; }
+        .ntb-actions-bar .button .dashicons { font-size: 18px; line-height: 1; }
+        .ntb-btn-primary { background: #007bff !important; border-color: #007bff !important; color: white !important; }
 
     /* DataTables Styling to match WordPress UI */
         .dataTables_wrapper {
@@ -313,34 +321,34 @@ for ($i = 1; $i <= 100; $i++) {
 
 
     /* Table Styling */
-    #ntb-template-builder-table {
-        border-collapse: collapse !important;
-        border: 1px solid #c3c4c7;
-    }
-    #ntb-template-builder-table th, #ntb-template-builder-table td {
-        padding: 8px 10px;
-        border-bottom: 1px solid #e2e4e7;
-    }
-    #ntb-template-builder-table thead th {
-        background-color: #f6f7f7;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-    .dataTables_empty {
-        padding: 20px !important;
-    }
-    .row-actions {
-        visibility: hidden;
-        font-size: 13px;
-        color: #aaa;
-    }
-    tr:hover .row-actions {
-        visibility: visible;
-    }
-    .badge {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 3px 7px;
-        border-radius: 10px;
-    }
+        #ntb-template-builder-table {
+            border-collapse: collapse !important;
+            border: 1px solid #c3c4c7;
+        }
+        #ntb-template-builder-table th, #ntb-template-builder-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e4e7;
+        }
+        #ntb-template-builder-table thead th {
+            background-color: #f6f7f7;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .dataTables_empty {
+            padding: 20px !important;
+        }
+        .row-actions {
+            visibility: hidden;
+            font-size: 13px;
+            color: #aaa;
+        }
+        tr:hover .row-actions {
+            visibility: visible;
+        }
+        .badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 7px;
+            border-radius: 10px;
+        }
 </style>

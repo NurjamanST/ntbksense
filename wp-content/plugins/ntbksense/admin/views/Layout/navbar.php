@@ -14,7 +14,7 @@
                 <span class="dashicons dashicons-admin-page"></span>
             </a>
             <!-- Table Builder -->
-            <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-table-builder')); ?>" class="ntb-navbar-icon">
+            <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-template-builder')); ?>" class="ntb-navbar-icon">
                 <span class="dashicons dashicons-editor-table"></span>
             </a>
             <!-- Setting -->
