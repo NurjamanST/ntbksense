@@ -3,9 +3,10 @@ class Template
 {
     // Properti ini sekarang akan berisi objek $wpdb
     private $conn;
-    private $table_name;
+    // private $table_name;
 
-    // Properti publik lo tetap sama
+    private $table_name = 'wp_acp_landings';
+
     public $id, $slug, $status, $title, $title_option, $description, $inject_keywords,
         $description_option, $template_file, $template_name, $random_template_method,
         $random_template_file, $random_template_file_afs, $post_urls,
@@ -16,22 +17,21 @@ class Template
         $custom_html, $parameter_key, $parameter_value, $cloaking_url,
         $custom_template_builder;
 
-    /**
-     * Constructor sekarang menerima objek $wpdb dari WordPress
-     */
-    public function __construct($db_connection)
+    public function __construct($db)
     {
-        $this->conn = $db_connection; // $db_connection adalah global $wpdb
-        // Mengambil nama tabel dengan prefix dinamis dari WordPress
-        $this->table_name = 'wp_acp_landings'; // Ganti 'wp_' dengan $this->conn->prefix jika perlu
+        $this->conn = $db;
     }
 
-    /**
-     * Membuat data baru menggunakan metode $wpdb->insert()
-     */
+    public function isSlugExists($slug)
+    {
+        $query = $this->conn->prepare("SELECT id FROM {$this->table_name} WHERE slug = %s", $slug);
+        $result = $this->conn->get_var($query);
+        return !empty($result);
+    }
+
     public function create()
     {
-        // Siapkan data dalam format array [nama_kolom => nilai]
+        // Siapkan data lengkap dengan membaca properti dari object ini ($this)
         $data = [
             'slug' => $this->slug,
             'status' => $this->status,
@@ -65,17 +65,46 @@ class Template
             'custom_template_builder' => $this->custom_template_builder
         ];
 
-        // $wpdb->insert() jauh lebih simpel dan aman. Mengembalikan false jika gagal.
-        $result = $this->conn->insert($this->table_name, $data);
+        // Siapkan format tipe data untuk setiap kolom
+        $format = [
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%d',
+            '%s',
+            '%s',
+            '%s',
+            '%s',
+            '%s'
+        ]; // %s untuk string, %d untuk angka
+
+        $result = $this->conn->insert($this->table_name, $data, $format);
 
         if ($result === false) {
-            // KODE DEBUG: Tampilkan pesan error terakhir dari database
-            http_response_code(500);
-            echo json_encode(['db_error' => $this->conn->last_error]);
-            exit; // Hentikan script di sini biar pesan errornya kelihatan
+            return false;
         }
 
-        // Ambil ID dari data yang baru saja dimasukkan
         $this->id = $this->conn->insert_id;
         return true;
     }
@@ -106,12 +135,12 @@ class Template
     /**
      * Mengecek apakah slug sudah ada
      */
-    public function isSlugExists($slug)
-    {
-        $query = $this->conn->prepare("SELECT id FROM {$this->table_name} WHERE slug = %s", $slug);
-        $result = $this->conn->get_var($query);
-        return !empty($result);
-    }
+    // public function isSlugExists($slug)
+    // {
+    //     $query = $this->conn->prepare("SELECT id FROM {$this->table_name} WHERE slug = %s", $slug);
+    //     $result = $this->conn->get_var($query);
+    //     return !empty($result);
+    // }
 
     /**
      * Mengecek apakah slug sudah dipakai oleh data LAIN (untuk validasi update)

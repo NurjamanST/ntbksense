@@ -93,8 +93,14 @@ $table_prefix = 'wp_';
  *
  * @link https://wordpress.org/documentation/article/debugging-in-wordpress/
  */
-define( 'WP_DEBUG', false );
+// define( 'WP_DEBUG', false );
 
+// Ubah dari 'false' menjadi 'true'
+define( 'WP_DEBUG', true );
+
+// Tambahkan baris ini di bawahnya untuk menyimpan log error
+define( 'WP_DEBUG_LOG', true );
+define( 'WP_DEBUG_DISPLAY', false ); // Biar error nggak tampil di layar
 /* Add any custom values between this line and the "stop editing" line. */
 
 
