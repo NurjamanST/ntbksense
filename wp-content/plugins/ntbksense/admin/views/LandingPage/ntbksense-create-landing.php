@@ -1,4 +1,8 @@
 <?php
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 // =========================================================================
 // FILE: ntbksense/admin/views/ntbksense-create-landing.php
 // =========================================================================
@@ -7,13 +11,18 @@
  * Tampilan untuk halaman admin Buat LP Baru ( Create Landing Page )
  */
 
-// Menambahkan aset khusus untuk halaman ini
-add_action('admin_footer', function() {
+add_action('admin_notices', function() {
     $screen = get_current_screen();
-    if ( 'admin_page_ntbksense-create-landing' !== $screen->id ) {
+    echo '<div class="notice notice-warning is-dismissible"><p>ID Halaman ini adalah: <strong>' . esc_html($screen->id) . '</strong></p></div>';
+});
+
+// Menambahkan aset khusus untuk halaman ini
+add_action('admin_footer', function () {
+    $screen = get_current_screen();
+    if ('admin_page_ntbksense-create-landing' !== $screen->id) {
         return;
     }
-    ?>
+?>
     <!-- Bootstrap for grid and form styling -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
@@ -24,7 +33,7 @@ add_action('admin_footer', function() {
 
     <script>
         jQuery(document).ready(function($) {
-            
+
             // Inisialisasi Range Sliders
             $(".ntb-range-slider").each(function() {
                 const $sliderContainer = $(this);
@@ -55,7 +64,7 @@ add_action('admin_footer', function() {
                 const $slider = $sliderContainer.find('.slider-track');
                 let minVal = parseInt($sliderContainer.find('.range-value-min').val(), 10);
                 let maxVal = parseInt($sliderContainer.find('.range-value-max').val(), 10);
-                
+
                 if ($input.hasClass('range-value-min') && minVal > maxVal) {
                     minVal = maxVal;
                     $input.val(minVal);
@@ -119,7 +128,7 @@ add_action('admin_footer', function() {
                 }
             });
             // --- END: Logika Toggle Advance ---
-            
+
             // --- START: Logika Tombol Upload Media ---
             $(document).on('click', '.ntb-media-btn', function(e) {
                 e.preventDefault();
@@ -135,7 +144,7 @@ add_action('admin_footer', function() {
             });
             // --- END: Logika Tombol Upload Media ---
 
-             // --- START: Logika Tombol Upload Media (BULK) ---
+            // --- START: Logika Tombol Upload Media (BULK) ---
             $(document).on('click', '.ntb-bulk-upload-btn', function(e) {
                 e.preventDefault();
                 $(this).siblings('.ntb-bulk-file-input').click();
@@ -155,7 +164,7 @@ add_action('admin_footer', function() {
             // --- END: Logika Tombol Upload Media (BULK) ---
 
             // --- START: Logika Dapatkan URL Artikel dengan Modal ---
-            
+
             // 1. Tampilkan modal saat tombol utama diklik
             $('#ntb-get-articles-btn').on('click', function(e) {
                 e.preventDefault();
@@ -207,33 +216,182 @@ add_action('admin_footer', function() {
                 });
             });
             // --- END: Logika Dapatkan URL Artikel ---
+
         });
     </script>
-    <?php
+
+    <script>
+        jQuery(document).ready(function($) {
+
+            // ===================================================================
+            // KODE UNTUK INTERAKSI UI (Slider, Repeater, Toggle, Modal, dll)
+            // ===================================================================
+
+            // Inisialisasi Range Sliders
+            $(".ntb-range-slider").each(function() {
+                // ... (kode slider lo yang sudah ada)
+            });
+            $('.range-value-min, .range-value-max').on('change', function() {
+                // ... (kode sinkronisasi slider lo yang sudah ada)
+            });
+
+            // Logika Tambah/Hapus Input Repeater
+            function addRepeaterField(e) {
+                // ... (kode repeater lo yang sudah ada)
+            }
+
+            function removeRepeaterField(e) {
+                // ... (kode repeater lo yang sudah ada)
+            }
+            $('.ntb-add-repeater').on('click', addRepeaterField);
+            $(document).on('click', '.ntb-remove-btn', removeRepeaterField);
+
+            // Logika Toggle Advance
+            $('.ntb-advance-toggle input[type="checkbox"]').on('change', function() {
+                // ... (kode toggle lo yang sudah ada)
+            });
+
+            // Logika Tombol Upload Media
+            $(document).on('click', '.ntb-media-btn, .ntb-bulk-upload-btn', function(e) {
+                // ... (kode upload media lo yang sudah ada)
+            });
+            $(document).on('change', '.ntb-file-input, .ntb-bulk-file-input', function() {
+                // ... (kode upload media lo yang sudah ada)
+            });
+
+            // Logika Dapatkan URL Artikel dengan Modal
+            $('#ntb-get-articles-btn').on('click', function(e) {
+                // ... (kode modal lo yang sudah ada)
+            });
+            $('#submit-get-articles').on('click', function(e) {
+                // ... (kode AJAX untuk get articles lo yang sudah ada)
+            });
+            // --- CHECKPOINT 2 ---
+            const $form = $('#ntb-create-lp-form');
+            console.log('Checkpoint 2: Mencari form #ntb-create-lp-form. Ditemukan:', $form.length);
+            // Jika hasilnya "Ditemukan: 0", berarti ID form di HTML salah atau tidak ada.
+
+            // --- LOGIKA SUBMIT FORM KE API ---
+            $form.on('submit', function(e) {
+                e.preventDefault(); // Mencegah form submit cara lama (reload halaman)
+
+                const $submitButton = $('#ntb-submit-btn');
+                const originalButtonText = $submitButton.html();
+
+                // Tampilkan status loading di tombol
+                $submitButton.html('<span class="spinner is-active" style="float: left; margin-top: 4px;"></span> Menyimpan...');
+                $submitButton.prop('disabled', true);
+
+                // 1. Kumpulkan semua data dari form
+                const formData = {
+                    // Data Umum
+                    slug: $('#slug').val(),
+                    status: '1', // Default status saat dibuat
+                    title: $('#judul_manual').val(),
+                    title_option: $('#judul option:selected').val(),
+                    template_name: $('#template option:selected').text().trim(),
+                    template_file: $('#template').val(), // Mengambil dari atribut 'value' di <option>
+
+                    // Deskripsi & Keywords
+                    description_option: $('#deskripsi option:selected').val(),
+                    description: $('textarea[name="ntb_deskripsi_manual"]').val() || '',
+                    inject_keywords: $('textarea[name="ntb_inject_keywords"]').val(),
+
+                    // Konten & URL
+                    post_urls: $('textarea[name="ntb_daftar_artikel"]').val(),
+                    video_urls: $('input[name="ntb_url_video[]"]').map((_, el) => $(el).val()).get().filter(url => url),
+                    universal_image_urls: $('input[name="ntb_url_gambar[]"]').map((_, el) => $(el).val()).get().filter(url => url),
+                    landing_image_urls: '', // Default kosong, bisa diisi jika ada inputnya
+                    number_images_displayed: parseInt($('input[name="ntb_jumlah_gambar"]').val(), 10) || 0,
+
+                    // Pengaturan Redirect & Tampilan
+                    redirect_post_option: $('#url_pengalihan option:selected').val(),
+                    timer_auto_refresh: `${$('input[name="ntb_waktu_refresh_min"]').val()}-${$('input[name="ntb_waktu_refresh_max"]').val()}`,
+                    auto_refresh_option: $('#auto_refresh option:selected').val(),
+                    protect_elementor: $('#proteksi_fitur option:selected').val(),
+                    referrer_option: $('#kontrol_penujuk option:selected').val(),
+                    device_view: $('#tampilan_perangkat option:selected').val(),
+                    videos_floating_option: $('#video_melayang option:selected').val(),
+                    timer_auto_pause_video: `${$('input[name="ntb_jeda_video_min"]').val()}-${$('input[name="ntb_jeda_video_max"]').val()}`,
+
+                    // Lainnya
+                    parameter_key: $('input[name="ntb_param_key"]').val(),
+                    parameter_value: $('input[name="ntb_param_value"]').val(),
+                    cloaking_url: $('input[name="ntb_cloaking_url"]').val(),
+                    custom_html: '', // Default kosong, bisa diisi jika ada inputnya
+                    custom_template_builder: '[]', // Default '[]'
+
+                    // Field Randomizer (biasanya di-set default)
+                    random_template_method: 'random',
+                    random_template_file: '[]',
+                    random_template_file_afs: '[]'
+                };
+
+                console.log('Data yang akan dikirim:', formData);
+
+                // 2. Kirim data ke API menggunakan Fetch
+                const apiUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/create.landing.php'); ?>';
+
+                // const createApiUrl = 'http://ntbksense.test/wp-content/plugins/ntbksense/api/landing_page/create.landing.php';
+
+                fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.message || 'Terjadi kesalahan jaringan.');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert('Sukses! ' + data.message);
+                        // Arahkan ke halaman utama Landing Page setelah sukses
+                        window.location.href = '<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Gagal! ' + error.message);
+                    })
+                    .finally(() => {
+                        // Kembalikan tombol ke keadaan semula
+                        $submitButton.html(originalButtonText);
+                        $submitButton.prop('disabled', false);
+                    });
+            });
+        });
+    </script>
+<?php
 });
 ?>
 
 <div class="wrap" id="ntb-lp-builder">
     <!-- Navbar -->
-    <?php include NTBKSENSE_PLUGIN_DIR."admin/views/Layout/navbar.php"; ?>
+    <?php include NTBKSENSE_PLUGIN_DIR . "admin/views/Layout/navbar.php"; ?>
 
     <!-- START: Breadcrumb Kustom -->
-        <div class="ntb-breadcrumb">
-            <span class="dashicons dashicons-admin-home"></span> <span>NTBKSense</span> &gt; 
-            <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>">Landing Page</a> &gt; <span>Buat LP Baru</span>
-        </div>
+    <div class="ntb-breadcrumb">
+        <span class="dashicons dashicons-admin-home"></span> <span>NTBKSense</span> &gt;
+        <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>">Landing Page</a> &gt; <span>Buat LP Baru</span>
+    </div>
     <!-- END: Breadcrumb Kustom -->
 
     <div class="ntb-main-content">
         <h1 class="wp-heading-inline">Buat LP Baru</h1>
         <p>
-            Halaman ini digunakan untuk membuat Landing Page baru dengan berbagai opsi konfigurasi, 
+            Halaman ini digunakan untuk membuat Landing Page baru dengan berbagai opsi konfigurasi,
             Pastikan untuk mengisi semua bidang yang diperlukan sebelum menyimpan.<br>
             Note : <span class="text-danger">*</span> menandakan bidang yang wajib diisi.
         </p>
         <hr class="wp-header-end">
 
-        <form method="post" action="">
+        <form method="post" action="" id="ntb-create-lp-form">
             <!-- Aksi Keamanan WordPress -->
             <?php wp_nonce_field('ntb_save_lp_action', 'ntb_save_lp_nonce'); ?>
 
@@ -247,34 +405,34 @@ add_action('admin_footer', function() {
                             <div class="col-md-6">
                                 <div class="ntb-form-group">
                                     <label for="template">Template <span class="text-danger">*</span></label>
-                                    <select id="template" name="ntb_template" class="form-select">
-                                        <option>Universal (Long screenshot)</option>
-                                        <option>Video (Long screenshot)</option>
+                                    <select id="template" name="ntb_template" class="form-select" required>
+                                        <option value="Universal (Long screenshot)">Universal (Long screenshot)</option>
+                                        <option value="Video (Long screenshot)">Video (Long screenshot)</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="url_pengalihan">URL Pengalihan <span class="text-danger">*</span></label>
-                                    <select id="url_pengalihan" name="ntb_url_pengalihan" class="form-select">
-                                        <option>isi Manual (Rekomendasi)</option>
+                                    <select id="url_pengalihan" name="ntb_url_pengalihan" class="form-select" required>
+                                        <option value="custom">isi Manual (Rekomendasi)</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="deskripsi">Deskripsi <span class="text-danger">*</span></label>
-                                    <select id="deskripsi" name="ntb_deskripsi" class="form-select">
-                                        <option>isi Manual (Rekomendasi)</option>
+                                    <select id="deskripsi" name="ntb_deskripsi" class="form-select" required>
+                                        <option value="costume">isi Manual (Rekomendasi)</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="kontrol_penujuk">Kontrol Penujuk <span class="text-danger">*</span></label>
-                                    <select id="kontrol_penujuk" name="ntb_kontrol_penujuk" class="form-select">
-                                        <option>Izinkan Semua Trafik</option>
+                                    <select id="kontrol_penujuk" name="ntb_kontrol_penujuk" class="form-select" required>
+                                        <option value="Izinkan Semua Trafik">Izinkan Semua Trafik</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="video_melayang">Video Melayang <span class="text-danger">*</span></label>
-                                    <select id="video_melayang" name="ntb_video_melayang" class="form-select">
-                                        <option>On</option>
-                                        <option>Off</option>
+                                    <select id="video_melayang" name="ntb_video_melayang" class="form-select" required>
+                                        <option value="on">On</option>
+                                        <option value="off">Off</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
@@ -285,7 +443,7 @@ add_action('admin_footer', function() {
                                         </small>
                                     </label>
                                     <select id="proteksi_fitur" name="ntb_proteksi_fitur" class="form-select">
-                                        <option>Pause Debugger</option>
+                                        <option value="Pause Debugger">Pause Debugger</option>
                                     </select>
                                 </div>
                             </div>
@@ -294,29 +452,29 @@ add_action('admin_footer', function() {
                             <div class="col-md-6">
                                 <div class="ntb-form-group">
                                     <label for="slug">Slug <span class="text-danger">*</span></label>
-                                    <input type="text" id="slug" name="ntb_slug" class="form-control" placeholder="mrSc0li">
+                                    <input type="text" id="slug" name="ntb_slug" class="form-control" placeholder="mrSc0li" required>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="judul">Judul <span class="text-danger">*</span></label>
-                                    <select id="judul" name="ntb_judul" class="form-select">
-                                        <option>isi Manual (Rekomendasi)</option>
+                                    <select id="judul" name="ntb_judul" class="form-select" required>
+                                        <option value="random">isi Manual (Rekomendasi)</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="auto_refresh">Auto Refresh <span class="text-danger">*</span></label>
-                                    <select id="auto_refresh" name="ntb_auto_refresh" class="form-select">
-                                        <option>Ketika halaman dimuat</option>
+                                    <select id="auto_refresh" name="ntb_auto_refresh" class="form-select" required>
+                                        <option value="Ketika halaman dimuat">Ketika halaman dimuat</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="tampilan_perangkat">Tampilan Perangkat <span class="text-danger">*</span></label>
-                                    <select id="tampilan_perangkat" name="ntb_tampilan_perangkat" class="form-select">
-                                        <option>Semua Perangkat (kecuali Bot)</option>
+                                    <select id="tampilan_perangkat" name="ntb_tampilan_perangkat" class="form-select" required>
+                                        <option value="Semua Perangkat (kecuali Bot)">Semua Perangkat (kecuali Bot)</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="jumlah_gambar">Jumlah Gambar Ditampilkan <span class="text-danger">*</span></label>
-                                    <input type="number" id="jumlah_gambar" name="ntb_jumlah_gambar" class="form-control" placeholder="10">
+                                    <input type="number" id="jumlah_gambar" name="ntb_jumlah_gambar" class="form-control" placeholder="10" required>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="cloaking_url">Cloaking URL</label>
@@ -360,7 +518,7 @@ add_action('admin_footer', function() {
                                 </div>
                                 <!-- URL Gambar -->
                                 <div class="ntb-form-group">
-                                        <div class="ntb-simple-view">
+                                    <div class="ntb-simple-view">
                                         <label>URL Gambar (Long screenshot) <a href="#" class="sample-link">Sample</a></label>
                                         <div id="ntb-image-urls-container">
                                             <div class="input-group">
@@ -437,7 +595,7 @@ add_action('admin_footer', function() {
                         <!-- Bawah -->
                         <div class="row mt-3">
                             <div class="col-md-12">
-                                    <div class="ntb-form-group">
+                                <div class="ntb-form-group">
                                     <div class="ntb-field-header">
                                         <label for="daftar_artikel">Daftar URL Artikel <span class="text-danger">*</span></label>
                                         <div class="d-flex gap-2">
@@ -478,23 +636,23 @@ add_action('admin_footer', function() {
     <div class="modal fade" id="getArticlesModal" tabindex="-1" aria-labelledby="getArticlesModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="getArticlesModalLabel">Atur Jumlah URL Artikel</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="get-articles-form">
-                <div class="mb-3">
-                    <label for="article_count" class="form-label">Jumlah URL yang akan diambil</label>
-                    <input type="number" class="form-control" id="article_count" name="article_count" value="10" min="1">
-                    <small class="form-text text-muted">Masukkan -1 untuk mengambil semua artikel yang diterbitkan.</small>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="getArticlesModalLabel">Atur Jumlah URL Artikel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" id="submit-get-articles">Dapatkan URL</button>
-            </div>
+                <div class="modal-body">
+                    <form id="get-articles-form">
+                        <div class="mb-3">
+                            <label for="article_count" class="form-label">Jumlah URL yang akan diambil</label>
+                            <input type="number" class="form-control" id="article_count" name="article_count" value="10" min="1">
+                            <small class="form-text text-muted">Masukkan -1 untuk mengambil semua artikel yang diterbitkan.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="submit-get-articles">Dapatkan URL</button>
+                </div>
             </div>
         </div>
     </div>
@@ -505,178 +663,256 @@ add_action('admin_footer', function() {
     #ntb-lp-builder {
         background-color: #ffffffff;
         padding: 0;
-        margin: 0px 0px 0px -20px; /* Override default .wrap margin */
+        margin: 0px 0px 0px -20px;
+        /* Override default .wrap margin */
     }
-    .ntb-main-content {
-            background: #fff;
-            border: 1px solid #c3c4c7;
-            border-radius: 10px;
-            box-shadow: 0 1px 1px rgba(0,0,0,.04);
-            padding: 20px;
-            margin: 20px;
-    }
-    .ntb-main-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0px 0px 20px 0px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-    }
-    /* Breadcrumb Styling */
-        .ntb-breadcrumb { padding: 15px 20px; color: #50575e; font-size: 14px; border-bottom: 1px solid #e0e0e0; }
-        .ntb-breadcrumb a { text-decoration: none; color: #0073aa; }
-        .ntb-breadcrumb a:hover { text-decoration: underline; }
-        .ntb-breadcrumb span { color: #1d2327; font-weight: 600; }
 
-    .ntb-form-container { background: #fff; border-radius: 20px; padding: 0px; margin-top: 10px; }
-    .ntb-form-group { margin-bottom: 1rem; }
-    .ntb-form-group label { margin-bottom: 0.5rem; display: block;font-size: 12px;font-weight: 600; }
-    .ntb-form-group a { text-decoration: none; font-size: 12px; }
-    
-    .ntb-form-footer { margin-top: 20px; padding: 15px 20px; background: #fff; border-top: 1px solid #c3c4c7; text-align: right;}
-    .ntb-form-footer .button { font-size: 14px; height: auto; padding: 2px 16px; }
-    .ntb-form-footer .button .dashicons { vertical-align: middle; margin-top: -2px; }
+    .ntb-main-content {
+        background: #fff;
+        border: 1px solid #c3c4c7;
+        border-radius: 10px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+        padding: 20px;
+        margin: 20px;
+    }
+
+    .ntb-main-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0px 0px 20px 0px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Breadcrumb Styling */
+    .ntb-breadcrumb {
+        padding: 15px 20px;
+        color: #50575e;
+        font-size: 14px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .ntb-breadcrumb a {
+        text-decoration: none;
+        color: #0073aa;
+    }
+
+    .ntb-breadcrumb a:hover {
+        text-decoration: underline;
+    }
+
+    .ntb-breadcrumb span {
+        color: #1d2327;
+        font-weight: 600;
+    }
+
+    .ntb-form-container {
+        background: #fff;
+        border-radius: 20px;
+        padding: 0px;
+        margin-top: 10px;
+    }
+
+    .ntb-form-group {
+        margin-bottom: 1rem;
+    }
+
+    .ntb-form-group label {
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .ntb-form-group a {
+        text-decoration: none;
+        font-size: 12px;
+    }
+
+    .ntb-form-footer {
+        margin-top: 20px;
+        padding: 15px 20px;
+        background: #fff;
+        border-top: 1px solid #c3c4c7;
+        text-align: right;
+    }
+
+    .ntb-form-footer .button {
+        font-size: 14px;
+        height: auto;
+        padding: 2px 16px;
+    }
+
+    .ntb-form-footer .button .dashicons {
+        vertical-align: middle;
+        margin-top: -2px;
+    }
 
     /* New styles for media inputs */
-        .ntb-media-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .ntb-remove-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .ntb-field-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 4px;
-        }
-        .ntb-advance-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .ntb-advance-toggle label{
-            margin-top: 10px;
-            font-size: 12px;
-            color: #50575e;
-        }
-        .ntb-advance-toggle span {
-            font-size: 12px;
-            color: #50575e;
-        }
-        .sample-link {
-            font-size: 12px;
-            font-weight: normal;
-            margin-left: 5px;
-        }
+    .ntb-media-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ntb-remove-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ntb-field-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 4px;
+    }
+
+    .ntb-advance-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ntb-advance-toggle label {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #50575e;
+    }
+
+    .ntb-advance-toggle span {
+        font-size: 12px;
+        color: #50575e;
+    }
+
+    .sample-link {
+        font-size: 12px;
+        font-weight: normal;
+        margin-left: 5px;
+    }
 
     /* Smaller toggle switch */
-        .ntb-switch.small-switch {
-            width: 34px;
-            height: 20px;
-        }
-        .ntb-switch.small-switch .ntb-slider:before {
-            height: 14px;
-            width: 14px;
-            left: 3px;
-            bottom: 3px;
-        }
-        .ntb-switch.small-switch input:checked + .ntb-slider:before {
-            transform: translateX(14px);
-        }
+    .ntb-switch.small-switch {
+        width: 34px;
+        height: 20px;
+    }
+
+    .ntb-switch.small-switch .ntb-slider:before {
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+    }
+
+    .ntb-switch.small-switch input:checked+.ntb-slider:before {
+        transform: translateX(14px);
+    }
 
     /* General Toggle Switch Styling */
-        .ntb-switch {
-            position: relative;
-            display: inline-block;
-        }
-        .ntb-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .ntb-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 20px;
-        }
-        .ntb-slider:before {
-            position: absolute;
-            content: "";
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .ntb-slider {
-            background-color: #007bff;
-        }
-        input:focus + .ntb-slider {
-            box-shadow: 0 0 1px #007bff;
-        }
+    .ntb-switch {
+        position: relative;
+        display: inline-block;
+    }
+
+    .ntb-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .ntb-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 20px;
+    }
+
+    .ntb-slider:before {
+        position: absolute;
+        content: "";
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.ntb-slider {
+        background-color: #007bff;
+    }
+
+    input:focus+.ntb-slider {
+        box-shadow: 0 0 1px #007bff;
+    }
+
     /* Range Slider Styling */
-        .ntb-range-slider {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .ntb-range-slider .slider-track {
-            margin: 10px 0;
-        }
-        .ntb-range-slider .ui-slider {
-            background: #e9e9e9;
-            border: none;
-            height: 6px;
-        }
-        .ntb-range-slider .ui-slider-range {
-            background: #007bff;
-        }
-        .ntb-range-slider .ui-slider-handle {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #fff;
-            border: 2px solid #007bff;
-            cursor: pointer;
-            top: -6px;
-        }
-        .ntb-range-slider .slider-inputs {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-        .ntb-range-slider .range-value-min,
-        .ntb-range-slider .range-value-max {
-            width: 60px;
-            text-align: center;
-        }
-        .ntb-range-slider .range-separator {
-            font-weight: bold;
-        }
+    .ntb-range-slider {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .ntb-range-slider .slider-track {
+        margin: 10px 0;
+    }
+
+    .ntb-range-slider .ui-slider {
+        background: #e9e9e9;
+        border: none;
+        height: 6px;
+    }
+
+    .ntb-range-slider .ui-slider-range {
+        background: #007bff;
+    }
+
+    .ntb-range-slider .ui-slider-handle {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid #007bff;
+        cursor: pointer;
+        top: -6px;
+    }
+
+    .ntb-range-slider .slider-inputs {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ntb-range-slider .range-value-min,
+    .ntb-range-slider .range-value-max {
+        width: 60px;
+        text-align: center;
+    }
+
+    .ntb-range-slider .range-separator {
+        font-weight: bold;
+    }
+
     /* Field Header Styling */
-        .ntb-field-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        .ntb-field-header label {
-            margin-bottom: 0; /* Remove bottom margin from label inside header */
-        }
-        .ntb-header-btn .dashicons {
-            margin-right: 5px;
-            font-size: 16px;
-            vertical-align: text-top;
-        }
+    .ntb-field-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .ntb-field-header label {
+        margin-bottom: 0;
+        /* Remove bottom margin from label inside header */
+    }
+
+    .ntb-header-btn .dashicons {
+        margin-right: 5px;
+        font-size: 16px;
+        vertical-align: text-top;
+    }
 </style>

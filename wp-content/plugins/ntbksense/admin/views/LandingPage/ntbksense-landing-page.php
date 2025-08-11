@@ -123,6 +123,48 @@ add_action('admin_footer', function () {
             });
         });
     </script>
+    <script>
+        jQuery(document).ready(function($) {
+            $(document).on('change', '.ntb-status-toggle', function() {
+
+                const checkbox = $(this);
+                const rowId = checkbox.data('id');
+
+                // 1. PHP HANYA menyediakan URL dasar, tanpa ID.
+                const baseUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/statusu.landing.php'); ?>';
+
+                // 2. JavaScript menambahkan ID saat tombol di-klik.
+                const apiUrl = `${baseUrl}?id=${rowId}`;
+
+                // Baris ini akan menampilkan URL yang BENAR ke console browser
+                console.log('Mencoba memanggil URL:', apiUrl);
+
+                checkbox.closest('td').css('opacity', 0.5);
+
+                $.ajax({
+                    url: apiUrl,
+                    type: 'PUT',
+                    success: function(response) {
+                        console.log('Respon sukses:', response.message);
+                    },
+                    error: function(jqXHR) {
+                        try {
+                            const errorResponse = JSON.parse(jqXHR.responseText);
+                            console.error('Gagal update:', errorResponse.message);
+                            alert('Error: ' + errorResponse.message);
+                        } catch (e) {
+                            console.error('Gagal mem-parsing respon error:', jqXHR.responseText);
+                            alert('Terjadi error yang tidak diketahui.');
+                        }
+                        checkbox.prop('checked', !checkbox.prop('checked'));
+                    },
+                    complete: function() {
+                        checkbox.closest('td').css('opacity', 1);
+                    }
+                });
+            });
+        });
+    </script>
 <?php
 });
 
@@ -274,7 +316,7 @@ for ($i = 1; $i <= 3; $i++) {
                             </td>
                             <td>
                                 <label class="ntb-switch">
-                                    <input type="checkbox" class="ntb-status-toggle" data-id="<?php echo $row['id'] ?? ''; ?>" <?php checked(($row['status'] ?? 'Tidak Aktif'), 'Aktif'); ?>>
+                                    <input type="checkbox" class="ntb-status-toggle" data-id="<?php echo $row['id'] ?? ''; ?>" <?php checked(($row['status'] ?? '0'), '1'); ?>>
                                     <span class="ntb-slider"></span>
                                 </label>
                             </td>
@@ -283,8 +325,6 @@ for ($i = 1; $i <= 3; $i++) {
                         </tr>
                 <?php
                     }
-                } else {
-                    echo '<tr><td colspan="8" class="dataTables_empty">Tidak ada data yang tersedia</td></tr>';
                 }
                 ?>
             </tbody>
