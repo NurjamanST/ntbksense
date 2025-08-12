@@ -295,6 +295,23 @@ class Template
         return ($result !== false);
     }
 
+
+    public function delete()
+    {
+        // Pastikan ID sudah di-set di object sebelum menghapus
+        if (empty($this->id)) {
+            return false;
+        }
+
+        $result = $this->wpdb->delete(
+            $this->table_name,
+            ['id' => $this->id], // Kondisi WHERE
+            ['%d']               // Format tipe data untuk ID (integer)
+        );
+
+        return ($result !== false);
+    }
+
     /**
      * Mengecek apakah slug sudah ada (untuk create).
      * @param string $slug Slug yang akan dicek.
