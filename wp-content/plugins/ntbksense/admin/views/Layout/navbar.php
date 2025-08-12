@@ -1,6 +1,8 @@
 <!-- START: Navbar Kustom -->
     <div class="ntb-navbar">
         <div class="ntb-navbar-left">
+            <!-- Logo -->
+            <img src="<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'assets/images/logotasik.png'); ?>" alt="Logo" class="ntb-navbar-logo">
             <span class="ntb-navbar-title">NTBKSense</span>
             <span class="ntb-navbar-version">v1.0.0</span>
         </div>
@@ -14,7 +16,7 @@
                 <span class="dashicons dashicons-admin-page"></span>
             </a>
             <!-- Table Builder -->
-            <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-table-builder')); ?>" class="ntb-navbar-icon">
+            <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-template-builder')); ?>" class="ntb-navbar-icon">
                 <span class="dashicons dashicons-editor-table"></span>
             </a>
             <!-- Setting -->
@@ -54,6 +56,11 @@
             padding: 10px 25px;
             background-color: #ffffff;
             border-bottom: 1px solid #c3c4c7;
+        }
+        .ntb-navbar-logo {
+            width: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
         }
         .ntb-navbar-title { font-size: 16px; font-weight: 600; color: #1d2327; }
         .ntb-navbar-version { font-size: 12px; color: #646970; margin-left: 8px; background-color: #f0f0f1; padding: 2px 6px; border-radius: 4px; }

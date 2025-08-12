@@ -213,14 +213,14 @@ add_action('admin_footer', function () {
 <?php
 });
 
-// START: Generate 100 dummy data entries
-$data = [];
-$templates = ['Sales', 'Video', 'Default', 'Lead Gen'];
-$parameter = ['Parameter 1', 'Parameter 2', 'Parameter 3', 'Parameter 4', 'Parameter 5'];
-$parameter2 = ['Value 1', 'Value 2', 'Value 3', 'Value 4', 'Value 5'];
-$statuses = ['Aktif', 'Tidak Aktif'];
-$devices = ['Desktop', 'Mobile', 'Desktop, Mobile', 'Chrome, Firefox', 'Safari', 'Edge'];
-$gambar = ['logotasik.png'];
+    // START: Generate 100 dummy data entries
+        $data = [];
+        $templates = ['Sales', 'Video', 'Default', 'Lead Gen'];
+        $parameter = ['Parameter 1', 'Parameter 2', 'Parameter 3', 'Parameter 4', 'Parameter 5'];
+        $parameter2 = ['Value 1', 'Value 2', 'Value 3', 'Value 4', 'Value 5'];
+        $statuses = ['Aktif', 'Tidak Aktif'];
+        $devices = ['Desktop', 'Mobile', 'Desktop, Mobile','Chrome, Firefox', 'Safari', 'Edge'];
+        $gambar = ['logotasik.png'];
 
 for ($i = 1; $i <= 3; $i++) {
     $random_timestamp = time() - rand(0, 365 * 24 * 60 * 60); // Random date in the last year
@@ -283,7 +283,6 @@ for ($i = 1; $i <= 3; $i++) {
             <tbody>
                 <?php
                 // Kodingan cURL asli lo, TIDAK DIUBAH
-                // $ApiUrl = 'http://ntbksenseapi.test/api/landing_page/read.landing.php';
                 $ApiUrl = esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/read.landing.php');
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $ApiUrl);
@@ -323,17 +322,9 @@ for ($i = 1; $i <= 3; $i++) {
                             <td>
                                 <p><?php echo htmlspecialchars($row['title'] ?? 'Tanpa Judul'); ?></p>
                             </td>
-                            <?php
-
-                            $baseUrl = home_url(); // Gunakan fungsi WordPress untuk base URL
-                            $adsUrl = "{$baseUrl}/redirect_ads.php?slug=" . urlencode($row['slug']);
-                            $cekURL = "{$baseUrl}/redirect_ads.php?slug=" . urlencode($row['slug']) . "&mode=ads";
-
-
-                            ?>
                             <td>
                                 <div class="url-lp-input-group">
-                                    <input type="text" value="<?php echo $adsUrl ?>" data-ads-url="<?php echo $cekURL ?>" disabled class="url-lp-input">
+                                    <input type="text" value="http://ntbksenseapi.test/redirect_ads.php?slug=<?= $row['slug'] ?>" data-ads-url="http://ntbksenseapi.test/redirect_ads.php?slug=<?= $row['slug'] ?>&mode=ads" disabled class="url-lp-input">
                                     <button class="url-lp-action-btn copy-btn" title="Salin URL Public">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy">
                                             <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
@@ -382,66 +373,41 @@ for ($i = 1; $i <= 3; $i++) {
 
 <style>
     /* General Layout & Main Content Box */
-    #ntbksense-landing-page-wrapper {
-        background-color: #ffffffff;
-        padding: 0;
-        margin: 0px 0px 0px -15px;
-        /* Override default .wrap margin */
-    }
-
-    .ntb-main-content {
-        background: #fff;
-        border: 1px solid #c3c4c7;
-        border-radius: 10px;
-        box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
-        padding: 20px;
-        margin: 20px;
-    }
-
-    .ntb-main-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0 0 20px 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+        #ntbksense-landing-page-wrapper {
+            background-color: #ffffffff;
+            padding: 0;
+            margin: 0px 0px 0px -15px; /* Override default .wrap margin */
+        }
+        .ntb-main-content {
+            background: #fff;
+            border: 1px solid #c3c4c7;
+            border-radius: 10px;
+            box-shadow: 0 1px 1px rgba(0,0,0,.04);
+            padding: 20px;
+            margin: 20px;
+        }
+        .ntb-main-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
     /* Navbar Styling */
-    .ntb-navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
-        background-color: #ffffff;
-        border-bottom: 1px solid #c3c4c7;
-    }
-
-    .ntb-navbar-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1d2327;
-    }
-
-    .ntb-navbar-version {
-        font-size: 12px;
-        color: #646970;
-        margin-left: 8px;
-        background-color: #f0f0f1;
-        padding: 2px 6px;
-        border-radius: 4px;
-    }
-
-    .ntb-navbar-right .ntb-navbar-icon {
-        color: #50575e;
-        text-decoration: none;
-        margin-left: 15px;
-    }
-
-    .ntb-navbar-right .ntb-navbar-icon .dashicons {
-        font-size: 20px;
-        vertical-align: middle;
-    }
+        .ntb-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #c3c4c7;
+        }
+        .ntb-navbar-title { font-size: 16px; font-weight: 600; color: #1d2327; }
+        .ntb-navbar-version { font-size: 12px; color: #646970; margin-left: 8px; background-color: #f0f0f1; padding: 2px 6px; border-radius: 4px; }
+        .ntb-navbar-right .ntb-navbar-icon { color: #50575e; text-decoration: none; margin-left: 15px; }
+        .ntb-navbar-right .ntb-navbar-icon .dashicons { font-size: 20px; vertical-align: middle; }
 
     /* Breadcrumb Styling */
     .ntb-breadcrumb {
