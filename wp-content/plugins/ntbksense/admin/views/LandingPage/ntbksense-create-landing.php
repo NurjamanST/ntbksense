@@ -419,13 +419,13 @@ add_action('admin_footer', function () {
                                 <div class="ntb-form-group">
                                     <label for="deskripsi">Deskripsi <span class="text-danger">*</span></label>
                                     <select id="deskripsi" name="ntb_deskripsi" class="form-select" required>
-                                        <option value="costume">isi Manual (Rekomendasi)</option>
+                                        <option value="custom">isi Manual (Rekomendasi)</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="kontrol_penujuk">Kontrol Penujuk <span class="text-danger">*</span></label>
                                     <select id="kontrol_penujuk" name="ntb_kontrol_penujuk" class="form-select" required>
-                                        <option value="Izinkan Semua Trafik">Izinkan Semua Trafik</option>
+                                        <option value="off">Izinkan Semua Trafik</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">

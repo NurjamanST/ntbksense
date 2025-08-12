@@ -117,37 +117,83 @@ add_action('admin_footer', function () {
             // --- END: Kode Baru ---
 
             // Fungsionalitas untuk checkbox "Pilih Semua" (kode ini tetap sama)
-            $('#select-all-lp').on('change', function() {
-                const isChecked = $(this).is(':checked');
-                $('#ntb-landing-page-table tbody input[type="checkbox"]').prop('checked', isChecked);
+            // $('#select-all-lp').on('change', function() {
+            //     const isChecked = $(this).is(':checked');
+            //     $('#ntb-landing-page-table tbody input[type="checkbox"]').prop('checked', isChecked);
+            // });
+
+            // Definisikan selector yang SUPER SPESIFIK untuk checkbox bulk action.
+            // Ini hanya menargetkan checkbox di dalam tabel spesifik dan mengabaikan toggle status.
+            const bulkActionCheckboxSelector = '#ntb-landing-page-table tbody input[name="lp[]"]:not(.ntb-status-toggle)';
+
+            // --- BAGIAN 1: FUNGSI 'PILIH SEMUA' ---
+            // Event ini berjalan saat checkbox di header (#select-all-lp) di-klik.
+            $('#select-all-lp').on('click', function() {
+                // Cek statusnya (dicentang atau tidak)
+                const isChecked = $(this).prop('checked');
+
+                // Gunakan selector yang sudah spesifik
+                // Ini HANYA akan memilih checkbox untuk bulk action
+                $(bulkActionCheckboxSelector).prop('checked', isChecked);
             });
+
+
+            // --- BAGIAN 2: FUNGSI 'BATAL OTOMATIS' ---
+            // Event ini berjalan saat salah satu checkbox item di-klik.
+            $(document).on('click', bulkActionCheckboxSelector, function() {
+                // Hitung jumlah total checkbox item (yang spesifik)
+                const totalCheckboxes = $(bulkActionCheckboxSelector).length;
+                // Hitung berapa banyak checkbox item (yang spesifik) yang sedang dicentang
+                const checkedCheckboxes = $(bulkActionCheckboxSelector + ':checked').length;
+
+                // Jika jumlah yang dicentang sama dengan jumlah total,
+                // maka centang juga checkbox 'Pilih Semua'. Jika tidak, batalkan centangnya.
+                const allAreChecked = totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes;
+                $('#select-all-lp').prop('checked', allAreChecked);
+            });
+
         });
     </script>
     <script>
         jQuery(document).ready(function($) {
-            $(document).on('change', '.ntb-status-toggle', function() {
+            // Ganti event dari 'change' ke 'click', dan targetnya ke label pembungkus
+            $(document).on('click', '.ntb-switch', function(e) {
+                // Mencegah aksi default dari label (yang bisa mentrigger event 'change' 2x)
+                e.preventDefault();
 
-                const checkbox = $(this);
+                // 'this' sekarang adalah <label class="ntb-switch"> yang di-klik
+                const label = $(this);
+                // Cari checkbox di dalam label tersebut
+                const checkbox = label.find('.ntb-status-toggle');
                 const rowId = checkbox.data('id');
+
+                // Jika tidak ada ID, jangan lakukan apa-apa
+                if (!rowId) {
+                    return;
+                }
 
                 // 1. PHP HANYA menyediakan URL dasar, tanpa ID.
                 const baseUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/statusu.landing.php'); ?>';
-
                 // 2. JavaScript menambahkan ID saat tombol di-klik.
                 const apiUrl = `${baseUrl}?id=${rowId}`;
 
-                // Baris ini akan menampilkan URL yang BENAR ke console browser
-                console.log('Mencoba memanggil URL:', apiUrl);
+                console.log('Mencoba memanggil URL (via click):', apiUrl);
 
-                checkbox.closest('td').css('opacity', 0.5);
+                label.closest('td').css('opacity', 0.5);
 
                 $.ajax({
                     url: apiUrl,
                     type: 'PUT',
                     success: function(response) {
                         console.log('Respon sukses:', response.message);
+                        // UPDATE PENTING:
+                        // Update status visual checkbox berdasarkan respon dari server
+                        const isChecked = response.status_baru == 1;
+                        checkbox.prop('checked', isChecked);
                     },
                     error: function(jqXHR) {
+                        // Error handling tetap sama, tapi kita tidak perlu membalikkan status
+                        // karena kita tidak mengubahnya di awal.
                         try {
                             const errorResponse = JSON.parse(jqXHR.responseText);
                             console.error('Gagal update:', errorResponse.message);
@@ -156,10 +202,9 @@ add_action('admin_footer', function () {
                             console.error('Gagal mem-parsing respon error:', jqXHR.responseText);
                             alert('Terjadi error yang tidak diketahui.');
                         }
-                        checkbox.prop('checked', !checkbox.prop('checked'));
                     },
                     complete: function() {
-                        checkbox.closest('td').css('opacity', 1);
+                        label.closest('td').css('opacity', 1);
                     }
                 });
             });

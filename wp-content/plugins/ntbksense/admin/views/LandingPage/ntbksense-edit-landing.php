@@ -16,7 +16,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $landing_page_id = 0;
 }
 // Inisialisasi data LP
-$lp_data = null; 
+$lp_data = null;
 
 // Generate data dummy yang konsisten dengan halaman daftar untuk simulasi database
 $data = [];
@@ -72,14 +72,14 @@ if ($landing_page_id > 0) {
 // --- END: Logika untuk mengambil data dummy ---
 
 // Menambahkan aset khusus untuk halaman builder
-add_action('admin_footer', function() {
+add_action('admin_footer', function () {
     // Pastikan ID layar cocok dengan halaman edit
     $screen = get_current_screen();
     // **FIX:** Changed screen ID to match WordPress format for hidden admin pages
-    if ( 'admin_page_ntbksense-edit-lp' !== $screen->id ) {
+    if ('admin_page_ntbksense-edit-lp' !== $screen->id) {
         return;
     }
-    ?>
+?>
     <!-- Bootstrap for grid and form styling -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
@@ -120,7 +120,7 @@ add_action('admin_footer', function() {
                 const $slider = $sliderContainer.find('.slider-track');
                 let minVal = parseInt($sliderContainer.find('.range-value-min').val(), 10);
                 let maxVal = parseInt($sliderContainer.find('.range-value-max').val(), 10);
-                
+
                 if ($input.hasClass('range-value-min') && minVal > maxVal) {
                     minVal = maxVal;
                     $input.val(minVal);
@@ -256,17 +256,168 @@ add_action('admin_footer', function() {
             });
         });
     </script>
-    <?php
+    <script>
+        jQuery(document).ready(function($) {
+
+            // ===================================================================
+            // KODE UNTUK INTERAKSI UI (Slider, Repeater, Toggle, Modal, dll)
+            // ===================================================================
+
+            // Inisialisasi Range Sliders
+            $(".ntb-range-slider").each(function() {
+                // ... (kode slider lo yang sudah ada)
+            });
+            $('.range-value-min, .range-value-max').on('change', function() {
+                // ... (kode sinkronisasi slider lo yang sudah ada)
+            });
+
+            // Logika Tambah/Hapus Input Repeater
+            function addRepeaterField(e) {
+                // ... (kode repeater lo yang sudah ada)
+            }
+
+            function removeRepeaterField(e) {
+                // ... (kode repeater lo yang sudah ada)
+            }
+            $('.ntb-add-repeater').on('click', addRepeaterField);
+            $(document).on('click', '.ntb-remove-btn', removeRepeaterField);
+
+            // Logika Toggle Advance
+            $('.ntb-advance-toggle input[type="checkbox"]').on('change', function() {
+                // ... (kode toggle lo yang sudah ada)
+            });
+
+            // Logika Tombol Upload Media
+            $(document).on('click', '.ntb-media-btn, .ntb-bulk-upload-btn', function(e) {
+                // ... (kode upload media lo yang sudah ada)
+            });
+            $(document).on('change', '.ntb-file-input, .ntb-bulk-file-input', function() {
+                // ... (kode upload media lo yang sudah ada)
+            });
+
+            // Logika Dapatkan URL Artikel dengan Modal
+            $('#ntb-get-articles-btn').on('click', function(e) {
+                // ... (kode modal lo yang sudah ada)
+            });
+            $('#submit-get-articles').on('click', function(e) {
+                // ... (kode AJAX untuk get articles lo yang sudah ada)
+            });
+            // --- CHECKPOINT 2 ---
+            // const $form = $('#ntb-update-landing');
+            // console.log('Checkpoint 2: Mencari form #ntb-update-landing. Ditemukan:', $form.length);
+            // Jika hasilnya "Ditemukan: 0", berarti ID form di HTML salah atau tidak ada.
+
+            // --- LOGIKA SUBMIT FORM KE API ---
+            $('#ntb-update-form').on('submit', function(e) {
+                e.preventDefault(); // Mencegah form submit cara lama
+
+                const $form = $(this);
+                const $submitButton = $form.find('button[type="submit"]');
+                const originalButtonText = $submitButton.html();
+
+                // Tampilkan status loading di tombol
+                $submitButton.html('<span class="spinner is-active" style="float: left; margin-top: 4px;"></span> Menyimpan...');
+                $submitButton.prop('disabled', true);
+
+                // 1. Kumpulkan semua data dari form
+                const formData = {
+                    // [PERUBAHAN 1] Ambil ID dari hidden input di form
+                    id: $('input[name="landing_page_id"]').val(),
+
+                    // Data Umum
+                    id: $('#id').val(),
+                    slug: $('#slug').val(),
+                    title: $('#judul_manual').val(),
+                    title_option: $('#judul option:selected').val(),
+                    template_name: $('#template option:selected').text().trim(),
+                    template_file: $('#template').val(),
+
+                    // Deskripsi & Keywords
+                    description_option: $('#deskripsi option:selected').val(),
+                    description: $('textarea[name="ntb_deskripsi_manual"]').val() || '',
+                    inject_keywords: $('textarea[name="ntb_inject_keywords"]').val(),
+
+                    // Konten & URL
+                    post_urls: $('textarea[name="ntb_daftar_artikel"]').val(),
+                    video_urls: JSON.stringify($('input[name="ntb_url_video[]"]').map((_, el) => $(el).val()).get().filter(url => url)),
+                    universal_image_urls: JSON.stringify($('input[name="ntb_url_gambar[]"]').map((_, el) => $(el).val()).get().filter(url => url)),
+                    landing_image_urls: '',
+                    number_images_displayed: parseInt($('input[name="ntb_jumlah_gambar"]').val(), 10) || 0,
+
+                    // Pengaturan Redirect & Tampilan
+                    redirect_post_option: $('#url_pengalihan option:selected').val(),
+                    timer_auto_refresh: $('input[name="ntb_timer_auto_refresh"]').val() || '0',
+                    auto_refresh_option: $('#auto_refresh option:selected').val(),
+                    protect_elementor: $('#proteksi_fitur option:selected').val(),
+                    referrer_option: $('#kontrol_penujuk option:selected').val(),
+                    device_view: $('#tampilan_perangkat option:selected').val(),
+                    videos_floating_option: $('#video_melayang option:selected').val(),
+                    timer_auto_pause_video: `${$('input[name="ntb_jeda_video_min"]').val()}-${$('input[name="ntb_jeda_video_max"]').val()}`,
+
+                    // Lainnya
+                    parameter_key: $('input[name="ntb_param_key"]').val(),
+                    parameter_value: $('input[name="ntb_param_value"]').val(),
+                    cloaking_url: $('input[name="ntb_cloaking_url"]').val(),
+                    custom_html: '',
+                    custom_template_builder: '[]',
+
+                    // Field Randomizer
+                    random_template_method: 'random',
+                    random_template_file: '[]',
+                    random_template_file_afs: '[]'
+                };
+
+                console.log('Data yang akan diupdate:', formData);
+
+                // [PERUBAHAN 2] Ganti URL API ke endpoint untuk UPDATE
+                const apiUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/update.landing.php'); ?>';
+
+                // 2. Kirim data ke API menggunakan Fetch
+                fetch(apiUrl, {
+                        // [PERUBAHAN 3] Method bisa diganti PUT untuk update, tapi POST juga umum
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.message || 'Terjadi kesalahan jaringan.');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert('Sukses! ' + data.message);
+                        // Arahkan ke halaman utama Landing Page setelah sukses
+                        window.location.href = '<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Gagal! ' + error.message);
+                    })
+                    .finally(() => {
+                        // Kembalikan tombol ke keadaan semula
+                        $submitButton.html(originalButtonText);
+                        $submitButton.prop('disabled', false);
+                    });
+            });
+        });
+    </script>
+<?php
 });
 ?>
 
 <div class="wrap" id="ntb-lp-builder">
     <!-- Navbar -->
-    <?php include NTBKSENSE_PLUGIN_DIR."admin/views/Layout/navbar.php"; ?>
+    <?php include NTBKSENSE_PLUGIN_DIR . "admin/views/Layout/navbar.php"; ?>
 
     <!-- START: Breadcrumb Kustom -->
     <div class="ntb-breadcrumb">
-        <span class="dashicons dashicons-admin-home"></span> <span>NTBKSense</span> &gt; 
+        <span class="dashicons dashicons-admin-home"></span> <span>NTBKSense</span> &gt;
         <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>">Landing Page</a> &gt; <span>Edit LP #<?php echo esc_html($landing_page_id); ?></span>
     </div>
     <!-- END: Breadcrumb Kustom -->
@@ -279,18 +430,28 @@ add_action('admin_footer', function() {
             Note : <span class="text-danger">*</span> menandakan bidang yang wajib diisi.
         </p>
         <hr class="wp-header-end">
-    
+        <?php
+
+        $apiUrl = esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/read.landing.php');
+        $ch = curl_init($apiUrl . '?id=' . $landing_page_id);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $data = json_decode($response, true);
+
+        ?>
+
         <?php if (!$lp_data): ?>
             <div class="notice notice-error">
                 <p><?php _e('Data Landing Page dengan ID yang diminta tidak ditemukan.', 'ntbksense'); ?></p>
             </div>
         <?php else: ?>
-            <form method="post" action="">
+            <form method="post" action="" id="ntb-update-form">
                 <!-- Aksi Keamanan WordPress untuk Update -->
                 <?php wp_nonce_field('ntb_update_lp_action', 'ntb_update_lp_nonce'); ?>
                 <!-- Hidden field untuk ID -->
                 <input type="hidden" name="lp_id" value="<?php echo esc_attr($landing_page_id); ?>">
-    
+
                 <div class="ntb-form-container">
                     <div class="row">
                         <!-- Kiri -->
@@ -300,76 +461,127 @@ add_action('admin_footer', function() {
                                 <!-- Kolom Kiri -->
                                 <div class="col-md-6">
                                     <div class="ntb-form-group">
+                                        <input type="hidden" id="id" value="<?php echo esc_attr($data['id']); ?>" disabled>
                                         <label for="template">Template <span class="text-danger">*</span></label>
                                         <select id="template" name="ntb_template" class="form-select">
-                                            <option <?php selected($lp_data['template'], 'Universal (Long screenshot)'); ?>>Universal (Long screenshot)</option>
-                                            <option <?php selected($lp_data['template'], 'Video (Long screenshot)'); ?>>Video (Long screenshot)</option>
+                                            <option value="<?= $data['template_name'] ?>"><?= $data['template_name'] ?></option>
+                                            <!-- <option>Video (Long screenshot)</option> -->
                                         </select>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="url_pengalihan">URL Pengalihan <span class="text-danger">*</span></label>
                                         <select id="url_pengalihan" name="ntb_url_pengalihan" class="form-select">
-                                            <option <?php selected($lp_data['url_pengalihan'], 'isi Manual (Rekomendasi)'); ?>>isi Manual (Rekomendasi)</option>
+                                            <?php
+                                            // Ambil nilai yang tersimpan di database.
+                                            // Kasih nilai default 'post_urls' kalau datanya belum ada.
+                                            $saved_value = $data['redirect_post_option'] ?? 'custom';
+                                            ?>
+                                            <option value="custom';" <?php selected($saved_value, 'custom'); ?>>Gunakan URL dari Daftar Artikel (Acak)</option>
+                                            <option value="cloaking_url" <?php selected($saved_value, 'cloaking_url'); ?>>Gunakan URL Cloaking Utama</option>
                                         </select>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="deskripsi">Deskripsi <span class="text-danger">*</span></label>
                                         <select id="deskripsi" name="ntb_deskripsi" class="form-select">
-                                            <option <?php selected($lp_data['deskripsi'], 'isi Manual (Rekomendasi)'); ?>>isi Manual (Rekomendasi)</option>
+                                            <?php
+                                            // Ambil nilai yang tersimpan di database.
+                                            // Kasih nilai default 'custom' kalau datanya belum ada.
+                                            $saved_value = $data['description_option'] ?? 'custom';
+                                            ?>
+                                            <option value="custom" <?php selected($saved_value, 'custom'); ?>>Isi Manual (Rekomendasi)</option>
+                                            <option value="auto" <?php selected($saved_value, 'auto'); ?>>Deskripsi Otomatis</option>
                                         </select>
                                     </div>
                                     <div class="ntb-form-group">
-                                        <label for="kontrol_penujuk">Kontrol Penujuk <span class="text-danger">*</span></label>
+                                        <label for="kontrol_penujuk">Kontrol Penunjuk <span class="text-danger">*</span></label>
                                         <select id="kontrol_penujuk" name="ntb_kontrol_penujuk" class="form-select">
-                                            <option <?php selected($lp_data['kontrol_penujuk'], 'Izinkan Semua Trafik'); ?>>Izinkan Semua Trafik</option>
+                                            <?php
+                                            // Ambil nilai yang tersimpan di database.
+                                            // Kasih nilai default 'on' kalau datanya belum ada.
+                                            $saved_value = $data['referrer_option'] ?? 'on';
+                                            ?>
+                                            <option value="on" <?php selected($saved_value, 'on'); ?>>Izinkan Semua Trafik</option>
+                                            <option value="off" <?php selected($saved_value, 'off'); ?>>Blokir Trafik Tanpa Penunjuk</option>
                                         </select>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="video_melayang">Video Melayang <span class="text-danger">*</span></label>
                                         <select id="video_melayang" name="ntb_video_melayang" class="form-select">
-                                            <option <?php selected($lp_data['video_melayang'], 'On'); ?>>On</option>
-                                            <option <?php selected($lp_data['video_melayang'], 'Off'); ?>>Off</option>
+                                            <?php
+                                            // Ambil nilai yang tersimpan di database.
+                                            // Kasih nilai default 'off' kalau datanya belum ada.
+                                            $saved_value = $data['videos_floating_option'] ?? 'off';
+                                            ?>
+                                            <option value="on" <?php selected($saved_value, 'on'); ?>>On</option>
+                                            <option value="off" <?php selected($saved_value, 'off'); ?>>Off</option>
                                         </select>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="proteksi_fitur">Proteksi fitur inspeksi elemen</label>
                                         <select id="proteksi_fitur" name="ntb_proteksi_fitur" class="form-select">
-                                            <option <?php selected($lp_data['proteksi_fitur'], 'Pause Debugger'); ?>>Pause Debugger</option>
+                                            <?php
+                                            // Ambil nilai yang tersimpan di database.
+                                            // Kasih nilai default 'off' kalau datanya belum ada.
+                                            $saved_value = $data['protect_elementor'] ?? 'off';
+                                            ?>
+                                            <option value="on" <?php selected($saved_value, 'on'); ?>>Aktifkan (Pause Debugger)</option>
+                                            <option value="off" <?php selected($saved_value, 'off'); ?>>Nonaktifkan</option>
                                         </select>
                                     </div>
                                 </div>
-    
+
                                 <!-- Kolom Kanan -->
                                 <div class="col-md-6">
                                     <div class="ntb-form-group">
                                         <label for="slug">Slug <span class="text-danger">*</span></label>
-                                        <input type="text" id="slug" name="ntb_slug" class="form-control" value="<?php echo esc_attr($lp_data['slug']); ?>">
+                                        <input type="text" id="" name="" class="form-control" value="<?php echo esc_attr($data['slug']); ?>" disabled>
+                                        <input type="hidden" id="slug" name="ntb_slug" class="form-control" value="<?php echo esc_attr($data['slug']); ?>">
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="judul">Judul <span class="text-danger">*</span></label>
                                         <select id="judul" name="ntb_judul" class="form-select">
-                                            <option <?php selected($lp_data['judul'], 'isi Manual (Rekomendasi)'); ?>>isi Manual (Rekomendasi)</option>
+                                            <?php
+                                            // Ambil nilai yang tersimpan di database.
+                                            // Kasih nilai default 'manual' kalau datanya belum ada.
+                                            $saved_value = $data['title_option'] ?? 'manual';
+                                            ?>
+                                            <option value="manual" <?php selected($saved_value, 'manual'); ?>>Isi Manual (rekomendasi)</option>
+                                            <option value="auto" <?php selected($saved_value, 'auto'); ?>>Judul Otomatis</option>
                                         </select>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="auto_refresh">Auto Refresh <span class="text-danger">*</span></label>
                                         <select id="auto_refresh" name="ntb_auto_refresh" class="form-select">
-                                            <option <?php selected($lp_data['auto_refresh'], 'Ketika halaman dimuat'); ?>>Ketika halaman dimuat</option>
+                                            <?php
+                                            // Ambil nilai yang tersimpan di database.
+                                            // Kasih nilai default 'off' kalau datanya belum ada.
+                                            $saved_value = $data['auto_refresh_option'] ?? 'off';
+                                            ?>
+                                            <option value="on_load" <?php selected($saved_value, 'on_load'); ?>>Ketika halaman dimuat</option>
+                                            <option value="off" <?php selected($saved_value, 'off'); ?>>Jangan Refresh</option>
                                         </select>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="tampilan_perangkat">Tampilan Perangkat <span class="text-danger">*</span></label>
                                         <select id="tampilan_perangkat" name="ntb_tampilan_perangkat" class="form-select">
-                                            <option <?php selected($lp_data['tampilan_perangkat'], 'Semua Perangkat (kecuali Bot)'); ?>>Semua Perangkat (kecuali Bot)</option>
+                                            <?php
+                                            // Ambil nilai yang tersimpan di database.
+                                            // Kasih nilai default 'semua' kalau datanya belum ada.
+                                            $saved_value = $data['device_view'] ?? 'semua';
+                                            ?>
+                                            <option value="semua" <?php selected($saved_value, 'semua'); ?>>Semua Perangkat (kecuali Bot)</option>
+                                            <option value="fb_browser" <?php selected($saved_value, 'fb_browser'); ?>>Hanya Browser FB/IG</option>
+                                            <option value="ponsel" <?php selected($saved_value, 'ponsel'); ?>>Hanya Ponsel</option>
+                                            <option value="desktop" <?php selected($saved_value, 'desktop'); ?>>Hanya Desktop</option>
                                         </select>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="jumlah_gambar">Jumlah Gambar Ditampilkan <span class="text-danger">*</span></label>
-                                        <input type="number" id="jumlah_gambar" name="ntb_jumlah_gambar" class="form-control" value="<?php echo esc_attr($lp_data['jumlah_gambar']); ?>">
+                                        <input type="number" id="jumlah_gambar" name="ntb_jumlah_gambar" class="form-control" value="<?php echo esc_attr($data['number_images_displayed']); ?>">
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="cloaking_url">Cloaking URL</label>
-                                        <input type="text" id="cloaking_url" name="ntb_cloaking_url" class="form-control" value="<?php echo esc_attr($lp_data['cloaking_url']); ?>">
+                                        <input type="text" id="cloaking_url" name="ntb_cloaking_url" class="form-control" value="<?php echo esc_attr($data['cloaking_url']); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -381,15 +593,29 @@ add_action('admin_footer', function() {
                                         <div class="ntb-simple-view">
                                             <label>URL Video</label>
                                             <div id="ntb-video-urls-container">
-                                                <?php foreach($lp_data['url_video'] as $index => $url): ?>
-                                                <div class="input-group <?php if ($index > 0) { echo 'mt-2'; } ?>">
-                                                    <input type="text" name="ntb_url_video[]" class="form-control" placeholder="https://example.com/video.mp4" value="<?php echo esc_attr($url); ?>">
-                                                    <input type="file" class="ntb-file-input" style="display: none;" accept="video/*">
-                                                    <button class="btn btn-primary ntb-media-btn" type="button"><span class="dashicons dashicons-cloud-upload"></span></button>
-                                                    <?php if($index > 0): ?>
-                                                    <button class="btn btn-danger ntb-remove-btn" type="button"><span class="dashicons dashicons-trash"></span></button>
-                                                    <?php endif; ?>
-                                                </div>
+                                                <?php
+                                                // 1. Ambil data JSON dari database.
+                                                $video_urls_json = $data['video_urls'] ?? '[]';
+
+                                                // 2. Ubah JSON jadi array PHP.
+                                                $video_urls = json_decode($video_urls_json, true);
+
+                                                // 3. Jika datanya kosong atau bukan array, buat satu input default.
+                                                if (empty($video_urls) || !is_array($video_urls)) {
+                                                    $video_urls = ['']; // Default dengan satu input kosong
+                                                }
+                                                ?>
+
+                                                <?php foreach ($video_urls as $index => $url): ?>
+                                                    <div class="input-group <?php if ($index > 0) echo 'mt-2'; ?>">
+                                                        <input type="text" name="ntb_url_video[]" class="form-control" placeholder="https://example.com/video.mp4" value="<?php echo esc_attr($url); ?>">
+                                                        <input type="file" class="ntb-file-input" style="display: none;" accept="video/*">
+                                                        <button class="btn btn-primary ntb-media-btn" type="button"><span class="dashicons dashicons-cloud-upload"></span></button>
+
+                                                        <?php if ($index > 0): ?>
+                                                            <button class="btn btn-danger ntb-remove-btn" type="button"><span class="dashicons dashicons-trash"></span></button>
+                                                        <?php endif; ?>
+                                                    </div>
                                                 <?php endforeach; ?>
                                             </div>
                                         </div>
@@ -414,15 +640,29 @@ add_action('admin_footer', function() {
                                         <div class="ntb-simple-view">
                                             <label>URL Gambar (Long screenshot) <a href="#" class="sample-link">Sample</a></label>
                                             <div id="ntb-image-urls-container">
-                                                <?php foreach($lp_data['url_gambar'] as $index => $url): ?>
-                                                <div class="input-group <?php if ($index > 0) { echo 'mt-2'; } ?>">
-                                                    <input type="text" name="ntb_url_gambar[]" class="form-control" placeholder="https://example.com/image.jpg" value="<?php echo esc_attr($url); ?>">
-                                                    <input type="file" class="ntb-file-input" style="display: none;" accept="image/*">
-                                                    <button class="btn btn-primary ntb-media-btn" type="button"><span class="dashicons dashicons-cloud-upload"></span></button>
-                                                    <?php if($index > 0): ?>
-                                                    <button class="btn btn-danger ntb-remove-btn" type="button"><span class="dashicons dashicons-trash"></span></button>
-                                                    <?php endif; ?>
-                                                </div>
+                                                <?php
+                                                // 1. Ambil data JSON dari database.
+                                                $image_urls_json = $data['universal_image_urls'] ?? '[]';
+
+                                                // 2. Ubah JSON jadi array PHP.
+                                                $image_urls = json_decode($image_urls_json, true);
+
+                                                // 3. Jika datanya kosong atau bukan array, buat satu input default.
+                                                if (empty($image_urls) || !is_array($image_urls)) {
+                                                    $image_urls = ['']; // Default dengan satu input kosong
+                                                }
+                                                ?>
+
+                                                <?php foreach ($image_urls as $index => $url): ?>
+                                                    <div class="input-group <?php if ($index > 0) echo 'mt-2'; ?>">
+                                                        <input type="text" name="ntb_url_gambar[]" class="form-control" placeholder="https://example.com/image.jpg" value="<?php echo esc_attr($url); ?>">
+                                                        <input type="file" class="ntb-file-input" style="display: none;" accept="image/*">
+                                                        <button class="btn btn-primary ntb-media-btn" type="button"><span class="dashicons dashicons-cloud-upload"></span></button>
+
+                                                        <?php if ($index > 0): ?>
+                                                            <button class="btn btn-danger ntb-remove-btn" type="button"><span class="dashicons dashicons-trash"></span></button>
+                                                        <?php endif; ?>
+                                                    </div>
                                                 <?php endforeach; ?>
                                             </div>
                                         </div>
@@ -452,9 +692,9 @@ add_action('admin_footer', function() {
                                     <div class="ntb-form-group">
                                         <label for="parameter">Parameter</label>
                                         <div class="input-group">
-                                            <input type="text" name="ntb_param_key" class="form-control" value="<?php echo esc_attr($lp_data['param_key']); ?>">
+                                            <input type="text" name="ntb_param_key" class="form-control" value="<?php echo esc_attr($data['parameter_key']); ?>">
                                             <span class="input-group-text">=</span>
-                                            <input type="text" name="ntb_param_value" class="form-control" value="<?php echo esc_attr($lp_data['param_value']); ?>">
+                                            <input type="text" name="ntb_param_value" class="form-control" value="<?php echo esc_attr($data['parameter_value']); ?>">
                                         </div>
                                     </div>
                                     <div class="row">
@@ -463,9 +703,20 @@ add_action('admin_footer', function() {
                                             <div class="ntb-range-slider">
                                                 <div class="slider-track" data-min="0" data-max="30"></div>
                                                 <div class="slider-inputs">
-                                                    <input type="number" name="ntb_jeda_video_min" class="form-control range-value-min" value="<?php echo esc_attr($lp_data['jeda_video_min']); ?>">
+                                                    <?php
+                                                    // 1. Ambil data string dari database, misal: "20-25".
+                                                    $pause_range_str = $data['timer_auto_pause_video'] ?? '5-15';
+
+                                                    // 2. Pisahkan string jadi array berdasarkan tanda '-'.
+                                                    $range_parts = explode('-', $pause_range_str);
+
+                                                    // 3. Tentukan nilai min dan max, kasih default jika datanya salah.
+                                                    $min_value = isset($range_parts[0]) ? (int)$range_parts[0] : 5;
+                                                    $max_value = isset($range_parts[1]) ? (int)$range_parts[1] : 15;
+                                                    ?>
+                                                    <input type="number" name="ntb_jeda_video_min" class="form-control range-value-min" value="<?php echo esc_attr($min_value); ?>">
                                                     <span class="range-separator"><-></span>
-                                                    <input type="number" name="ntb_jeda_video_max" class="form-control range-value-max" value="<?php echo esc_attr($lp_data['jeda_video_max']); ?>">
+                                                    <input type="number" name="ntb_jeda_video_max" class="form-control range-value-max" value="<?php echo esc_attr($max_value); ?>">
                                                 </div>
                                             </div>
                                         </div>
@@ -474,16 +725,27 @@ add_action('admin_footer', function() {
                                             <div class="ntb-range-slider">
                                                 <div class="slider-track" data-min="0" data-max="30"></div>
                                                 <div class="slider-inputs">
-                                                    <input type="number" name="ntb_waktu_refresh_min" class="form-control range-value-min" value="<?php echo esc_attr($lp_data['waktu_refresh_min']); ?>">
+                                                    <?php
+                                                    // 1. Ambil data string dari database, misal: "20-25".
+                                                    $auto_refresh = $data['timer_auto_refresh'] ?? '5-15';
+
+                                                    // 2. Pisahkan string jadi array berdasarkan tanda '-'.
+                                                    $range_parts = explode('-', $auto_refresh);
+
+                                                    // 3. Tentukan nilai min dan max, kasih default jika datanya salah.
+                                                    $min_refresh = isset($range_parts[0]) ? (int)$range_parts[0] : 5;
+                                                    $max_refresh = isset($range_parts[1]) ? (int)$range_parts[1] : 15;
+                                                    ?>
+                                                    <input type="number" name="ntb_waktu_refresh_min" class="form-control range-value-min" value="<?php echo esc_attr($min_refresh); ?>">
                                                     <span class="range-separator"><-></span>
-                                                    <input type="number" name="ntb_waktu_refresh_max" class="form-control range-value-max" value="<?php echo esc_attr($lp_data['waktu_refresh_max']); ?>">
+                                                    <input type="number" name="ntb_waktu_refresh_max" class="form-control range-value-max" value="<?php echo esc_attr($max_refresh); ?>">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="judul_manual">Judul Manual</label>
-                                        <input type="text" id="judul_manual" name="ntb_judul_manual" class="form-control" value="<?php echo esc_attr($lp_data['judul_manual']); ?>">
+                                        <input type="text" id="judul_manual" name="ntb_judul_manual" class="form-control" value="<?php echo esc_attr($data['title']); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -501,22 +763,22 @@ add_action('admin_footer', function() {
                                                 </button>
                                             </div>
                                         </div>
-                                        <textarea id="daftar_artikel" name="ntb_daftar_artikel" class="form-control" rows="5"><?php echo esc_textarea($lp_data['daftar_artikel']); ?></textarea>
+                                        <textarea id="daftar_artikel" name="ntb_daftar_artikel" class="form-control" rows="5"><?php echo esc_textarea($data['post_urls'] ?? ''); ?></textarea>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="deskripsi_manual">Deskripsi Manual</label>
-                                        <textarea id="deskripsi_manual" name="ntb_deskripsi_manual" class="form-control" rows="5"><?php echo esc_textarea($lp_data['deskripsi_manual']); ?></textarea>
+                                        <textarea id="deskripsi_manual" name="ntb_deskripsi_manual" class="form-control" rows="5"><?php echo esc_textarea($data['deskripsi']); ?></textarea>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="inject_keywords">Inject Keywords</label>
-                                        <textarea id="inject_keywords" name="ntb_inject_keywords" class="form-control" rows="5" placeholder="Pisahkan dengan koma | keyword1,keyword"><?php echo esc_textarea($lp_data['inject_keywords']); ?></textarea>
+                                        <textarea id="inject_keywords" name="ntb_inject_keywords" class="form-control" rows="5" placeholder="Pisahkan dengan koma | keyword1,keyword"><?php echo esc_textarea($data['inject_keywords']); ?></textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-    
+
                 <div class="ntb-form-footer">
                     <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>" class="button">Batal</a>
                     <button type="submit" name="ntb_update_lp" class="button button-primary">
@@ -531,23 +793,23 @@ add_action('admin_footer', function() {
     <div class="modal fade" id="getArticlesModal" tabindex="-1" aria-labelledby="getArticlesModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="getArticlesModalLabel">Atur Jumlah URL Artikel</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="get-articles-form">
-                <div class="mb-3">
-                    <label for="article_count" class="form-label">Jumlah URL yang akan diambil</label>
-                    <input type="number" class="form-control" id="article_count" name="article_count" value="10" min="1">
-                    <small class="form-text text-muted">Masukkan -1 untuk mengambil semua artikel yang diterbitkan.</small>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="getArticlesModalLabel">Atur Jumlah URL Artikel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" id="submit-get-articles">Dapatkan URL</button>
-            </div>
+                <div class="modal-body">
+                    <form id="get-articles-form">
+                        <div class="mb-3">
+                            <label for="article_count" class="form-label">Jumlah URL yang akan diambil</label>
+                            <input type="number" class="form-control" id="article_count" name="article_count" value="10" min="1">
+                            <small class="form-text text-muted">Masukkan -1 untuk mengambil semua artikel yang diterbitkan.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="submit-get-articles">Dapatkan URL</button>
+                </div>
             </div>
         </div>
     </div>
@@ -559,10 +821,11 @@ add_action('admin_footer', function() {
         background: #fff;
         border: 1px solid #c3c4c7;
         border-radius: 10px;
-        box-shadow: 0 1px 1px rgba(0,0,0,.04);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
         padding: 20px;
         margin: 20px;
     }
+
     /* Navbar Styling */
     .ntb-navbar {
         display: flex;
@@ -572,53 +835,133 @@ add_action('admin_footer', function() {
         background-color: #ffffff;
         border-bottom: 1px solid #c3c4c7;
     }
-    .ntb-navbar-title { font-size: 16px; font-weight: 600; color: #1d2327; }
-    .ntb-navbar-version { font-size: 12px; color: #646970; margin-left: 8px; background-color: #f0f0f1; padding: 2px 6px; border-radius: 4px; }
-    .ntb-navbar-right .ntb-navbar-icon { color: #50575e; text-decoration: none; margin-left: 15px; }
-    .ntb-navbar-right .ntb-navbar-icon .dashicons { font-size: 20px; vertical-align: middle; }
+
+    .ntb-navbar-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1d2327;
+    }
+
+    .ntb-navbar-version {
+        font-size: 12px;
+        color: #646970;
+        margin-left: 8px;
+        background-color: #f0f0f1;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    .ntb-navbar-right .ntb-navbar-icon {
+        color: #50575e;
+        text-decoration: none;
+        margin-left: 15px;
+    }
+
+    .ntb-navbar-right .ntb-navbar-icon .dashicons {
+        font-size: 20px;
+        vertical-align: middle;
+    }
 
     /* Breadcrumb Styling */
-    .ntb-breadcrumb { padding: 15px 20px; color: #50575e; font-size: 14px; border-bottom: 1px solid #e0e0e0; }
-    .ntb-breadcrumb a { text-decoration: none; color: #0073aa; }
-    .ntb-breadcrumb a:hover { text-decoration: underline; }
-    .ntb-breadcrumb span { color: #1d2327; font-weight: 600; }
+    .ntb-breadcrumb {
+        padding: 15px 20px;
+        color: #50575e;
+        font-size: 14px;
+        border-bottom: 1px solid #e0e0e0;
+    }
 
-    #ntb-lp-builder { margin: 0px 0px 0px -15px; }
-    .ntb-form-container { background: #fff; border-radius: 20px; padding: 0px; margin-top: 10px; }
-    .ntb-form-group { margin-bottom: 1rem; }
-    .ntb-form-group label { margin-bottom: 0.5rem; display: block;font-size: 12px;font-weight: 600; }
-    .ntb-form-group a { text-decoration: none; font-size: 12px; }
-    
-    .ntb-form-footer { margin-top: 20px; padding: 15px 20px; background: #fff; border-top: 1px solid #c3c4c7; text-align: right;}
-    .ntb-form-footer .button { font-size: 14px; height: auto; padding: 2px 16px; }
-    .ntb-form-footer .button .dashicons { vertical-align: middle; margin-top: -2px; }
+    .ntb-breadcrumb a {
+        text-decoration: none;
+        color: #0073aa;
+    }
+
+    .ntb-breadcrumb a:hover {
+        text-decoration: underline;
+    }
+
+    .ntb-breadcrumb span {
+        color: #1d2327;
+        font-weight: 600;
+    }
+
+    #ntb-lp-builder {
+        margin: 0px 0px 0px -15px;
+    }
+
+    .ntb-form-container {
+        background: #fff;
+        border-radius: 20px;
+        padding: 0px;
+        margin-top: 10px;
+    }
+
+    .ntb-form-group {
+        margin-bottom: 1rem;
+    }
+
+    .ntb-form-group label {
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .ntb-form-group a {
+        text-decoration: none;
+        font-size: 12px;
+    }
+
+    .ntb-form-footer {
+        margin-top: 20px;
+        padding: 15px 20px;
+        background: #fff;
+        border-top: 1px solid #c3c4c7;
+        text-align: right;
+    }
+
+    .ntb-form-footer .button {
+        font-size: 14px;
+        height: auto;
+        padding: 2px 16px;
+    }
+
+    .ntb-form-footer .button .dashicons {
+        vertical-align: middle;
+        margin-top: -2px;
+    }
 
     /* New styles for media inputs */
-    .ntb-media-btn, .ntb-remove-btn {
+    .ntb-media-btn,
+    .ntb-remove-btn {
         display: flex;
         align-items: center;
         justify-content: center;
     }
+
     .ntb-field-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-top: 4px;
     }
+
     .ntb-advance-toggle {
         display: flex;
         align-items: center;
         gap: 10px;
     }
-    .ntb-advance-toggle label{
+
+    .ntb-advance-toggle label {
         margin-top: 10px;
         font-size: 12px;
         color: #50575e;
     }
+
     .ntb-advance-toggle span {
         font-size: 12px;
         color: #50575e;
     }
+
     .sample-link {
         font-size: 12px;
         font-weight: normal;
@@ -630,11 +973,13 @@ add_action('admin_footer', function() {
         position: relative;
         display: inline-block;
     }
+
     .ntb-switch input {
         opacity: 0;
         width: 0;
         height: 0;
     }
+
     .ntb-slider {
         position: absolute;
         cursor: pointer;
@@ -646,6 +991,7 @@ add_action('admin_footer', function() {
         transition: .4s;
         border-radius: 20px;
     }
+
     .ntb-slider:before {
         position: absolute;
         content: "";
@@ -653,21 +999,29 @@ add_action('admin_footer', function() {
         transition: .4s;
         border-radius: 50%;
     }
-    input:checked + .ntb-slider { background-color: #007bff; }
-    input:focus + .ntb-slider { box-shadow: 0 0 1px #007bff; }
-    
+
+    input:checked+.ntb-slider {
+        background-color: #007bff;
+    }
+
+    input:focus+.ntb-slider {
+        box-shadow: 0 0 1px #007bff;
+    }
+
     /* Smaller toggle switch */
     .ntb-switch.small-switch {
         width: 34px;
         height: 20px;
     }
+
     .ntb-switch.small-switch .ntb-slider:before {
         height: 14px;
         width: 14px;
         left: 3px;
         bottom: 3px;
     }
-    .ntb-switch.small-switch input:checked + .ntb-slider:before {
+
+    .ntb-switch.small-switch input:checked+.ntb-slider:before {
         transform: translateX(14px);
     }
 
@@ -677,13 +1031,21 @@ add_action('admin_footer', function() {
         border: 1px solid #ddd;
         border-radius: 4px;
     }
-    .ntb-range-slider .slider-track { margin: 10px 0; }
+
+    .ntb-range-slider .slider-track {
+        margin: 10px 0;
+    }
+
     .ntb-range-slider .ui-slider {
         background: #e9e9e9;
         border: none;
         height: 6px;
     }
-    .ntb-range-slider .ui-slider-range { background: #007bff; }
+
+    .ntb-range-slider .ui-slider-range {
+        background: #007bff;
+    }
+
     .ntb-range-slider .ui-slider-handle {
         width: 18px;
         height: 18px;
@@ -693,18 +1055,23 @@ add_action('admin_footer', function() {
         cursor: pointer;
         top: -6px;
     }
+
     .ntb-range-slider .slider-inputs {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 10px;
     }
+
     .ntb-range-slider .range-value-min,
     .ntb-range-slider .range-value-max {
         width: 60px;
         text-align: center;
     }
-    .ntb-range-slider .range-separator { font-weight: bold; }
+
+    .ntb-range-slider .range-separator {
+        font-weight: bold;
+    }
 
     /* Field Header Styling */
     .ntb-field-header {
@@ -713,7 +1080,11 @@ add_action('admin_footer', function() {
         align-items: center;
         margin-bottom: 0.5rem;
     }
-    .ntb-field-header label { margin-bottom: 0; }
+
+    .ntb-field-header label {
+        margin-bottom: 0;
+    }
+
     .ntb-header-btn .dashicons {
         margin-right: 5px;
         font-size: 16px;
