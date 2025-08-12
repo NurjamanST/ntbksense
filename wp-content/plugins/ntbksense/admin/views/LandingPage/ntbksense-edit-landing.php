@@ -308,6 +308,7 @@ add_action('admin_footer', function () {
             // Jika hasilnya "Ditemukan: 0", berarti ID form di HTML salah atau tidak ada.
 
             // --- LOGIKA SUBMIT FORM KE API ---
+            // Target form update lo. Pastikan ID form di HTML adalah 'ntb-update-form'
             $('#ntb-update-form').on('submit', function(e) {
                 e.preventDefault(); // Mencegah form submit cara lama
 
@@ -319,32 +320,23 @@ add_action('admin_footer', function () {
                 $submitButton.html('<span class="spinner is-active" style="float: left; margin-top: 4px;"></span> Menyimpan...');
                 $submitButton.prop('disabled', true);
 
-                // 1. Kumpulkan semua data dari form
+                // Kumpulkan semua data dari form
                 const formData = {
-                    // [PERUBAHAN 1] Ambil ID dari hidden input di form
-                    id: $('input[name="landing_page_id"]').val(),
-
-                    // Data Umum
                     id: $('#id').val(),
                     slug: $('#slug').val(),
+                    status: '1', // Atau ambil dari input jika ada
                     title: $('#judul_manual').val(),
                     title_option: $('#judul option:selected').val(),
                     template_name: $('#template option:selected').text().trim(),
                     template_file: $('#template').val(),
-
-                    // Deskripsi & Keywords
                     description_option: $('#deskripsi option:selected').val(),
                     description: $('textarea[name="ntb_deskripsi_manual"]').val() || '',
                     inject_keywords: $('textarea[name="ntb_inject_keywords"]').val(),
-
-                    // Konten & URL
                     post_urls: $('textarea[name="ntb_daftar_artikel"]').val(),
                     video_urls: JSON.stringify($('input[name="ntb_url_video[]"]').map((_, el) => $(el).val()).get().filter(url => url)),
                     universal_image_urls: JSON.stringify($('input[name="ntb_url_gambar[]"]').map((_, el) => $(el).val()).get().filter(url => url)),
-                    landing_image_urls: '',
+                    landing_image_urls: '[]', // Ganti jika ada inputnya
                     number_images_displayed: parseInt($('input[name="ntb_jumlah_gambar"]').val(), 10) || 0,
-
-                    // Pengaturan Redirect & Tampilan
                     redirect_post_option: $('#url_pengalihan option:selected').val(),
                     timer_auto_refresh: $('input[name="ntb_timer_auto_refresh"]').val() || '0',
                     auto_refresh_option: $('#auto_refresh option:selected').val(),
@@ -353,51 +345,41 @@ add_action('admin_footer', function () {
                     device_view: $('#tampilan_perangkat option:selected').val(),
                     videos_floating_option: $('#video_melayang option:selected').val(),
                     timer_auto_pause_video: `${$('input[name="ntb_jeda_video_min"]').val()}-${$('input[name="ntb_jeda_video_max"]').val()}`,
-
-                    // Lainnya
                     parameter_key: $('input[name="ntb_param_key"]').val(),
                     parameter_value: $('input[name="ntb_param_value"]').val(),
                     cloaking_url: $('input[name="ntb_cloaking_url"]').val(),
                     custom_html: '',
                     custom_template_builder: '[]',
-
-                    // Field Randomizer
                     random_template_method: 'random',
                     random_template_file: '[]',
                     random_template_file_afs: '[]'
                 };
 
-                console.log('Data yang akan diupdate:', formData);
-
-                // [PERUBAHAN 2] Ganti URL API ke endpoint untuk UPDATE
+                // Ganti URL API ke endpoint untuk UPDATE
                 const apiUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/update.landing.php'); ?>';
 
-                // 2. Kirim data ke API menggunakan Fetch
                 fetch(apiUrl, {
-                        // [PERUBAHAN 3] Method bisa diganti PUT untuk update, tapi POST juga umum
-                        method: 'PUT',
+                        method: 'POST', // Bisa juga 'PUT'
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify(formData)
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(err => {
-                                throw new Error(err.message || 'Terjadi kesalahan jaringan.');
-                            });
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json()) // Langsung ubah ke JSON
                     .then(data => {
-                        alert('Sukses! ' + data.message);
-                        // Arahkan ke halaman utama Landing Page setelah sukses
-                        window.location.href = '<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>';
+                        // 'data' adalah objek JSON dari wp_send_json_success/error
+                        if (data.success) {
+                            alert('Sukses! ' + data.data.message);
+                            window.location.href = '<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>';
+                        } else {
+                            // Tampilkan pesan error dari server
+                            alert('Gagal! ' + data.data.message);
+                        }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Gagal! ' + error.message);
+                        alert('Terjadi kesalahan. Cek console untuk detail.');
                     })
                     .finally(() => {
                         // Kembalikan tombol ke keadaan semula
