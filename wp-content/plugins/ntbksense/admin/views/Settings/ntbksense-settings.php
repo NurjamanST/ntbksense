@@ -235,6 +235,77 @@ $countries = ["Indonesia", "Malaysia", "Singapore", "United States", "United Kin
                                             ?>
                                         </select>
                                     </div>
+                                    <small class="form-text text-muted mt-2">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><span class="text-primary">&bull;</span> <strong>**Termasuk**</strong> &rarr; Hanya berlaku untuk negara yang dipilih.</li>
+                                            <li><span class="text-primary">&bull;</span> <strong>**Kecualikan**</strong> &rarr; Berlaku untuk *semua negara kecuali* negara yang dipilih.</li>
+                                        </ul>
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="ntb-settings-section">
+                                <div class="mb-3">
+                                    <label for="blokir_ip_address" class="form-label">Blokir IP address</label>
+                                    <textarea id="blokir_ip_address" name="blokir_ip_address" class="form-control" rows="4"><?php echo esc_textarea($options['blokir_ip_address'] ?? "192.168.1.1\n192.168.1.12"); ?></textarea>
+                                    <small class="form-text text-muted">Masukkan satu IP per baris untuk memblokir akses dari IP tertentu.<br>
+                                    Contoh:<br>
+                                    192.168.1.1<br>
+                                    203.0.113.42<br>
+                                    Anda juga bisa memblokir rentang IP dengan format CIDR. Contoh: <code>192.0.2.0/24</code></small>
+                                </div>
+                            </div>
+                            <!-- **MODIFIED:** Akses ASN Section -->
+                            <div class="ntb-settings-section">
+                                <div class="mb-3">
+                                    <label for="akses_asn_mode" class="form-label">Akses ASN</label>
+                                    <select id="akses_asn_mode" name="akses_asn_mode" class="form-select">
+                                        <option value="off" <?php selected($options['akses_asn_mode'] ?? 'off', 'off'); ?>>Off</option>
+                                        <option value="termasuk" <?php selected($options['akses_asn_mode'] ?? '', 'termasuk'); ?>>Termasuk</option>
+                                        <option value="kecualikan" <?php selected($options['akses_asn_mode'] ?? '', 'kecualikan'); ?>>Kecualikan</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3" id="akses_asn_list_wrapper">
+                                    <textarea id="akses_asn_list" name="akses_asn_list" class="form-control" rows="4" placeholder="Masukkan satu ASN per baris, Contoh:&#10;15169&#10;45566"><?php echo esc_textarea($options['akses_asn_list'] ?? ''); ?></textarea>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <strong>Apa itu ASN?</strong><br>
+                                    ASN (Autonomous System Number) adalah nomor unik yang digunakan untuk mengidentifikasi jaringan internet milik perusahaan, penyedia layanan internet (ISP), atau organisasi tertentu. Contoh ASN:<br>
+                                    - 15169 &rarr; Google<br>
+                                    - 45566 &rarr; Indosat<br>
+                                    - 32934 &rarr; Facebook<br>
+                                    <strong>Cara penggunaan:</strong><br>
+                                    - Pilih mode Kecualikan untuk memblokir semua ASN kecuali yang terdaftar di daftar ini.<br>
+                                    - Pilih mode Termasuk untuk hanya mengizinkan ASN yang terdaftar di daftar ini.<br>
+                                    - Masukkan satu ASN per baris.<br>
+                                    <strong>Bagaimana cara mengetahui ASN?.</strong><br>
+                                    Anda bisa mencari ASN suatu IP menggunakan layanan seperti: <a href="https://ipinfo.io" target="_blank">ipinfo.io</a> or <a href="https://bgpview.io" target="_blank">bgpview.io</a>.
+                                </small>
+                            </div>
+                            <div class="ntb-settings-section">
+                                <h5 class="section-title">Detektor Perangkat</h5>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="1" id="detektor_perangkat_tinggi" <?php checked($options['detektor_perangkat_tinggi'] ?? 0, 1); ?>>
+                                    <label class="form-check-label" for="detektor_perangkat_tinggi"><strong>Akurasi lebih tinggi</strong> (dibanding metode user-agent standar).</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="1" id="detektor_perangkat_sedang" <?php checked($options['detektor_perangkat_sedang'] ?? 1, 1); ?>>
+                                    <label class="form-check-label" for="detektor_perangkat_sedang"><strong>Memungkinkan penargetan (redirect)</strong> yang lebih tepat berdasarkan jenis perangkat.</label>
+                                </div>
+                                 <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="1" id="detektor_perangkat_rendah" <?php checked($options['detektor_perangkat_rendah'] ?? 1, 1); ?>>
+                                    <label class="form-check-label" for="detektor_perangkat_rendah"><strong>Mendukung lebih banyak</strong> jenis perangkat.</label>
+                                </div>
+                                <p class="mt-3"><strong>Kekurangan:</strong><br>Membutuhkan lebih banyak sumber daya server, terutama pada situs dengan traffic tinggi.<br>Bisa meningkatkan waktu loading jika tidak dikonfigurasi dengan baik.<br>Menggunakan caching dapat mengurangi beban, tetapi perlu dikonfigurasi dengan benar.</p>
+                                <p><strong>Catatan:</strong><br>Jika opsi ini <strong>TIDAK</strong> dalam bentuk isian, akan mengembalikan metode deteksi lawas yang lebih ringan tetapi kurang akurat.<br>Jika Anda memiliki traffic terbatas, pertimbangkan untuk menggunakan caching atau metode deteksi yang lebih sederhana.</p>
+                            </div>
+                             <div class="ntb-settings-section">
+                                <div class="mb-3">
+                                    <label for="simpan_log" class="form-label">Simpan Log ke Database</label>
+                                    <select id="simpan_log" name="simpan_log" class="form-select">
+                                        <option <?php selected($options['simpan_log'] ?? 'Aktifkan', 'Aktifkan'); ?>>Aktifkan</option>
+                                        <option <?php selected($options['simpan_log'] ?? '', 'Nonaktifkan'); ?>>Nonaktifkan</option>
+                                    </select>
+                                    <small class="form-text text-muted">Jika diaktifkan, setiap redirect akan dicatat di database.<br><strong>Keuntungan:</strong> Memberikan data analitik yang berharga soal traffic.<br><strong>Kekurangan:</strong> Database bisa cepat penuh jika traffic tinggi.</small>
                                 </div>
                             </div>
                         </div>
