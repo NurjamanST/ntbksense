@@ -899,3 +899,53 @@ Stack trace:
 [12-Aug-2025 15:29:44 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\Users\Fajar Hidayatuloh\Herd\ntbksense\wp-includes\functions.php on line 2195
 [12-Aug-2025 15:29:44 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\Users\Fajar Hidayatuloh\Herd\ntbksense\wp-includes\functions.php on line 7360
 [12-Aug-2025 15:29:44 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\Users\Fajar Hidayatuloh\Herd\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:12:19 UTC] PHP Warning:  mysqli_real_connect(): (HY000/1045): Access denied for user 'root'@'localhost' (using password: YES) in C:\laragon\www\ntbksense\wp-includes\class-wpdb.php on line 1988
+[14-Aug-2025 08:12:23 UTC] PHP Warning:  mysqli_real_connect(): (HY000/1045): Access denied for user 'root'@'localhost' (using password: YES) in C:\laragon\www\ntbksense\wp-includes\class-wpdb.php on line 1988
+[14-Aug-2025 08:12:24 UTC] PHP Warning:  mysqli_real_connect(): (HY000/1045): Access denied for user 'root'@'localhost' (using password: YES) in C:\laragon\www\ntbksense\wp-includes\class-wpdb.php on line 1988
+[14-Aug-2025 08:14:08 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:14:08 UTC] Automatic updates starting...
+[14-Aug-2025 08:14:08 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:14:08 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:14:08 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:14:10 UTC] Automatic updates complete.
+[14-Aug-2025 08:14:16 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:14:16 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:14:16 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:14:16 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:14:26 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:14:26 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:14:26 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:14:26 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:14:26 UTC] PHP Deprecated:  strip_tags(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\ntbksense\wp-admin\admin-header.php on line 41
+[14-Aug-2025 08:15:28 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:15:28 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:15:28 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:15:28 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:16:21 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:16:21 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:16:21 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:16:21 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:16:21 UTC] PHP Deprecated:  strip_tags(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\ntbksense\wp-admin\admin-header.php on line 41
+[14-Aug-2025 08:16:21 UTC] PHP Warning:  Undefined array key "deskripsi" in C:\laragon\www\ntbksense\wp-content\plugins\ntbksense\admin\views\LandingPage\ntbksense-edit-landing.php on line 752
+[14-Aug-2025 08:16:21 UTC] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\formatting.php on line 4724
+[14-Aug-2025 08:16:38 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:16:38 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:16:38 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:16:38 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:16:48 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:16:48 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:16:48 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:16:48 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:16:48 UTC] PHP Deprecated:  strip_tags(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\ntbksense\wp-admin\admin-header.php on line 41
+[14-Aug-2025 08:16:48 UTC] PHP Warning:  Undefined array key "deskripsi" in C:\laragon\www\ntbksense\wp-content\plugins\ntbksense\admin\views\LandingPage\ntbksense-edit-landing.php on line 752
+[14-Aug-2025 08:16:48 UTC] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\formatting.php on line 4724
+[14-Aug-2025 08:35:22 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:35:22 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:35:22 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:35:22 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:35:50 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:35:50 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 08:35:50 UTC] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 7360
+[14-Aug-2025 08:35:50 UTC] PHP Deprecated:  str_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in C:\laragon\www\ntbksense\wp-includes\functions.php on line 2195
+[14-Aug-2025 12:39:59 UTC] Automatic updates starting...
+[14-Aug-2025 12:40:01 UTC] Automatic updates complete.
