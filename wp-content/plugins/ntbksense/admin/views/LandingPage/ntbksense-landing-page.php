@@ -117,37 +117,83 @@ add_action('admin_footer', function () {
             // --- END: Kode Baru ---
 
             // Fungsionalitas untuk checkbox "Pilih Semua" (kode ini tetap sama)
-            $('#select-all-lp').on('change', function() {
-                const isChecked = $(this).is(':checked');
-                $('#ntb-landing-page-table tbody input[type="checkbox"]').prop('checked', isChecked);
+            // $('#select-all-lp').on('change', function() {
+            //     const isChecked = $(this).is(':checked');
+            //     $('#ntb-landing-page-table tbody input[type="checkbox"]').prop('checked', isChecked);
+            // });
+
+            // Definisikan selector yang SUPER SPESIFIK untuk checkbox bulk action.
+            // Ini hanya menargetkan checkbox di dalam tabel spesifik dan mengabaikan toggle status.
+            const bulkActionCheckboxSelector = '#ntb-landing-page-table tbody input[name="lp[]"]:not(.ntb-status-toggle)';
+
+            // --- BAGIAN 1: FUNGSI 'PILIH SEMUA' ---
+            // Event ini berjalan saat checkbox di header (#select-all-lp) di-klik.
+            $('#select-all-lp').on('click', function() {
+                // Cek statusnya (dicentang atau tidak)
+                const isChecked = $(this).prop('checked');
+
+                // Gunakan selector yang sudah spesifik
+                // Ini HANYA akan memilih checkbox untuk bulk action
+                $(bulkActionCheckboxSelector).prop('checked', isChecked);
             });
+
+
+            // --- BAGIAN 2: FUNGSI 'BATAL OTOMATIS' ---
+            // Event ini berjalan saat salah satu checkbox item di-klik.
+            $(document).on('click', bulkActionCheckboxSelector, function() {
+                // Hitung jumlah total checkbox item (yang spesifik)
+                const totalCheckboxes = $(bulkActionCheckboxSelector).length;
+                // Hitung berapa banyak checkbox item (yang spesifik) yang sedang dicentang
+                const checkedCheckboxes = $(bulkActionCheckboxSelector + ':checked').length;
+
+                // Jika jumlah yang dicentang sama dengan jumlah total,
+                // maka centang juga checkbox 'Pilih Semua'. Jika tidak, batalkan centangnya.
+                const allAreChecked = totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes;
+                $('#select-all-lp').prop('checked', allAreChecked);
+            });
+
         });
     </script>
     <script>
         jQuery(document).ready(function($) {
-            $(document).on('change', '.ntb-status-toggle', function() {
+            // Ganti event dari 'change' ke 'click', dan targetnya ke label pembungkus
+            $(document).on('click', '.ntb-switch', function(e) {
+                // Mencegah aksi default dari label (yang bisa mentrigger event 'change' 2x)
+                e.preventDefault();
 
-                const checkbox = $(this);
+                // 'this' sekarang adalah <label class="ntb-switch"> yang di-klik
+                const label = $(this);
+                // Cari checkbox di dalam label tersebut
+                const checkbox = label.find('.ntb-status-toggle');
                 const rowId = checkbox.data('id');
+
+                // Jika tidak ada ID, jangan lakukan apa-apa
+                if (!rowId) {
+                    return;
+                }
 
                 // 1. PHP HANYA menyediakan URL dasar, tanpa ID.
                 const baseUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/statusu.landing.php'); ?>';
-
                 // 2. JavaScript menambahkan ID saat tombol di-klik.
                 const apiUrl = `${baseUrl}?id=${rowId}`;
 
-                // Baris ini akan menampilkan URL yang BENAR ke console browser
-                console.log('Mencoba memanggil URL:', apiUrl);
+                console.log('Mencoba memanggil URL (via click):', apiUrl);
 
-                checkbox.closest('td').css('opacity', 0.5);
+                label.closest('td').css('opacity', 0.5);
 
                 $.ajax({
                     url: apiUrl,
                     type: 'PUT',
                     success: function(response) {
                         console.log('Respon sukses:', response.message);
+                        // UPDATE PENTING:
+                        // Update status visual checkbox berdasarkan respon dari server
+                        const isChecked = response.status_baru == 1;
+                        checkbox.prop('checked', isChecked);
                     },
                     error: function(jqXHR) {
+                        // Error handling tetap sama, tapi kita tidak perlu membalikkan status
+                        // karena kita tidak mengubahnya di awal.
                         try {
                             const errorResponse = JSON.parse(jqXHR.responseText);
                             console.error('Gagal update:', errorResponse.message);
@@ -156,26 +202,133 @@ add_action('admin_footer', function () {
                             console.error('Gagal mem-parsing respon error:', jqXHR.responseText);
                             alert('Terjadi error yang tidak diketahui.');
                         }
-                        checkbox.prop('checked', !checkbox.prop('checked'));
                     },
                     complete: function() {
-                        checkbox.closest('td').css('opacity', 1);
+                        label.closest('td').css('opacity', 1);
                     }
                 });
+            });
+
+            // Event listener untuk tombol hapus di tabel
+            // Pastikan tombol hapus lo punya class 'ntb-delete-btn' dan atribut 'data-id'
+            $(document).on('click', '.ntb-delete-btn', function(e) {
+                e.preventDefault();
+
+                // Konfirmasi sebelum menghapus (PENTING!)
+                if (!confirm('Apakah lo yakin mau menghapus template ini? Aksi ini tidak bisa dibatalkan.')) {
+                    return;
+                }
+
+                const $button = $(this);
+                const landingPageId = $button.data('id');
+                const $tableRow = $button.closest('tr'); // Cari baris tabel terdekat
+
+                // Ganti URL API ke endpoint untuk DELETE
+                const apiUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/delete.landing.php'); ?>';
+
+                // Tampilkan status loading (opsional)
+                $tableRow.css('opacity', 0.5);
+
+                fetch(apiUrl, {
+                        method: 'POST', // Bisa juga 'DELETE', tapi POST lebih umum didukung
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: landingPageId
+                        }) // Kirim ID dalam format JSON
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Sukses! ' + data.data.message);
+                            // Hapus baris dari tabel secara visual
+                            $tableRow.fadeOut(400, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            alert('Gagal! ' + data.data.message);
+                            $tableRow.css('opacity', 1); // Kembalikan opacity jika gagal
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan. Cek console untuk detail.');
+                        $tableRow.css('opacity', 1); // Kembalikan opacity jika error
+                    });
+            });
+
+            // [FUNGSI BARU] Event listener untuk tombol HAPUS MASAL (BULK DELETE)
+            $('#ntb-bulk-delete-btn').on('click', function(e) {
+                e.preventDefault();
+
+                // 1. Kumpulkan semua ID dari checkbox yang dicentang
+                const idsToDelete = [];
+                // Pastikan checkbox lo punya name="lp[]" dan value berisi ID
+                $('input[name="lp[]"]:checked').each(function() {
+                    idsToDelete.push($(this).val());
+                });
+
+                // 2. Jika tidak ada yang dipilih, kasih peringatan
+                if (idsToDelete.length === 0) {
+                    alert('Pilih dulu item yang mau dihapus.');
+                    return;
+                }
+
+                // 3. Konfirmasi sebelum menghapus
+                if (!confirm(`Lo yakin mau menghapus ${idsToDelete.length} item yang dipilih?`)) {
+                    return;
+                }
+
+                // 4. Kirim data ke API endpoint baru untuk bulk delete
+                const apiUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/bulk-delete.landing.php'); ?>';
+
+                // Tampilkan status loading (opsional)
+                $('input[name="lp[]"]:checked').closest('tr').css('opacity', 0.5);
+
+                fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            ids: idsToDelete
+                        }) // Kirim array of IDs
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Sukses! ' + data.data.message);
+                            // Hapus semua baris yang dipilih dari tabel
+                            $('input[name="lp[]"]:checked').closest('tr').fadeOut(400, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            alert('Gagal! ' + data.data.message);
+                            $('input[name="lp[]"]:checked').closest('tr').css('opacity', 1);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan. Cek console untuk detail.');
+                        $('input[name="lp[]"]:checked').closest('tr').css('opacity', 1);
+                    });
             });
         });
     </script>
 <?php
 });
 
-    // START: Generate 100 dummy data entries
-        $data = [];
-        $templates = ['Sales', 'Video', 'Default', 'Lead Gen'];
-        $parameter = ['Parameter 1', 'Parameter 2', 'Parameter 3', 'Parameter 4', 'Parameter 5'];
-        $parameter2 = ['Value 1', 'Value 2', 'Value 3', 'Value 4', 'Value 5'];
-        $statuses = ['Aktif', 'Tidak Aktif'];
-        $devices = ['Desktop', 'Mobile', 'Desktop, Mobile','Chrome, Firefox', 'Safari', 'Edge'];
-        $gambar = ['logotasik.png'];
+// START: Generate 100 dummy data entries
+$data = [];
+$templates = ['Sales', 'Video', 'Default', 'Lead Gen'];
+$parameter = ['Parameter 1', 'Parameter 2', 'Parameter 3', 'Parameter 4', 'Parameter 5'];
+$parameter2 = ['Value 1', 'Value 2', 'Value 3', 'Value 4', 'Value 5'];
+$statuses = ['Aktif', 'Tidak Aktif'];
+$devices = ['Desktop', 'Mobile', 'Desktop, Mobile', 'Chrome, Firefox', 'Safari', 'Edge'];
+$gambar = ['logotasik.png'];
 
 for ($i = 1; $i <= 3; $i++) {
     $random_timestamp = time() - rand(0, 365 * 24 * 60 * 60); // Random date in the last year
@@ -215,7 +368,7 @@ for ($i = 1; $i <= 3; $i++) {
             <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-create-landing')); ?>" class="button ntb-btn-primary">
                 <span class="dashicons dashicons-plus-alt"></span>LP Baru
             </a>
-            <a href="#" class="button ntb-btn-danger"><span class="dashicons dashicons-trash"></span>Hapus</a>
+            <a href="#" class="button ntb-btn-danger" id="ntb-bulk-delete-btn"><span class="dashicons dashicons-trash"></span>Hapus</a>
             <a href="#" class="button ntb-btn-success"><span class="dashicons dashicons-upload"></span>Ekspor</a>
             <a href="#" class="button"><span class="dashicons dashicons-download"></span>Impor</a>
             <a href="#" class="button ntb-btn-warning"><span class="dashicons dashicons-admin-page"></span>Duplikat</a>
@@ -267,7 +420,10 @@ for ($i = 1; $i <= 3; $i++) {
                                             <a style="text-decoration:none;" href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-duplicate-lp&id=' . ($row['id'] ?? ''))); ?>" class="text-secondary">
                                                 <span class="dashicons dashicons-admin-page"></span>
                                             </a>
-                                            <a style="text-decoration:none;" href="<?php echo esc_url(wp_nonce_url(admin_url('admin.php?page=ntbksense-landing-page&action=delete&id=' . ($row['id'] ?? '')), 'ntb_delete_lp_nonce')); ?>" class="text-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus landing page ini?');">
+                                            <a
+                                                href="<?php echo esc_url(wp_nonce_url(admin_url('admin.php?page=ntbksense-landing-page&action=delete&id=' . ($row['id'] ?? '')), 'ntb_delete_lp_nonce')); ?>"
+                                                class="text-danger ntb-delete-btn"
+                                                data-id="<?php echo esc_attr($row['id'] ?? ''); ?>">
                                                 <span class="dashicons dashicons-trash"></span>
                                             </a>
                                         </div>
@@ -328,41 +484,66 @@ for ($i = 1; $i <= 3; $i++) {
 
 <style>
     /* General Layout & Main Content Box */
-        #ntbksense-landing-page-wrapper {
-            background-color: #ffffffff;
-            padding: 0;
-            margin: 0px 0px 0px -15px; /* Override default .wrap margin */
-        }
-        .ntb-main-content {
-            background: #fff;
-            border: 1px solid #c3c4c7;
-            border-radius: 10px;
-            box-shadow: 0 1px 1px rgba(0,0,0,.04);
-            padding: 20px;
-            margin: 20px;
-        }
-        .ntb-main-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0 0 20px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    #ntbksense-landing-page-wrapper {
+        background-color: #ffffffff;
+        padding: 0;
+        margin: 0px 0px 0px -15px;
+        /* Override default .wrap margin */
+    }
+
+    .ntb-main-content {
+        background: #fff;
+        border: 1px solid #c3c4c7;
+        border-radius: 10px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+        padding: 20px;
+        margin: 20px;
+    }
+
+    .ntb-main-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 20px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
     /* Navbar Styling */
-        .ntb-navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #ffffff;
-            border-bottom: 1px solid #c3c4c7;
-        }
-        .ntb-navbar-title { font-size: 16px; font-weight: 600; color: #1d2327; }
-        .ntb-navbar-version { font-size: 12px; color: #646970; margin-left: 8px; background-color: #f0f0f1; padding: 2px 6px; border-radius: 4px; }
-        .ntb-navbar-right .ntb-navbar-icon { color: #50575e; text-decoration: none; margin-left: 15px; }
-        .ntb-navbar-right .ntb-navbar-icon .dashicons { font-size: 20px; vertical-align: middle; }
+    .ntb-navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #ffffff;
+        border-bottom: 1px solid #c3c4c7;
+    }
+
+    .ntb-navbar-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1d2327;
+    }
+
+    .ntb-navbar-version {
+        font-size: 12px;
+        color: #646970;
+        margin-left: 8px;
+        background-color: #f0f0f1;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    .ntb-navbar-right .ntb-navbar-icon {
+        color: #50575e;
+        text-decoration: none;
+        margin-left: 15px;
+    }
+
+    .ntb-navbar-right .ntb-navbar-icon .dashicons {
+        font-size: 20px;
+        vertical-align: middle;
+    }
 
     /* Breadcrumb Styling */
     .ntb-breadcrumb {

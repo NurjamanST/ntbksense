@@ -22,22 +22,36 @@ require_once($template_class_path);
 // Ambil data JSON dari body request
 $data = json_decode(file_get_contents('php://input'), true);
 
-// Validasi ID
-$landing_page_id = isset($data['id']) ? (int)$data['id'] : 0;
-if ($landing_page_id <= 0) {
-    wp_send_json_error(['message' => 'ID Landing Page tidak valid untuk dihapus.']);
+// Validasi array IDs
+$ids_to_delete = isset($data['ids']) && is_array($data['ids']) ? $data['ids'] : [];
+if (empty($ids_to_delete)) {
+    wp_send_json_error(['message' => 'Tidak ada ID yang dipilih untuk dihapus.']);
     exit;
 }
 
 global $wpdb;
 $template = new Template($wpdb);
+$success_count = 0;
+$error_count = 0;
 
-// Set ID yang akan dihapus
-$template->id = $landing_page_id;
+// Loop melalui setiap ID dan hapus
+foreach ($ids_to_delete as $id) {
+    // Pastikan ID adalah integer yang valid
+    $template->id = (int)$id;
+    if ($template->id > 0) {
+        if ($template->delete()) {
+            $success_count++;
+        } else {
+            $error_count++;
+        }
+    } else {
+        $error_count++;
+    }
+}
 
-// Panggil method delete dari Class
-if ($template->delete()) {
-    wp_send_json_success(['message' => 'Template berhasil dihapus.']);
+// Kirim respon akhir
+if ($error_count > 0) {
+    wp_send_json_error(['message' => "Proses selesai. Berhasil dihapus: {$success_count}, Gagal: {$error_count}."]);
 } else {
-    wp_send_json_error(['message' => 'Gagal menghapus template dari database.']);
+    wp_send_json_success(['message' => "{$success_count} item berhasil dihapus."]);
 }
