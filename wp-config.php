@@ -97,10 +97,10 @@ $table_prefix = 'wp_';
 // define( 'WP_DEBUG', false );
 
 // Ubah dari 'false' menjadi 'true'
-define( 'WP_DEBUG', true );
+define( 'WP_DEBUG', false );
 
 // Tambahkan baris ini di bawahnya untuk menyimpan log error
-define( 'WP_DEBUG_LOG', true );
+define( 'WP_DEBUG_LOG', false );
 define( 'WP_DEBUG_DISPLAY', false ); // Biar error nggak tampil di layar
 /* Add any custom values between this line and the "stop editing" line. */
 

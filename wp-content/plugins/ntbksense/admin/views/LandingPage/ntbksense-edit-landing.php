@@ -737,10 +737,10 @@ add_action('admin_footer', function () {
                                         <div class="ntb-field-header">
                                             <label for="daftar_artikel">Daftar URL Artikel <span class="text-danger">*</span></label>
                                             <div class="d-flex gap-2">
-                                                <button id="ntb-get-articles-btn" class="btn btn-danger btn-sm ntb-header-btn" type="button" data-nonce="<?php echo wp_create_nonce('ntb_get_articles_nonce'); ?>">
+                                                <button id="ntb-get-articles-btn" class="btn btn-warning btn-sm ntb-header-btn" type="button" data-nonce="<?php echo wp_create_nonce('ntb_get_articles_nonce'); ?>">
                                                     <span class="dashicons dashicons-admin-links"></span> Dapatkan URL Artikel
                                                 </button>
-                                                <button class="btn btn-success btn-sm ntb-header-btn" type="button">
+                                                <button class="btn btn-primary btn-sm ntb-header-btn" type="button">
                                                     <span class="dashicons dashicons-search"></span> Dapatkan Link SEO
                                                 </button>
                                             </div>
@@ -749,7 +749,7 @@ add_action('admin_footer', function () {
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="deskripsi_manual">Deskripsi Manual</label>
-                                        <textarea id="deskripsi_manual" name="ntb_deskripsi_manual" class="form-control" rows="5"><?php echo esc_textarea($data['deskripsi']); ?></textarea>
+                                        <textarea id="deskripsi_manual" name="ntb_deskripsi_manual" class="form-control" rows="5"><?php echo esc_textarea($data['description']); ?></textarea>
                                     </div>
                                     <div class="ntb-form-group">
                                         <label for="inject_keywords">Inject Keywords</label>
