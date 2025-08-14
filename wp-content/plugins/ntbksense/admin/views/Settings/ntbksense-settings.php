@@ -423,7 +423,7 @@ $countries = ["Indonesia", "Malaysia", "Singapore", "United States", "United Kin
                             <div class="ntb-settings-section">
                                 <div class="mb-3">
                                     <label for="blokir_ip_address" class="form-label">Blokir IP address</label>
-                                    <textarea id="blokir_ip_address" name="blokir_ip_address" class="form-control" rows="4"><?php echo esc_textarea($options['blokir_ip_address'] ?? "192.168.1.1\n192.168.1.12"); ?></textarea>
+                                    <textarea id="blokir_ip_address" name="blokir_ip_address" class="form-control" rows="4"><?php echo esc_textarea($options['blokir_ip_address'] ?? "192.168.1.1192.168.1.12"); ?></textarea>
                                     <small class="form-text text-muted">Masukkan satu IP per baris untuk memblokir akses dari IP tertentu.<br>
                                     Contoh:<br>
                                     192.168.1.1<br>
