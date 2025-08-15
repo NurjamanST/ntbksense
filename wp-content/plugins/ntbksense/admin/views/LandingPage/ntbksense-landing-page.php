@@ -436,7 +436,7 @@ for ($i = 1; $i <= 3; $i++) {
                             </td>
                             <td>
                                 <div class="url-lp-input-group">
-                                    <input type="text" value="<?= $home ?>/redirect_ads.php?slug=<?= $row['slug'] ?>" data-ads-url="<?= $home ?>/redirect_ads.php?slug=<?= $row['slug'] ?>&mode=ads" disabled class="url-lp-input">
+                                    <input type="text" value="<?= $home ?>/<?= $row['slug'] ?>" data-ads-url="<?= $home ?>/<?= $row['slug'] ?>?mode=ads" disabled class="url-lp-input">
                                     <button class="url-lp-action-btn copy-btn" title="Salin URL Public">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy">
                                             <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
