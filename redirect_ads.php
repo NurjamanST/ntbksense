@@ -6,20 +6,12 @@
  * ===================================================================
  */
 
-/**
- * Mendeteksi apakah User Agent berasal dari browser internal Facebook/Instagram.
- * @return bool True jika dari FB/IG, false jika bukan.
- */
 function is_fb_or_ig_browser()
 {
     $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
     return (strpos($user_agent, "FBAV") !== false) || (strpos($user_agent, "FBAN") !== false) || (strpos($user_agent, "Instagram") !== false);
 }
 
-/**
- * Mendeteksi apakah User Agent berasal dari perangkat mobile.
- * @return bool True jika mobile, false jika bukan (dianggap desktop).
- */
 function is_mobile_device()
 {
     $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
@@ -33,20 +25,17 @@ function is_mobile_device()
  */
 
 // LANGKAH 1: Memuat inti WordPress.
-require_once('wp-load.php'); // Memuat WordPress
+require_once('wp-load.php');
 
-// [PERUBAHAN UTAMA] Ambil pengaturan global dari tabel database
+// LANGKAH 2: Ambil pengaturan & data
 global $wpdb;
-$settings_table_name = $wpdb->prefix . 'ntbk_ads_settings';
+$settings_table_name = $wpdb->prefix . 'ntbksense_ads_settings';
 $global_settings = $wpdb->get_row("SELECT * FROM {$settings_table_name} LIMIT 1", ARRAY_A);
 if (!$global_settings) {
-    $global_settings = []; // Jika tabel kosong, buat array kosong biar nggak error
+    $global_settings = [];
 }
 
-// LANGKAH 2: Ambil parameter & data dari DB (spesifik untuk landing page ini).
 $slug = isset($_GET['slug']) ? $_GET['slug'] : null;
-$mode = isset($_GET['mode']) ? $_GET['mode'] : null;
-
 if (!$slug) {
     http_response_code(400);
     echo "Error: Parameter 'slug' wajib diisi.";
@@ -59,59 +48,33 @@ $templateData = $wpdb->get_row($query, ARRAY_A);
 
 // LANGKAH 3: Validasi data awal.
 if (!$templateData || $templateData['status'] == 0) {
-    $fallback_url = isset($templateData['cloaking_url']) && !empty($templateData['cloaking_url']) ? $templateData['cloaking_url'] : 'https://www.youtube.com/watch?v=rMtqRp4hUYc&list=RDrMtqRp4hUYc&start_radio=1';
+    $fallback_url = isset($templateData['cloaking_url']) && !empty($templateData['cloaking_url']) ? $templateData['cloaking_url'] : 'https://www.youtube.com';
     wp_redirect($fallback_url);
     exit;
 }
 
-// LANGKAH 4: LOGIKA UNTUK MENENTUKAN OUTPUT
-$showSafePage = false; // Defaultnya, semua traffic dianggap biasa (akan di-redirect)
+// [LOGIKA UTAMA] URL MASKING & REFRESH
+$secret_parameter = 'bila'; // Ganti sesuai kebutuhan
+$secret_value = 'nanti';     // Ganti sesuai kebutuhan
+$redirect_url_on_refresh = $templateData['cloaking_url']; // URL tujuan saat di-refresh
 
-// Cek 1: Apakah ada parameter 'mode=ads'? (Prioritas tertinggi)
-if ($mode === 'ads') {
-    $showSafePage = true;
-}
-// Cek 2: Jika bukan 'mode=ads', cek aturan perangkat.
-elseif ($mode !== 'public') {
-    $device_rule = isset($templateData['device_view']) ? $templateData['device_view'] : 'semua';
-    switch ($device_rule) {
-        case 'fb_browser':
-            if (is_fb_or_ig_browser()) $showSafePage = true;
-            break;
-        case 'ponsel':
-            if (is_mobile_device()) $showSafePage = true;
-            break;
-        case 'desktop':
-            if (!is_mobile_device()) $showSafePage = true;
-            break;
-        case 'semua':
-        default:
-            $showSafePage = true; // Jika aturan 'semua', tampilkan safe page
-            break;
-    }
-}
+if (isset($_GET[$secret_parameter]) && $_GET[$secret_parameter] === $secret_value) {
 
-// LANGKAH 5: Tampilkan output berdasarkan hasil akhir
-if ($showSafePage) {
+    // --- KUNJUNGAN PERTAMA (DENGAN PARAMETER RAHASIA) ---
     // Tampilkan halaman "aman" (safe page)
+
     $video_urls = json_decode($templateData['video_urls'], true);
     $img_urls = json_decode($templateData['universal_image_urls'], true);
-
     $is_video_floating = (isset($templateData['videos_floating_option']) && $templateData['videos_floating_option'] === 'on');
 
-    // [LOGIKA IKLAN DARI PENGATURAN GLOBAL]
-    $ads_opacity = (int)(isset($global_settings['opacity']) ? $global_settings['opacity'] : 100);
-    $ads_margin_top = (int)(isset($global_settings['margin_top']) ? $global_settings['margin_top'] : 5);
-    $ads_margin_bottom = (int)(isset($global_settings['margin_bottom']) ? $global_settings['margin_bottom'] : 5);
-    $ads_code_1 = isset($global_settings['kode_iklan_1']) ? $global_settings['kode_iklan_1'] : '';
-    $ads_code_2 = isset($global_settings['kode_iklan_2']) ? $global_settings['kode_iklan_2'] : '';
-    // [LOGIKA BARU] Ambil kode iklan ke-3 untuk overlay video
-    $ads_code_3_for_video = isset($global_settings['kode_iklan_3']) ? $global_settings['kode_iklan_3'] : '';
+    $ads_code_1 = $global_settings['kode_iklan_1'] ?? '';
+    $ads_code_2 = $global_settings['kode_iklan_2'] ?? '';
+    $ads_opacity = (int)($global_settings['opacity'] ?? 100);
+    $ads_margin_bottom = (int)($global_settings['margin_bottom'] ?? 5);
+    $ads_margin_top = (int)($global_settings['margin_top'] ?? 5);
     $ads_show_close_btn = !empty($global_settings['tampilkan_close_ads']);
     $ads_auto_scroll = !empty($global_settings['auto_scroll']);
     $ads_hide_blank = !empty($global_settings['sembunyikan_elemen_blank']);
-
-    // [LOGIKA TIMER]
     $pause_range_str = isset($templateData['timer_auto_pause_video']) ? $templateData['timer_auto_pause_video'] : '';
     $refresh_timer_sec = (int)(isset($templateData['timer_auto_refresh']) ? $templateData['timer_auto_refresh'] : 0);
 
@@ -127,7 +90,6 @@ if ($showSafePage) {
     header("Content-Type: text/html; charset=UTF-8");
     echo "<!DOCTYPE html><html><head><title>" . esc_html($templateData['title']) . "</title>";
 
-    // [PERBAIKAN] CSS untuk semua fitur
     echo "<style>
         body { margin: 0; padding: 0; font-family: sans-serif; background-color: #333; }
         .content-wrapper { text-align: center; padding: 20px; }
@@ -156,95 +118,100 @@ if ($showSafePage) {
 
     echo "</head><body>";
 
+    if (!empty($img_urls[0])) {
+        echo "<div class='fullscreen-bg'><img src='" . esc_url($img_urls[0]) . "' alt=''></div>";
+        echo "<div class='page-overlay'></div>";
+    }
+
     echo "<div class='content-wrapper'>";
-
     if (!empty($ads_code_1)) {
-        echo "<div class='ad-container' style='opacity: " . ($ads_opacity / 100) . "; margin-bottom: " . $ads_margin_bottom . "px;'>" . $ads_code_1 . "</div>";
+        echo "<div class='ad-container' style='opacity: " . ($ads_opacity / 100) . "; margin-bottom: " . $ads_margin_bottom . "px;'>{$ads_code_1}</div>";
     }
-
     // echo "<h2 style='color: white;'>" . esc_html($templateData['title']) . "</h2>";
-
     if (!empty($ads_code_2)) {
-        echo "<div class='ad-container' style='opacity: " . ($ads_opacity / 100) . "; margin-top: " . $ads_margin_top . "px; margin-bottom: " . $ads_margin_bottom . "px;'>" . $ads_code_2 . "</div>";
+        echo "<div class='ad-container' style='opacity: " . ($ads_opacity / 100) . "; margin-top: " . $ads_margin_top . "px; margin-bottom: " . $ads_margin_bottom . "px;'>{$ads_code_2}</div>";
     }
 
-    if (!empty($img_urls)) {
-        $random_image_url = $img_urls[array_rand($img_urls)];
-        if (!empty($random_image_url)) {
-            echo "<img src='" . esc_url($random_image_url) . "' alt='Gambar' class='main-image'>";
-        }
-    }
-
-    // [PERBAIKAN] Logika Tampilan Video dengan Ad Overlay
     if (!empty($video_urls[0])) {
-        // Hapus 'autoplay' jika ada ad overlay
-        $autoplay_attr = empty($ads_code_3_for_video) ? 'autoplay' : '';
-        $video_tag = "<video id='safe-page-video' controls {$autoplay_attr} muted loop playsinline><source src='" . esc_url($video_urls[0]) . "' type='video/webm'>Browser tidak support video.</video>";
-
-        // Bungkus video dalam wrapper
-        $video_html = "<div class='video-wrapper'>";
-        // Tambahkan ad overlay jika ada kodenya
-        if (!empty($ads_code_3_for_video)) {
-            $video_html .= "<div class='video-ad-overlay'>{$ads_code_3_for_video}</div>";
-        }
-        $video_html .= $video_tag;
-        $video_html .= "</div>";
-
+        $video_tag = "<video id='safe-page-video' controls autoplay muted loop playsinline><source src='" . esc_url($video_urls[0]) . "' type='video/webm'></video>";
         if ($is_video_floating) {
-            echo "<div class='floating-video-container'>{$video_html}</div>";
+            echo "<div class='floating-video-container'>{$video_tag}</div>";
         } else {
-            echo $video_html;
+            echo $video_tag;
         }
     }
 
     if ($ads_show_close_btn) {
         echo "<button id='ntb-close-ads-btn'>Close ADS</button>";
     }
-
-    echo "</div>"; // Penutup .content-wrapper
+    echo "</div>";
 
     echo "<script>
+        window.onload = function() {
+            const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?slug=" . urlencode($slug) . "';
+            window.history.pushState({}, '', cleanUrl);
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             const video = document.getElementById('safe-page-video');
-            
-            // [LOGIKA BARU] Ad Overlay untuk Video
-            const adOverlay = document.querySelector('.video-ad-overlay');
-            if (adOverlay && video) {
-                adOverlay.addEventListener('click', function() {
-                    this.style.display = 'none'; // Sembunyikan overlay
-                    video.play(); // Langsung putar video setelah overlay di-klik
-                }, { once: true }); // Event ini hanya jalan sekali
-            }
-
             if (video) {
                 let pauseTimerSet = false;
                 video.addEventListener('playing', function() {
                     const pauseTimeInMs = " . $random_pause_time_ms . ";
                     if (pauseTimeInMs > 0 && !pauseTimerSet) {
                         pauseTimerSet = true;
-                        setTimeout(function() {
-                            video.pause();
-                        }, pauseTimeInMs);
+                        setTimeout(function() { video.pause(); }, pauseTimeInMs);
                     }
                 });
             }
-
-            // ... (sisa kode JavaScript untuk refresh, close ads, dll tetap sama) ...
+            const refreshTimeInMs = " . ($refresh_timer_sec * 1000) . ";
+            if (refreshTimeInMs > 0) {
+                setTimeout(function() { location.reload(); }, refreshTimeInMs);
+            }
+            const showCloseBtn = " . ($ads_show_close_btn ? 'true' : 'false') . ";
+            if (showCloseBtn) {
+                const closeBtn = document.getElementById('ntb-close-ads-btn');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function() {
+                        document.querySelectorAll('.ad-container').forEach(function(c) { c.style.display = 'none'; });
+                        this.style.display = 'none';
+                    });
+                }
+            }
+            const hideBlankAds = " . ($ads_hide_blank ? 'true' : 'false') . ";
+            if (hideBlankAds) {
+                setTimeout(function() {
+                    document.querySelectorAll('.ad-container').forEach(function(c) {
+                        if (c.innerHTML.trim() === '' || c.offsetHeight < 5) { c.style.display = 'none'; }
+                    });
+                }, 2000);
+            }
+            const autoScroll = " . ($ads_auto_scroll ? 'true' : 'false') . ";
+            if (autoScroll) {
+                window.scrollBy({ top: window.innerHeight, left: 0, behavior: 'smooth' });
+            }
         });
     </script>";
 
     echo "</body></html>";
 } else {
-    // Redirect ke URL cloaking/post untuk traffic biasa
-    $cloaking_url = $templateData['cloaking_url'];
-    $post_urls = preg_split("/\r\n|\n|\r/", $templateData['post_urls']);
 
-    if (!empty($post_urls) && !empty(trim($post_urls[0]))) {
-        $redirectTo = $post_urls[array_rand($post_urls)];
-        wp_redirect(trim($redirectTo));
-    } else {
-        wp_redirect($cloaking_url);
+    // --- KUNJUNGAN KEDUA (REFRESH ATAU TANPA PARAMETER RAHASIA) ---
+    // Cek apakah ini traffic biasa (bukan dari iklan)
+    $mode = isset($_GET['mode']) ? $_GET['mode'] : null;
+    $isFromAds = ($mode === 'ads');
+    if (!$isFromAds) {
+        $post_urls = preg_split("/\r\n|\n|\r/", $templateData['post_urls']);
+        if (!empty($post_urls) && !empty(trim($post_urls[0]))) {
+            $redirectTo = $post_urls[array_rand($post_urls)];
+            wp_redirect(trim($redirectTo));
+            exit;
+        }
     }
+
+    // Jika ini adalah refresh dari safe page atau traffic iklan tanpa parameter rahasia
+    wp_redirect($redirect_url_on_refresh);
+    exit;
 }
 
 exit;
