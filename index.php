@@ -29,7 +29,7 @@ require_once('wp-load.php');
 
 // LANGKAH 2: Ambil pengaturan & data
 global $wpdb;
-$settings_table_name = $wpdb->prefix . 'ntbk_ads_settings';
+$settings_table_name = $wpdb->prefix . 'ntbksense_ads_settings';
 $global_settings = $wpdb->get_row("SELECT * FROM {$settings_table_name} LIMIT 1", ARRAY_A);
 if (!$global_settings) {
     $global_settings = [];
@@ -63,17 +63,21 @@ if (!$templateData || $templateData['status'] == 0) {
     exit;
 }
 
-// [LOGIKA UTAMA YANG DIPERBAIKI] Cek Kunci Masuk dan Aturan Perangkat
+// [LOGIKA UTAMA YANG DIPERBAIKI] Cek Kunci Masuk, Auto Refresh, dan Aturan Perangkat
 $secret_parameter = $templateData['parameter_key'] ?? 'bila';
 $secret_value = $templateData['parameter_value'] ?? 'nanti';
 $redirect_url = $templateData['cloaking_url'];
 $showSafePage = false; // Defaultnya, semua traffic akan di-redirect
 
-// Cek 1: Apakah ada kunci sakti 'mode=ads'? (Prioritas tertinggi)
+// Cek 1: Kunci sakti 'mode=ads'
 if (isset($_GET['mode']) && $_GET['mode'] === 'ads') {
     $showSafePage = true;
 }
-// Cek 2: Jika tidak ada 'mode=ads', cek kunci biasa '?bila=nanti' DIIKUTI oleh cek perangkat
+// Cek 2: Kunci auto-refresh (dari JavaScript)
+elseif (isset($_GET['auto_refresh']) && $_GET['auto_refresh'] === '1') {
+    $showSafePage = true;
+}
+// Cek 3: Kunci biasa '?bila=nanti' DIIKUTI oleh cek perangkat
 elseif (isset($_GET[$secret_parameter]) && $_GET[$secret_parameter] === $secret_value) {
     $device_rule = isset($templateData['device_view']) ? $templateData['device_view'] : 'semua';
     switch ($device_rule) {
@@ -156,7 +160,7 @@ if ($showSafePage) {
     if (!empty($ads_code_1)) {
         echo "<div class='ad-container' style='opacity: " . ($ads_opacity / 100) . "; margin-bottom: " . $ads_margin_bottom . "px;'>{$ads_code_1}</div>";
     }
-    echo "<h2 style='color: white;'>" . esc_html($templateData['title']) . "</h2>";
+    // echo "<h2 style='color: white;'>" . esc_html($templateData['title']) . "</h2>";
     if (!empty($ads_code_2)) {
         echo "<div class='ad-container' style='opacity: " . ($ads_opacity / 100) . "; margin-top: " . $ads_margin_top . "px; margin-bottom: " . $ads_margin_bottom . "px;'>{$ads_code_2}</div>";
     }
@@ -184,7 +188,7 @@ if ($showSafePage) {
 
     echo "<script>
         window.onload = function() {
-            const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?slug=" . urlencode($slug) . "';
+            const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
             window.history.pushState({}, '', cleanUrl);
         };
 
@@ -200,10 +204,16 @@ if ($showSafePage) {
                     }
                 });
             }
+            
+            // [PERBAIKAN] Logika Auto Refresh
             const refreshTimeInMs = " . ($refresh_timer_sec * 1000) . ";
             if (refreshTimeInMs > 0) {
-                setTimeout(function() { location.reload(); }, refreshTimeInMs);
+                setTimeout(function() {
+                    // Tambahkan parameter khusus untuk menandai auto-refresh
+                    window.location.href = window.location.pathname + '?auto_refresh=1';
+                }, refreshTimeInMs);
             }
+
             const showCloseBtn = " . ($ads_show_close_btn ? 'true' : 'false') . ";
             if (showCloseBtn) {
                 const closeBtn = document.getElementById('ntb-close-ads-btn');
@@ -232,7 +242,7 @@ if ($showSafePage) {
     echo "</body></html>";
 } else {
 
-    // --- KUNJUNGAN KEDUA (REFRESH ATAU TANPA KUNCI) ---
+    // --- KUNJUNGAN KEDUA (REFRESH MANUAL ATAU TANPA KUNCI) ---
     wp_redirect($redirect_url);
     exit;
 }
