@@ -1,15 +1,10 @@
 <?php
-/**
- * NTBKSense Settings Page
- *
- * @package NTBKSense
- */
 // =========================================================================
 // FILE: ntbksense/admin/views/Settings/ntbksense-settings.php
 // FUNGSI: Menampilkan form pengaturan global.
-// VERSI DATABASE LENGKAP - DENGAN PERBAIKAN KOMPATIBILITAS
 // =========================================================================
 
+// Memuat logika, aset, dan persiapan variabel
 include "add_action_settings.php";
 ?>
 
@@ -28,169 +23,41 @@ include "add_action_settings.php";
             <div class="row">
                 <!-- Kolom Kiri: Pengaturan -->
                 <div class="col-lg-8">
-                    <ul class="nav nav-tabs ntb-nav-tabs" id="settingsTabs" role="tablist">
-                        <li class="nav-item" role="presentation"><button class="nav-link active" id="pengaturan-iklan-tab" data-bs-toggle="tab" data-bs-target="#pengaturan-iklan" type="button" role="tab">Pengaturan Iklan</button></li>
-                        <li class="nav-item" role="presentation"><button class="nav-link" id="advance-tab" data-bs-toggle="tab" data-bs-target="#advance" type="button" role="tab">Advance</button></li>
+                    <ul class="nav nav-tabs ntb-nav-tabs" id="settingsTabs" role="tablist">                        
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="pengaturan-iklan-tab" data-bs-toggle="tab" data-bs-target="#pengaturan-iklan" type="button" role="tab" aria-controls="pengaturan-iklan" aria-selected="true"><span class="dashicons dashicons-megaphone"></span> Pengaturan Iklan</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="advance-tab" data-bs-toggle="tab" data-bs-target="#advance" type="button" role="tab" aria-controls="advance" aria-selected="false"><span class="dashicons dashicons-admin-settings"></span> Advance</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="header-footer-tab" data-bs-toggle="tab" data-bs-target="#header-footer" type="button" role="tab" aria-controls="header-footer" aria-selected="false"><span class="dashicons dashicons-editor-code"></span> Header & Footer</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="plugin-tab" data-bs-toggle="tab" data-bs-target="#plugin" type="button" role="tab" aria-controls="plugin" aria-selected="false"><span class="dashicons dashicons-admin-plugins"></span> Plugin</button>
+                        </li>
+                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="keamanan-tab" data-bs-toggle="tab" data-bs-target="#keamanan" type="button" role="tab" aria-controls="keamanan" aria-selected="false"><span class="dashicons dashicons-lock"></span> Keamanan</button>
+                        </li>
+                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="optimasi-tab" data-bs-toggle="tab" data-bs-target="#optimasi" type="button" role="tab" aria-controls="optimasi" aria-selected="false"><span class="dashicons dashicons-performance"></span> Optimasi</button>
+                        </li>
                     </ul>
 
                     <div class="tab-content ntb-tab-content" id="settingsTabsContent">
                         <!-- Tab: Pengaturan Iklan -->
-                        <div class="tab-pane fade show active" id="pengaturan-iklan" role="tabpanel">
-                            <div class="ntb-settings-section">
-                                <div class="mb-3">
-                                    <label for="id_publisher" class="form-label">ID Publisher</label>
-                                    <input type="text" id="id_publisher" name="id_publisher" class="form-control" value="<?= $id_publisher ?>">
-                                </div>
-                            </div>
-                            <div class="ntb-settings-section">
-                                <h5 class="section-title">Iklan Display</h5>
-                                <div class="row">
-                                    <div class="col-md-6"><label for="opacity" class="form-label">Opacity (%)</label><input type="number" id="opacity" name="opacity" class="form-control" value="<?= $opacity ?>"></div>
-                                    <div class="col-md-6"><label for="jumlah_iklan" class="form-label">Jumlah Iklan</label>
-                                        <select id="jumlah_iklan" name="jumlah_iklan" class="form-select">
-                                            <?php 
-                                                for ($i = 1; $i <= 5; $i++) {
-                                                    echo '<option value="' . $i . '" ' . selected($jumlah_iklan_val, $i, false) . '>' . $i . '</option>';
-                                                } 
-                                            ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-md-3"><label for="mode_tampilan" class="form-label">Mode Tampilan</label><select id="mode_tampilan" name="mode_tampilan" class="form-select">
-                                            <option <?php selected(isset($options['mode_tampilan']) ? $options['mode_tampilan'] : 'Berurutan', 'Berurutan'); ?>>Berurutan</option>
-                                            <option <?php selected(isset($options['mode_tampilan']) ? $options['mode_tampilan'] : '', 'Acak'); ?>>Acak</option>
-                                        </select></div>
-                                    <div class="col-md-3"><label for="posisi" class="form-label">Posisi</label><select id="posisi" name="posisi" class="form-select">
-                                            <option <?php selected(isset($options['posisi']) ? $options['posisi'] : 'Fixed', 'Fixed'); ?>>Fixed</option>
-                                            <option <?php selected(isset($options['posisi']) ? $options['posisi'] : '', 'Absolute'); ?>>Absolute</option>
-                                        </select></div>
-                                    <div class="col-md-3"><label for="margin_top" class="form-label">Margin Top</label>
-                                        <div class="input-group"><input type="number" id="margin_top" name="margin_top" class="form-control" value="<?php echo esc_attr(isset($options['margin_top']) ? $options['margin_top'] : '5'); ?>"><span class="input-group-text">px</span></div>
-                                    </div>
-                                    <div class="col-md-3"><label for="margin_bottom" class="form-label">Margin Bottom</label>
-                                        <div class="input-group"><input type="number" id="margin_bottom" name="margin_bottom" class="form-control" value="<?php echo esc_attr(isset($options['margin_bottom']) ? $options['margin_bottom'] : '5'); ?>"><span class="input-group-text">px</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ntb-settings-section">
-                                <h5 class="section-title">Kode Iklan Display</h5>
-                                <div class="row">
-                                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="kode_iklan_<?php echo $i; ?>" class="form-label">Kode Iklan <?php echo $i; ?></label>
-                                            <textarea id="kode_iklan_<?php echo $i; ?>" name="kode_iklan_<?php echo $i; ?>" class="form-control" rows="4"><?php echo esc_textarea(isset($options["kode_iklan_{$i}"]) ? $options["kode_iklan_{$i}"] : ''); ?></textarea>
-                                        </div>
-                                    <?php endfor; ?>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="refresh_blank" class="form-label">Refresh jika iklan blank</label>
-                                        <div class="input-group"><input type="number" id="refresh_blank" name="refresh_blank" class="form-control" value="<?php echo esc_attr(isset($options['refresh_blank']) ? $options['refresh_blank'] : '0'); ?>"><span class="input-group-text">Detik</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ntb-settings-section">
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="1" id="sembunyikan_vinyet" name="sembunyikan_vinyet" <?php checked(isset($options['sembunyikan_vinyet']) ? $options['sembunyikan_vinyet'] : 0, 1); ?>><label class="form-check-label" for="sembunyikan_vinyet">Sembunyikan iklan vinyet.</label></div>
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="1" id="sembunyikan_anchor" name="sembunyikan_anchor" <?php checked(isset($options['sembunyikan_anchor']) ? $options['sembunyikan_anchor'] : 0, 1); ?>><label class="form-check-label" for="sembunyikan_anchor">Sembunyikan iklan anchor.</label></div>
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="1" id="sembunyikan_elemen_blank" name="sembunyikan_elemen_blank" <?php checked(isset($options['sembunyikan_elemen_blank']) ? $options['sembunyikan_elemen_blank'] : 0, 1); ?>><label class="form-check-label" for="sembunyikan_elemen_blank">Sembunyikan elemen iklan (jika blank).</label></div>
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="1" id="tampilkan_close_ads" name="tampilkan_close_ads" <?php checked(isset($options['tampilkan_close_ads']) ? $options['tampilkan_close_ads'] : 0, 1); ?>><label class="form-check-label" for="tampilkan_close_ads">Tampilkan Tombol Close ADS.</label></div>
-                                <div class="form-check"><input class="form-check-input" type="checkbox" value="1" id="auto_scroll" name="auto_scroll" <?php checked(isset($options['auto_scroll']) ? $options['auto_scroll'] : 0, 1); ?>><label class="form-check-label" for="auto_scroll">Auto Scroll.</label></div>
-                            </div>
-                        </div>
+                        <?php include "ads_settings.php"; ?>
 
                         <!-- Tab: Advance -->
-                        <div class="tab-pane fade" id="advance" role="tabpanel">
-                            <div class="ntb-settings-section">
-                                <div class="mb-3">
-                                    <label for="akses_lokasi_mode" class="form-label">Akses Lokasi</label>
-                                    <select id="akses_lokasi_mode" name="akses_lokasi_mode" class="form-select mb-2">
-                                        <option value="off" <?php selected(isset($options['akses_lokasi_mode']) ? $options['akses_lokasi_mode'] : 'off', 'off'); ?>>Off</option>
-                                        <option value="termasuk" <?php selected(isset($options['akses_lokasi_mode']) ? $options['akses_lokasi_mode'] : '', 'termasuk'); ?>>Termasuk</option>
-                                        <option value="kecualikan" <?php selected(isset($options['akses_lokasi_mode']) ? $options['akses_lokasi_mode'] : '', 'kecualikan'); ?>>Kecualikan</option>
-                                    </select>
-                                    <div id="akses_lokasi_countries_wrapper">
-                                        <select id="akses_lokasi_countries" name="akses_lokasi_countries[]" class="form-select" multiple="multiple">
-                                            <?php
-                                            $selected_countries = json_decode(isset($options['akses_lokasi_countries']) ? $options['akses_lokasi_countries'] : '[]', true);
-                                            foreach ($countries as $country) {
-                                                echo '<option value="' . esc_attr($country) . '" ' . (is_array($selected_countries) && in_array($country, $selected_countries) ? 'selected' : '') . '>' . esc_html($country) . '</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                    <small class="form-text text-muted mt-2">
-                                        <ul class="list-unstyled mb-0">
-                                            <li><span class="text-primary">&bull;</span> <strong>**Termasuk**</strong> &rarr; Hanya berlaku untuk negara yang dipilih.</li>
-                                            <li><span class="text-primary">&bull;</span> <strong>**Kecualikan**</strong> &rarr; Berlaku untuk *semua negara kecuali* negara yang dipilih.</li>
-                                        </ul>
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="ntb-settings-section">
-                                <div class="mb-3">
-                                    <label for="blokir_ip_address" class="form-label">Blokir IP address</label>
-                                    <textarea id="blokir_ip_address" name="blokir_ip_address" class="form-control" rows="4"><?php echo esc_textarea($options['blokir_ip_address'] ?? "192.168.1.1\n192.168.1.12"); ?></textarea>
-                                    <small class="form-text text-muted">Masukkan satu IP per baris untuk memblokir akses dari IP tertentu.<br>
-                                    Contoh:<br>
-                                    192.168.1.1<br>
-                                    203.0.113.42<br>
-                                    Anda juga bisa memblokir rentang IP dengan format CIDR. Contoh: <code>192.0.2.0/24</code></small>
-                                </div>
-                            </div>
-                            <!-- **MODIFIED:** Akses ASN Section -->
-                            <div class="ntb-settings-section">
-                                <div class="mb-3">
-                                    <label for="akses_asn_mode" class="form-label">Akses ASN</label>
-                                    <select id="akses_asn_mode" name="akses_asn_mode" class="form-select">
-                                        <option value="off" <?php selected($options['akses_asn_mode'] ?? 'off', 'off'); ?>>Off</option>
-                                        <option value="termasuk" <?php selected($options['akses_asn_mode'] ?? '', 'termasuk'); ?>>Termasuk</option>
-                                        <option value="kecualikan" <?php selected($options['akses_asn_mode'] ?? '', 'kecualikan'); ?>>Kecualikan</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3" id="akses_asn_list_wrapper">
-                                    <textarea id="akses_asn_list" name="akses_asn_list" class="form-control" rows="4" placeholder="Masukkan satu ASN per baris, Contoh:&#10;15169&#10;45566"><?php echo esc_textarea($options['akses_asn_list'] ?? ''); ?></textarea>
-                                </div>
-                                <small class="form-text text-muted">
-                                    <strong>Apa itu ASN?</strong><br>
-                                    ASN (Autonomous System Number) adalah nomor unik yang digunakan untuk mengidentifikasi jaringan internet milik perusahaan, penyedia layanan internet (ISP), atau organisasi tertentu. Contoh ASN:<br>
-                                    - 15169 &rarr; Google<br>
-                                    - 45566 &rarr; Indosat<br>
-                                    - 32934 &rarr; Facebook<br>
-                                    <strong>Cara penggunaan:</strong><br>
-                                    - Pilih mode Kecualikan untuk memblokir semua ASN kecuali yang terdaftar di daftar ini.<br>
-                                    - Pilih mode Termasuk untuk hanya mengizinkan ASN yang terdaftar di daftar ini.<br>
-                                    - Masukkan satu ASN per baris.<br>
-                                    <strong>Bagaimana cara mengetahui ASN?.</strong><br>
-                                    Anda bisa mencari ASN suatu IP menggunakan layanan seperti: <a href="https://ipinfo.io" target="_blank">ipinfo.io</a> or <a href="https://bgpview.io" target="_blank">bgpview.io</a>.
-                                </small>
-                            </div>
-                            <div class="ntb-settings-section">
-                                <h5 class="section-title">Detektor Perangkat</h5>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" value="1" id="detektor_perangkat_tinggi" <?php checked($options['detektor_perangkat_tinggi'] ?? 0, 1); ?>>
-                                    <label class="form-check-label" for="detektor_perangkat_tinggi"><strong>Akurasi lebih tinggi</strong> (dibanding metode user-agent standar).</label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" value="1" id="detektor_perangkat_sedang" <?php checked($options['detektor_perangkat_sedang'] ?? 1, 1); ?>>
-                                    <label class="form-check-label" for="detektor_perangkat_sedang"><strong>Memungkinkan penargetan (redirect)</strong> yang lebih tepat berdasarkan jenis perangkat.</label>
-                                </div>
-                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" value="1" id="detektor_perangkat_rendah" <?php checked($options['detektor_perangkat_rendah'] ?? 1, 1); ?>>
-                                    <label class="form-check-label" for="detektor_perangkat_rendah"><strong>Mendukung lebih banyak</strong> jenis perangkat.</label>
-                                </div>
-                                <p class="mt-3"><strong>Kekurangan:</strong><br>Membutuhkan lebih banyak sumber daya server, terutama pada situs dengan traffic tinggi.<br>Bisa meningkatkan waktu loading jika tidak dikonfigurasi dengan baik.<br>Menggunakan caching dapat mengurangi beban, tetapi perlu dikonfigurasi dengan benar.</p>
-                                <p><strong>Catatan:</strong><br>Jika opsi ini <strong>TIDAK</strong> dalam bentuk isian, akan mengembalikan metode deteksi lawas yang lebih ringan tetapi kurang akurat.<br>Jika Anda memiliki traffic terbatas, pertimbangkan untuk menggunakan caching atau metode deteksi yang lebih sederhana.</p>
-                            </div>
-                             <div class="ntb-settings-section">
-                                <div class="mb-3">
-                                    <label for="simpan_log" class="form-label">Simpan Log ke Database</label>
-                                    <select id="simpan_log" name="simpan_log" class="form-select">
-                                        <option <?php selected($options['simpan_log'] ?? 'Aktifkan', 'Aktifkan'); ?>>Aktifkan</option>
-                                        <option <?php selected($options['simpan_log'] ?? '', 'Nonaktifkan'); ?>>Nonaktifkan</option>
-                                    </select>
-                                    <small class="form-text text-muted">Jika diaktifkan, setiap redirect akan dicatat di database.<br><strong>Keuntungan:</strong> Memberikan data analitik yang berharga soal traffic.<br><strong>Kekurangan:</strong> Database bisa cepat penuh jika traffic tinggi.</small>
-                                </div>
-                            </div>
-                        </div>
+                        <?php include "advance_settings.php"; ?>
+                        
+                        <!-- Tab: Header & Footer -->
+                        <?php include "header_footer.php"; ?>
+
+                        <!-- Placeholder untuk tab lainnya -->
+                        <div class="tab-pane fade" id="plugin" role="tabpanel"><p>Pengaturan Plugin akan muncul di sini.</p></div>
+                        <div class="tab-pane fade" id="keamanan" role="tabpanel"><p>Pengaturan Keamanan akan muncul di sini.</p></div>
+                        <div class="tab-pane fade" id="optimasi" role="tabpanel"><p>Pengaturan Optimasi akan muncul di sini.</p></div>
                     </div>
                 </div>
 
@@ -198,14 +65,29 @@ include "add_action_settings.php";
                 <div class="col-lg-4">
                     <div class="ntb-preview-container">
                         <div class="ntb-mobile-preview">
-                            <div class="ntb-mobile-header"><span class="time">11:39 AM</span>
+                            <div class="ntb-mobile-header">
+                                <span class="time">11:39 AM</span>
                                 <div class="notch"></div>
-                                <div class="status-icons">...</div>
+                                <div class="status-icons">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-reception-4" viewBox="0 0 16 16"><path d="M0 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-8zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-11z"/></svg>
+                                    <span>5G</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-battery-full" viewBox="0 0 16 16"><path d="M2 6h10v4H2V6z"/><path d="M2 4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H2zm13 1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1v-4h1z"/></svg>
+                                </div>
                             </div>
                             <div class="ntb-mobile-screen"><iframe id="ad-preview-iframe" src="about:blank" style="width: 100%; height: 100%; border: none;"></iframe></div>
                             <div class="ntb-mobile-footer">
-                                <div class="ntb-address-bar">...</div>
-                                <div class="ntb-nav-buttons">...</div>
+                               <div class="ntb-address-bar">
+                                    <span>Aa</span>
+                                    <div class="url-text"><span class="dashicons dashicons-lock"></span> www.example.com</div>
+                                    <span class="dashicons dashicons-image-rotate"></span>
+                                </div>
+                                <div class="ntb-nav-buttons">
+                                    <span class="dashicons dashicons-arrow-left-alt2"></span>
+                                    <span class="dashicons dashicons-arrow-right-alt2"></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1h-2z"/><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+                                    <span class="dashicons dashicons-book-alt"></span>
+                                    <span class="dashicons dashicons-images-alt"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -220,11 +102,6 @@ include "add_action_settings.php";
         </form>
     </div>
 </div>
-
-<!-- <style>
-    /* ... (Semua kode CSS lo yang sudah ada) ... */
-</style> -->
-
 
 <style>
     /* General Layout & Main Content Box */
@@ -334,6 +211,21 @@ include "add_action_settings.php";
     .form-control,
     .form-select {
         font-size: 13px;
+    }
+    .form-text a {
+        text-decoration: none;
+    }
+    .ntb-feature-list {
+        list-style: none;
+        padding-left: 0;
+        font-size: 13px;
+    }
+    .ntb-feature-list li {
+        margin-bottom: 5px;
+    }
+    .ntb-feature-list .dashicons {
+        vertical-align: middle;
+        margin-right: 5px;
     }
 
     /* Mobile Preview */
