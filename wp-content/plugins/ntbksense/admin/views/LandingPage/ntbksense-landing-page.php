@@ -453,7 +453,7 @@ for ($i = 1; $i <= 3; $i++) {
                             </td>
                             <td>
                                 <div class="ntb-param-group">
-                                    <input type="text" value="<?= $row['parameter_key'] ?> = <?= $row['parameter_value'] ?>" disabled class="ntb-param-input">
+                                    <input type="text" value="<?= $row['parameter_key'] ?>=<?= $row['parameter_value'] ?>" disabled class="ntb-param-input">
                                     <button class="ntb-param-copy-btn" title="Salin Parameter">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy">
                                             <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />

@@ -29,7 +29,7 @@ require_once('wp-load.php');
 
 // LANGKAH 2: Ambil pengaturan & data
 global $wpdb;
-$settings_table_name = $wpdb->prefix . 'ntbksense_ads_settings';
+$settings_table_name = $wpdb->prefix . 'ntbk_ads_settings';
 $global_settings = $wpdb->get_row("SELECT * FROM {$settings_table_name} LIMIT 1", ARRAY_A);
 if (!$global_settings) {
     $global_settings = [];
