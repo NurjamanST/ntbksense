@@ -20,11 +20,12 @@ add_action('admin_footer', function () {
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
         <script type="text/javascript">
+            // Menyiapkan data untuk JavaScript
             const ntbksense_data = {
                 ajaxUrl: '<?php echo admin_url('admin-ajax.php'); ?>',
                 nonce: '<?php echo wp_create_nonce('ntbksense_settings_nonce'); ?>'
             };
-
+            // =========================================================================
             jQuery(document).ready(function($) {
                 function updatePreview() {
                     const params = {
@@ -46,6 +47,7 @@ add_action('admin_footer', function () {
                     $("#ad-preview-iframe").attr("src", previewUrl);
                 }
 
+                // Fungsi untuk menampilkan notifikasi
                 function showNotification(message, type) {
                     $.notify(message, {
                         className: type,
@@ -53,18 +55,21 @@ add_action('admin_footer', function () {
                         autoHideDelay: 5000
                     });
                 }
-
+    
+                // Inisialisasi tab navigasi
                 $(".next-tab, .prev-tab").click(function() {
                     const targetTab = $(this).data("next") || $(this).data("prev");
                     $(`button[data-bs-target="${targetTab}"]`).tab('show');
                     window.scrollTo(0, 0);
                 });
 
+                // Inisialisasi Select2 untuk dropdown negara
                 $("#akses_lokasi_countries").select2({
                     placeholder: "Pilih Negara",
                     width: "100%"
                 });
 
+                // Fungsi untuk menampilkan atau menyembunyikan field berdasarkan mode akses lokasi
                 function toggleConditionalFields() {
                     $("#akses_lokasi_mode").val() === 'off' ? $("#akses_lokasi_countries_wrapper").hide() : $("#akses_lokasi_countries_wrapper").show();
                     $("#akses_asn_mode").val() === 'off' ? $("#akses_asn_list_wrapper").hide() : $("#akses_asn_list_wrapper").show();
@@ -72,6 +77,20 @@ add_action('admin_footer', function () {
                 $("#akses_lokasi_mode, #akses_asn_mode").on('change', toggleConditionalFields);
                 toggleConditionalFields();
 
+                // Fungsi untuk mengunggah logo plugin
+                $('#upload_logo_button').on('click', function(e) {
+                    e.preventDefault();
+                    $('#plugin_logo_file').click();
+                });
+
+                $('#plugin_logo_file').on('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        $('#plugin_logo').val(file.name);
+                    }
+                });
+
+                // Fungsi untuk menangani pengiriman form
                 $("#settingsForm").submit(function(e) {
                     e.preventDefault();
                     const $submitButton = $(".btn-update-settings");
@@ -102,6 +121,7 @@ add_action('admin_footer', function () {
                     });
                 });
 
+                // Inisialisasi preview iklan
                 $(document).on("input change", "#opacity, #kode_iklan_1, #kode_iklan_2, #kode_iklan_3, #kode_iklan_4, #kode_iklan_5, #posisi, #margin_top, #margin_bottom, #mode_tampilan, #jumlah_iklan", updatePreview);
                 updatePreview();
             });
