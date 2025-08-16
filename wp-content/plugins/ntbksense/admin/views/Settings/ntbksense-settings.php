@@ -25,22 +25,22 @@ include "add_action_settings.php";
                 <div class="col-lg-8">
                     <ul class="nav nav-tabs ntb-nav-tabs" id="settingsTabs" role="tablist">                        
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="pengaturan-iklan-tab" data-bs-toggle="tab" data-bs-target="#pengaturan-iklan" type="button" role="tab" aria-controls="pengaturan-iklan" aria-selected="true"><span class="dashicons dashicons-megaphone"></span> Pengaturan Iklan</button>
+                            <button style="font-size:14px;" class="nav-link active" id="pengaturan-iklan-tab" data-bs-toggle="tab" data-bs-target="#pengaturan-iklan" type="button" role="tab" aria-controls="pengaturan-iklan" aria-selected="true"><span class="dashicons dashicons-megaphone"></span> Pengaturan Iklan</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="advance-tab" data-bs-toggle="tab" data-bs-target="#advance" type="button" role="tab" aria-controls="advance" aria-selected="false"><span class="dashicons dashicons-admin-settings"></span> Advance</button>
+                            <button style="font-size:14px;" class="nav-link" id="advance-tab" data-bs-toggle="tab" data-bs-target="#advance" type="button" role="tab" aria-controls="advance" aria-selected="false"><span class="dashicons dashicons-admin-settings"></span> Advance</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="header-footer-tab" data-bs-toggle="tab" data-bs-target="#header-footer" type="button" role="tab" aria-controls="header-footer" aria-selected="false"><span class="dashicons dashicons-editor-code"></span> Header & Footer</button>
+                            <button style="font-size:14px;" class="nav-link" id="header-footer-tab" data-bs-toggle="tab" data-bs-target="#header-footer" type="button" role="tab" aria-controls="header-footer" aria-selected="false"><span class="dashicons dashicons-editor-code"></span> Header & Footer</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="plugin-tab" data-bs-toggle="tab" data-bs-target="#plugin" type="button" role="tab" aria-controls="plugin" aria-selected="false"><span class="dashicons dashicons-admin-plugins"></span> Plugin</button>
+                            <button style="font-size:14px;" class="nav-link" id="plugin-tab" data-bs-toggle="tab" data-bs-target="#plugin" type="button" role="tab" aria-controls="plugin" aria-selected="false"><span class="dashicons dashicons-admin-plugins"></span> Plugin</button>
                         </li>
                          <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="keamanan-tab" data-bs-toggle="tab" data-bs-target="#keamanan" type="button" role="tab" aria-controls="keamanan" aria-selected="false"><span class="dashicons dashicons-lock"></span> Keamanan</button>
+                            <button style="font-size:14px;" class="nav-link" id="keamanan-tab" data-bs-toggle="tab" data-bs-target="#keamanan" type="button" role="tab" aria-controls="keamanan" aria-selected="false"><span class="dashicons dashicons-lock"></span> Keamanan</button>
                         </li>
                          <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="optimasi-tab" data-bs-toggle="tab" data-bs-target="#optimasi" type="button" role="tab" aria-controls="optimasi" aria-selected="false"><span class="dashicons dashicons-performance"></span> Optimasi</button>
+                            <button style="font-size:14px;" class="nav-link" id="optimasi-tab" data-bs-toggle="tab" data-bs-target="#optimasi" type="button" role="tab" aria-controls="optimasi" aria-selected="false"><span class="dashicons dashicons-performance"></span> Optimasi</button>
                         </li>
                     </ul>
 
