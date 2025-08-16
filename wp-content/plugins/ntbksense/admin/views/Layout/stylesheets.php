@@ -226,6 +226,50 @@
             background-color: #e0e0e0;
         }
 
+    /* Form Sections & Fields */
+        .ntb-settings-section {
+            padding: 20px;
+            border: 1px solid #e5e5e5;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .ntb-settings-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .ntb-settings-section .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .form-control,
+        .form-select {
+            font-size: 13px;
+        }
+        .form-text a {
+            text-decoration: none;
+        }
+        .ntb-feature-list {
+            list-style: none;
+            padding-left: 0;
+            font-size: 13px;
+        }
+        .ntb-feature-list li {
+            margin-bottom: 5px;
+        }
+        .ntb-feature-list .dashicons {
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
     /* ----- Tombol (Buttons) & Aksi ----- */
         .ntb-actions-bar {
             margin-bottom: 20px;
@@ -446,6 +490,129 @@
             margin-top: 10px;
         }
 
+    /* Override for a smaller, cleaner toggle switch specifically within the optimization tab */
+        #optimasi .ntb-switch {
+            width: 44px;
+            height: 24px;
+        }
+        #optimasi .ntb-switch .ntb-slider:before {
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+        }
+        #optimasi .ntb-switch input:checked + .ntb-slider:before {
+            transform: translateX(20px);
+        }
+    /* Mobile Preview */
+        .ntb-preview-container {
+            position: sticky;
+            top: 50px;
+        }
+
+        .ntb-mobile-preview {
+            width: 300px;
+            /* Lebar iPhone 13 Mini */
+            height: 615px;
+            /* Tinggi iPhone 13 Mini */
+            background: #fff;
+            border: 8px solid #111;
+            border-radius: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ntb-mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            color: #111;
+            position: relative;
+            background-color: #fff;
+            border-top-left-radius: 32px;
+            border-top-right-radius: 32px;
+        }
+
+        .ntb-mobile-header .time {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .ntb-mobile-header .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: #111;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .ntb-mobile-header .status-icons {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .ntb-mobile-screen {
+            background: #000;
+            flex-grow: 1;
+        }
+
+        .ntb-mobile-footer {
+            background-color: #f0f0f1;
+            padding: 8px 12px 15px 12px;
+            border-bottom-left-radius: 32px;
+            border-bottom-right-radius: 32px;
+        }
+
+        .ntb-address-bar {
+            background-color: #e1e1e1;
+            border-radius: 8px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .ntb-address-bar .url-text {
+            color: #333;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ntb-address-bar .url-text .dashicons {
+            font-size: 14px;
+        }
+
+        .ntb-nav-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 15px;
+            color: #007aff;
+            font-size: 22px;
+        }
+
+        .ntb-nav-buttons .dashicons {
+            font-size: 24px;
+            height: auto;
+            width: auto;
+        }
+
+        .ntb-nav-buttons .bi-box-arrow-up {
+            font-size: 20px;
+        }
+
+
     /* ----- Form Footer ----- */
         .ntb-form-footer {
             margin-top: 20px;
@@ -590,5 +757,11 @@
 
         .ntb-param-copy-btn:hover {
             background-color: #f0f0f1;
+        }
+    /* Form Actions */
+        .ntb-form-actions {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
         }
 </style>    
