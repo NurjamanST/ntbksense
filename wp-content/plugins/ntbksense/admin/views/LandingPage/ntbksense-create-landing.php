@@ -389,7 +389,7 @@ add_action('admin_footer', function () {
             Pastikan untuk mengisi semua bidang yang diperlukan sebelum menyimpan.<br>
             Note : <span class="text-danger">*</span> menandakan bidang yang wajib diisi.
         </p>
-        <hr class="wp-header-end">
+        <hr>
 
         <form method="post" action="" id="ntb-create-lp-form">
             <!-- Aksi Keamanan WordPress -->
@@ -437,10 +437,7 @@ add_action('admin_footer', function () {
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="proteksi_fitur">
-                                        Proteksi fitur inspeksi elemen
-                                        <small class="text-danger">
-                                            {Margin if error 1.2%}
-                                        </small>
+                                        Proteksi fitur inspeksi elemen <small class="text-danger">{Margin if error 1.2%}</small>
                                     </label>
                                     <select id="proteksi_fitur" name="ntb_proteksi_fitur" class="form-select">
                                         <option value="Pause Debugger">Pause Debugger</option>
@@ -623,7 +620,7 @@ add_action('admin_footer', function () {
                     </div>
                 </div>
             </div>
-
+            
             <div class="ntb-form-footer">
                 <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-landing-page')); ?>" class="button">Kembali</a>
                 <button type="submit" class="button button-primary">
@@ -659,260 +656,7 @@ add_action('admin_footer', function () {
     <!-- END: Modal -->
 </div>
 
-<style>
-    #ntb-lp-builder {
-        background-color: #ffffffff;
-        padding: 0;
-        margin: 0px 0px 0px -20px;
-        /* Override default .wrap margin */
-    }
 
-    .ntb-main-content {
-        background: #fff;
-        border: 1px solid #c3c4c7;
-        border-radius: 10px;
-        box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
-        padding: 20px;
-        margin: 20px;
-    }
-
-    .ntb-main-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0px 0px 20px 0px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    /* Breadcrumb Styling */
-    .ntb-breadcrumb {
-        padding: 15px 20px;
-        color: #50575e;
-        font-size: 14px;
-        border-bottom: 1px solid #e0e0e0;
-    }
-
-    .ntb-breadcrumb a {
-        text-decoration: none;
-        color: #0073aa;
-    }
-
-    .ntb-breadcrumb a:hover {
-        text-decoration: underline;
-    }
-
-    .ntb-breadcrumb span {
-        color: #1d2327;
-        font-weight: 600;
-    }
-
-    .ntb-form-container {
-        background: #fff;
-        border-radius: 20px;
-        padding: 0px;
-        margin-top: 10px;
-    }
-
-    .ntb-form-group {
-        margin-bottom: 1rem;
-    }
-
-    .ntb-form-group label {
-        margin-bottom: 0.5rem;
-        display: block;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .ntb-form-group a {
-        text-decoration: none;
-        font-size: 12px;
-    }
-
-    .ntb-form-footer {
-        margin-top: 20px;
-        padding: 15px 20px;
-        background: #fff;
-        border-top: 1px solid #c3c4c7;
-        text-align: right;
-    }
-
-    .ntb-form-footer .button {
-        font-size: 14px;
-        height: auto;
-        padding: 2px 16px;
-    }
-
-    .ntb-form-footer .button .dashicons {
-        vertical-align: middle;
-        margin-top: -2px;
-    }
-
-    /* New styles for media inputs */
-    .ntb-media-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .ntb-remove-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .ntb-field-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 4px;
-    }
-
-    .ntb-advance-toggle {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .ntb-advance-toggle label {
-        margin-top: 10px;
-        font-size: 12px;
-        color: #50575e;
-    }
-
-    .ntb-advance-toggle span {
-        font-size: 12px;
-        color: #50575e;
-    }
-
-    .sample-link {
-        font-size: 12px;
-        font-weight: normal;
-        margin-left: 5px;
-    }
-
-    /* Smaller toggle switch */
-    .ntb-switch.small-switch {
-        width: 34px;
-        height: 20px;
-    }
-
-    .ntb-switch.small-switch .ntb-slider:before {
-        height: 14px;
-        width: 14px;
-        left: 3px;
-        bottom: 3px;
-    }
-
-    .ntb-switch.small-switch input:checked+.ntb-slider:before {
-        transform: translateX(14px);
-    }
-
-    /* General Toggle Switch Styling */
-    .ntb-switch {
-        position: relative;
-        display: inline-block;
-    }
-
-    .ntb-switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .ntb-slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: .4s;
-        border-radius: 20px;
-    }
-
-    .ntb-slider:before {
-        position: absolute;
-        content: "";
-        background-color: white;
-        transition: .4s;
-        border-radius: 50%;
-    }
-
-    input:checked+.ntb-slider {
-        background-color: #007bff;
-    }
-
-    input:focus+.ntb-slider {
-        box-shadow: 0 0 1px #007bff;
-    }
-
-    /* Range Slider Styling */
-    .ntb-range-slider {
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-
-    .ntb-range-slider .slider-track {
-        margin: 10px 0;
-    }
-
-    .ntb-range-slider .ui-slider {
-        background: #e9e9e9;
-        border: none;
-        height: 6px;
-    }
-
-    .ntb-range-slider .ui-slider-range {
-        background: #007bff;
-    }
-
-    .ntb-range-slider .ui-slider-handle {
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: #fff;
-        border: 2px solid #007bff;
-        cursor: pointer;
-        top: -6px;
-    }
-
-    .ntb-range-slider .slider-inputs {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .ntb-range-slider .range-value-min,
-    .ntb-range-slider .range-value-max {
-        width: 60px;
-        text-align: center;
-    }
-
-    .ntb-range-slider .range-separator {
-        font-weight: bold;
-    }
-
-    /* Field Header Styling */
-    .ntb-field-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-    }
-
-    .ntb-field-header label {
-        margin-bottom: 0;
-        /* Remove bottom margin from label inside header */
-    }
-
-    .ntb-header-btn .dashicons {
-        margin-right: 5px;
-        font-size: 16px;
-        vertical-align: text-top;
-    }
-</style>
+<?php 
+    include NTBKSENSE_PLUGIN_DIR . "admin/views/Layout/stylesheets.php";
+?>
