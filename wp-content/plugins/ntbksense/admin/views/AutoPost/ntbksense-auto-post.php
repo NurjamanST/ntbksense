@@ -8,7 +8,7 @@
 include "add_action_autopost.php";
 ?>
 
-<div class="wrap" id="ntbksense-autopost-wrapper">
+<div class="wrap" id="ntb-lp-builder">
     <!-- Navbar -->
     <?php include NTBKSENSE_PLUGIN_DIR . "admin/views/Layout/navbar.php"; ?>
 

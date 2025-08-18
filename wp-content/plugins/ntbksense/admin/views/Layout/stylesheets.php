@@ -32,9 +32,8 @@
     /* ============================================= */
     /* 2. Layout & Struktur Umum
     /* ============================================= */
-        #ntbksense-autopost-wrapper,
         #ntb-lp-builder {
-            background-color: var(--bg-light-gray);
+            background-color: var(--bg-white);
             padding: 0;
             margin: 0px 0px 0px -20px;
             /* Menyesuaikan margin admin WordPress */
@@ -769,5 +768,33 @@
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid #ddd;
+        }
+    /* License Table */
+        .ntb-license-table {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        .ntb-license-row {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .ntb-license-row:last-child {
+            border-bottom: none;
+        }
+        .ntb-license-label {
+            font-weight: 600;
+            padding: 12px 15px;
+            width: 200px;
+            background-color: #f9f9f9;
+            border-right: 1px solid #e0e0e0;
+        }
+        .ntb-license-value {
+            padding: 12px 15px;
+            flex-grow: 1;
+            font-family: monospace;
+        }
+        .ntb-license-value a {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            text-decoration: none;
         }
 </style>    
