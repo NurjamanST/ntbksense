@@ -71,6 +71,9 @@
             background-color: var(--bg-white);
             border-bottom: 1px solid var(--border-color-strong);
         }
+        .ntb-navbar-logo{
+            width: 10%;
+        }
 
         .ntb-navbar-title {
             font-size: 16px;
@@ -96,6 +99,50 @@
         .ntb-navbar-right .ntb-navbar-icon .dashicons {
             font-size: 20px;
             vertical-align: middle;
+        }
+    /* ----- Stat Cards (Laporan) ----- */
+        .ntb-stat-card {
+            background-color: var(--bg-white);
+            border: 1px solid var(--border-color-soft);
+            border-radius: var(--border-radius-sm);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease-in-out;
+        }
+        .ntb-stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .stat-icon {
+            font-size: 1.5rem;
+        }
+        .stat-content {
+            text-align: left;
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-medium);
+        }
+
+    /* ----- Filter & Data Box (Laporan) ----- */
+        .ntb-filter-box, .ntb-data-box {
+            background: var(--bg-white);
+            border: 1px solid var(--border-color-soft);
+            border-radius: var(--border-radius-sm);
+            padding: 10px;
+        }
+        .ntb-box-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
         }
 
     /* ----- Breadcrumb ----- */

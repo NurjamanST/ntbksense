@@ -2,7 +2,7 @@
     <div class="ntb-navbar">
         <div class="ntb-navbar-left">
             <!-- Logo -->
-            <img src="<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'assets/images/logotasik.png'); ?>" alt="Logo" class="ntb-navbar-logo">
+            <img src="<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'assets/images/NTBKsense.png'); ?>" alt="Logo" class="ntb-navbar-logo">
             <span class="ntb-navbar-title">NTBKSense</span>
             <span class="ntb-navbar-version">v1.0.0</span>
         </div>
