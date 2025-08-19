@@ -1,4 +1,9 @@
 <?php
+// =========================================================================
+// FILE: ntbksense/admin/views/LandingPage/ntbksense-landing-page.php
+// FUNGSI: Menampilkan halaman informasi Landing Page.
+// =========================================================================
+
     include "add_action_landingpage.php"; // Memastikan semua aksi yang diperlukan sudah ditambahkan
 ?>
 <div class="wrap" id="ntb-lp-builder">
@@ -23,7 +28,8 @@
             <a href="#" class="button ntb-btn-danger" id="ntb-bulk-delete-btn"><span class="dashicons dashicons-trash"></span>Hapus</a>
             <a href="#" class="button ntb-btn-success"><span class="dashicons dashicons-upload"></span>Ekspor</a>
             <a href="#" class="button"><span class="dashicons dashicons-download"></span>Impor</a>
-            <a href="#" class="button ntb-btn-warning"><span class="dashicons dashicons-admin-page"></span>Duplikat</a>
+            <!-- <a href="#" class="button ntb-btn-warning"><span class="dashicons dashicons-admin-page"></span>Duplikat</a> -->
+            <a href="#" class="button ntb-btn-warning" id="ntb-bulk-duplicate-btn"><span class="dashicons dashicons-admin-page"></span>Duplikat</a>
         </div>
 
         <!-- Tabel HTML Standar untuk DataTables -->
@@ -70,13 +76,17 @@
                                             <a style="text-decoration:none;" href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-edit-lp&id=' . ($row['id'] ?? ''))); ?>" class="text-primary">
                                                 <span class="dashicons dashicons-edit"></span>
                                             </a>
-                                            <a style="text-decoration:none;" href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-duplicate-lp&id=' . ($row['id'] ?? ''))); ?>" class="text-secondary">
+                                            <a  style="text-decoration:none;" href="#" 
+                                                class="text-secondary ntb-duplicate-btn" 
+                                                data-id="<?php echo esc_attr($row['id'] ?? ''); ?>" 
+                                                title="Duplikat">
                                                 <span class="dashicons dashicons-admin-page"></span>
                                             </a>
                                             <a
                                                 href="<?php echo esc_url(wp_nonce_url(admin_url('admin.php?page=ntbksense-landing-page&action=delete&id=' . ($row['id'] ?? '')), 'ntb_delete_lp_nonce')); ?>"
                                                 class="text-danger ntb-delete-btn"
-                                                data-id="<?php echo esc_attr($row['id'] ?? ''); ?>">
+                                                data-id="<?php echo esc_attr($row['id'] ?? ''); ?>"
+                                                title="Delete">
                                                 <span class="dashicons dashicons-trash"></span>
                                             </a>
                                         </div>

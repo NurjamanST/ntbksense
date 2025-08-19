@@ -40,111 +40,198 @@ add_action('admin_footer', function () {
     <script>
         jQuery(document).ready(function($) {
             // Inisialisasi DataTables (kode ini tetap sama)
-            $('#ntb-landing-page-table').DataTable({
-                "lengthMenu": [5, 10, 25, 50, 100],
-                "language": {
-                    "lengthMenu": "Tampilkan _MENU_ entri per halaman",
-                    "zeroRecords": "<span class='text-danger fs-1'>Tidak ada data yang ditemukan..</span><br><span style='font-size:100px;'>🤨</span>",
-                    "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
-                    "infoEmpty": "Tidak ada data yang tersedia",
-                    "infoFiltered": "(Difilter dari _MAX_ total entri)",
-                    "search": "",
-                    "searchPlaceholder": "Cari...",
-                    "paginate": {
-                        "first": "Pertama",
-                        "last": "Terakhir",
-                        "next": "Berikutnya",
-                        "previous": "Sebelumnya"
+                $('#ntb-landing-page-table').DataTable({
+                    "lengthMenu": [5, 10, 25, 50, 100],
+                    "language": {
+                        "lengthMenu": "Tampilkan _MENU_ entri per halaman",
+                        "zeroRecords": "<span class='text-danger fs-1'>Tidak ada data yang ditemukan..</span><br><span style='font-size:100px;'>🤨</span>",
+                        "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                        "infoEmpty": "Tidak ada data yang tersedia",
+                        "infoFiltered": "(Difilter dari _MAX_ total entri)",
+                        "search": "",
+                        "searchPlaceholder": "Cari...",
+                        "paginate": {
+                            "first": "Pertama",
+                            "last": "Terakhir",
+                            "next": "Berikutnya",
+                            "previous": "Sebelumnya"
+                        },
                     },
-                },
-                "columnDefs": [{
-                    "targets": 0,
-                    "orderable": false
-                }]
-            });
+                    "columnDefs": [{
+                        "targets": 0,
+                        "orderable": false
+                    }]
+                });
 
-            // --- START: Kode Baru untuk Notifikasi dan Salin ---
-
-            // Fungsi untuk menampilkan notifikasi
-            function showCopyNotification(message) {
-                const notification = $('#ntb-copy-notification');
-                notification.html(message);
-                notification.addClass('show');
-                setTimeout(function() {
-                    notification.removeClass('show');
-                }, 3000);
-            }
-
-            // Event handler gabungan untuk semua tombol salin
-            $(document).on('click', '.copy-btn, .ntb-param-copy-btn', function() {
-                const $button = $(this);
-                const $inputGroup = $button.closest('.url-lp-input-group, .ntb-param-group');
-                const inputElement = $inputGroup.find('input[type="text"]')[0];
-                let valueToCopy = inputElement.value;
-                let message;
-
-                // Logika untuk menentukan nilai dan pesan yang akan disalin
-                if ($button.hasClass('ntb-param-copy-btn')) {
-                    message = `Parameter berhasil disalin!<br><strong style="font-size: 12px;">${valueToCopy}</strong>`;
-                } else if ($button.hasClass('copydanger-btn')) {
-                    valueToCopy = $(inputElement).data('ads-url'); // Ambil URL Ads dari data attribute
-                    message = `URL Adsense berhasil disalin!<br><strong style="font-size: 12px;">${valueToCopy}</strong>`;
-                } else {
-                    message = `URL Public berhasil disalin!<br><strong style="font-size: 12px;">${valueToCopy}</strong>`;
+            // --- START: Kode Baru untuk Notifikasi dan Salin
+                // Fungsi untuk menampilkan notifikasi
+                function showCopyNotification(message) {
+                    const notification = $('#ntb-copy-notification');
+                    notification.html(message);
+                    notification.addClass('show');
+                    setTimeout(function() {
+                        notification.removeClass('show');
+                    }, 3000);
                 }
 
-                // Buat elemen textarea sementara untuk menyalin teks
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = valueToCopy;
-                document.body.appendChild(tempTextArea);
-                tempTextArea.select();
-                tempTextArea.setSelectionRange(0, 99999); // Untuk mobile
+                // Event handler gabungan untuk semua tombol salin
+                $(document).on('click', '.copy-btn, .ntb-param-copy-btn', function() {
+                    const $button = $(this);
+                    const $inputGroup = $button.closest('.url-lp-input-group, .ntb-param-group');
+                    const inputElement = $inputGroup.find('input[type="text"]')[0];
+                    let valueToCopy = inputElement.value;
+                    let message;
 
-                try {
-                    if (document.execCommand("copy")) {
-                        showCopyNotification(message);
+                    // Logika untuk menentukan nilai dan pesan yang akan disalin
+                    if ($button.hasClass('ntb-param-copy-btn')) {
+                        message = `Parameter berhasil disalin!<br><strong style="font-size: 12px;">${valueToCopy}</strong>`;
+                    } else if ($button.hasClass('copydanger-btn')) {
+                        valueToCopy = $(inputElement).data('ads-url'); // Ambil URL Ads dari data attribute
+                        message = `URL Adsense berhasil disalin!<br><strong style="font-size: 12px;">${valueToCopy}</strong>`;
                     } else {
-                        alert('Gagal menyalin. Silakan salin secara manual.');
+                        message = `URL Public berhasil disalin!<br><strong style="font-size: 12px;">${valueToCopy}</strong>`;
                     }
-                } catch (err) {
-                    console.error('Error saat menyalin:', err);
-                    alert('Gagal menyalin. Silakan salin secara manual.');
-                } finally {
-                    document.body.removeChild(tempTextArea); // Selalu hapus elemen sementara
-                }
-            });
 
+                    // Buat elemen textarea sementara untuk menyalin teks
+                    const tempTextArea = document.createElement('textarea');
+                    tempTextArea.value = valueToCopy;
+                    document.body.appendChild(tempTextArea);
+                    tempTextArea.select();
+                    tempTextArea.setSelectionRange(0, 99999); // Untuk mobile
+
+                    try {
+                        if (document.execCommand("copy")) {
+                            showCopyNotification(message);
+                        } else {
+                            alert('Gagal menyalin. Silakan salin secara manual.');
+                        }
+                    } catch (err) {
+                        console.error('Error saat menyalin:', err);
+                        alert('Gagal menyalin. Silakan salin secara manual.');
+                    } finally {
+                        document.body.removeChild(tempTextArea); // Selalu hapus elemen sementara
+                    }
+                });
             // --- END: Kode Baru ---
 
             // Definisikan selector yang SUPER SPESIFIK untuk checkbox bulk action.
             // Ini hanya menargetkan checkbox di dalam tabel spesifik dan mengabaikan toggle status.
-            const bulkActionCheckboxSelector = '#ntb-landing-page-table tbody input[name="lp[]"]:not(.ntb-status-toggle)';
+                const bulkActionCheckboxSelector = '#ntb-landing-page-table tbody input[name="lp[]"]:not(.ntb-status-toggle)';
 
             // --- BAGIAN 1: FUNGSI 'PILIH SEMUA' ---
             // Event ini berjalan saat checkbox di header (#select-all-lp) di-klik.
-            $('#select-all-lp').on('click', function() {
-                // Cek statusnya (dicentang atau tidak)
-                const isChecked = $(this).prop('checked');
+                $('#select-all-lp').on('click', function() {
+                    // Cek statusnya (dicentang atau tidak)
+                    const isChecked = $(this).prop('checked');
 
-                // Gunakan selector yang sudah spesifik. Ini HANYA akan memilih checkbox untuk bulk action
-                $(bulkActionCheckboxSelector).prop('checked', isChecked);
-            });
+                    // Gunakan selector yang sudah spesifik. Ini HANYA akan memilih checkbox untuk bulk action
+                    $(bulkActionCheckboxSelector).prop('checked', isChecked);
+                });
 
 
             // --- BAGIAN 2: FUNGSI 'BATAL OTOMATIS' ---
             // Event ini berjalan saat salah satu checkbox item di-klik.
-            $(document).on('click', bulkActionCheckboxSelector, function() {
-                // Hitung jumlah total checkbox item (yang spesifik)
-                const totalCheckboxes = $(bulkActionCheckboxSelector).length;
-                // Hitung berapa banyak checkbox item (yang spesifik) yang sedang dicentang
-                const checkedCheckboxes = $(bulkActionCheckboxSelector + ':checked').length;
+                $(document).on('click', bulkActionCheckboxSelector, function() {
+                    // Hitung jumlah total checkbox item (yang spesifik)
+                    const totalCheckboxes = $(bulkActionCheckboxSelector).length;
+                    // Hitung berapa banyak checkbox item (yang spesifik) yang sedang dicentang
+                    const checkedCheckboxes = $(bulkActionCheckboxSelector + ':checked').length;
 
-                // Jika jumlah yang dicentang sama dengan jumlah total,
-                // maka centang juga checkbox 'Pilih Semua'. Jika tidak, batalkan centangnya.
-                const allAreChecked = totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes;
-                $('#select-all-lp').prop('checked', allAreChecked);
+                    // Jika jumlah yang dicentang sama dengan jumlah total,
+                    // maka centang juga checkbox 'Pilih Semua'. Jika tidak, batalkan centangnya.
+                    const allAreChecked = totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes;
+                    $('#select-all-lp').prop('checked', allAreChecked);
+                });
+            // [FUNGSI DIPERBARUI] Event listener untuk tombol DUPLIKAT (BULK & SINGLE)
+            $(document).on('click', '#ntb-bulk-duplicate-btn, .ntb-duplicate-btn', function(e) {
+                e.preventDefault();
+
+                const $button = $(this);
+                const idsToDuplicate = [];
+                const slugsToCreate = []; // Array baru untuk menampung slug kustom
+                let isBulkAction = false;
+
+                // Cek apakah ini aksi massal atau per item
+                if ($button.attr('id') === 'ntb-bulk-duplicate-btn') {
+                    isBulkAction = true;
+                    // Aksi Massal: Kumpulkan ID dari checkbox yang dipilih
+                    $('input[name="lp[]"]:checked').each(function() {
+                        idsToDuplicate.push($(this).val());
+                    });
+
+                    if (idsToDuplicate.length === 0) {
+                        alert('Pilih dulu item yang mau diduplikasi.');
+                        return;
+                    }
+                } else {
+                    // Aksi per Item: Ambil ID dari atribut data-id
+                    idsToDuplicate.push($button.data('id'));
+                }
+
+                // --- LOGIKA BARU: Minta slug kustom HANYA untuk aksi tunggal ---
+                if (!isBulkAction) {
+                    const originalUrl = $button.closest('tr').find('.url-lp-input').val();
+                    // Ekstrak slug dari URL lengkap
+                    const originalSlug = originalUrl.substring(originalUrl.lastIndexOf('/') + 1);
+                    const newSlugSuggestion = originalSlug ? `${originalSlug}-copy` : 'new-copy';
+
+                    const newSlug = prompt('Masukkan slug baru untuk duplikat:', newSlugSuggestion);
+
+                    // Jika pengguna menekan "Cancel" atau mengosongkan input, batalkan proses
+                    if (newSlug === null || newSlug.trim() === '') {
+                        alert('Proses duplikasi dibatalkan.');
+                        return;
+                    }
+                    slugsToCreate.push(newSlug.trim());
+                }
+                // --- AKHIR LOGIKA BARU ---
+
+                // Konfirmasi sebelum melanjutkan
+                if (!confirm(`Anda yakin ingin menduplikasi ${idsToDuplicate.length} item yang dipilih?`)) {
+                    return;
+                }
+
+                // Tentukan URL API untuk duplikasi
+                const apiUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/duplicate.landing.php'); ?>';
+
+                // Tampilkan efek loading pada baris yang akan diduplikasi
+                const $rowsToUpdate = idsToDuplicate.map(id => $(`input[value="${id}"], [data-id="${id}"]`).closest('tr'));
+                $rowsToUpdate.forEach($row => $row.css('opacity', 0.5));
+
+                // Siapkan payload untuk dikirim ke API
+                const payload = {
+                    ids: idsToDuplicate
+                };
+                // Hanya tambahkan properti 'slugs' jika ini bukan aksi massal
+                if (!isBulkAction) {
+                    payload.slugs = slugsToCreate;
+                }
+
+                // Kirim permintaan ke API menggunakan Fetch
+                fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(payload) // Kirim payload yang sudah disiapkan
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Sukses! ' + data.data.message);
+                            location.reload(); // Muat ulang halaman untuk menampilkan data terbaru
+                        } else {
+                            alert('Gagal! ' + data.data.message);
+                            $rowsToUpdate.forEach($row => $row.css('opacity', 1)); // Kembalikan opacity jika gagal
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan. Silakan cek konsol browser untuk detail.');
+                        $rowsToUpdate.forEach($row => $row.css('opacity', 1)); // Kembalikan opacity jika error
+                    });
             });
-
         });
     </script>
     
