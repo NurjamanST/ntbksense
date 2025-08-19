@@ -27,7 +27,8 @@
             </a>
             <a href="#" class="button ntb-btn-danger" id="ntb-bulk-delete-btn"><span class="dashicons dashicons-trash"></span>Hapus</a>
             <a href="#" class="button ntb-btn-success" id="ntb-bulk-export-btn"><span class="dashicons dashicons-upload"></span>Ekspor</a>
-            <a href="#" class="button"><span class="dashicons dashicons-download"></span>Impor</a>
+            <a href="#" class="button" id="ntb-bulk-import-btn"><span class="dashicons dashicons-download"></span>Impor</a>
+            <input type="file" id="ntb-import-file-input" style="display: none;" accept=".json">
             <a href="#" class="button ntb-btn-warning" id="ntb-bulk-duplicate-btn"><span class="dashicons dashicons-admin-page"></span>Duplikat</a>
         </div>
 

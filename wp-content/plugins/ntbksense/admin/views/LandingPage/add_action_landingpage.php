@@ -310,6 +310,90 @@ add_action('admin_footer', function () {
                     $button.prop('disabled', false);
                 });
             });
+            // [FUNGSI BARU] Event listener untuk tombol IMPOR
+            $('#ntb-bulk-import-btn').on('click', function(e) {
+                e.preventDefault();
+                // Memicu klik pada input file yang tersembunyi
+                $('#ntb-import-file-input').click();
+            });
+
+            $('#ntb-import-file-input').on('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) {
+                    return; // Batalkan jika tidak ada file yang dipilih
+                }
+
+                // Validasi tipe file
+                if (file.type !== 'application/json') {
+                    alert('Gagal! Harap pilih file dengan format .json');
+                    $(this).val(''); // Reset input file
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const content = event.target.result;
+                    try {
+                        // Coba parse JSON untuk validasi awal
+                        JSON.parse(content);
+                        
+                        // Konfirmasi sebelum mengirim
+                        if (!confirm('Anda yakin ingin mengimpor data dari file ini?.')) {
+                            $('#ntb-import-file-input').val(''); // Reset input file
+                            return;
+                        }
+
+                        // Kirim data ke API
+                        sendImportRequest(content);
+
+                    } catch (error) {
+                        alert('Gagal membaca file. Pastikan file JSON valid.');
+                        console.error('JSON Parse Error:', error);
+                    } finally {
+                        // Reset input file setelah selesai
+                        $('#ntb-import-file-input').val('');
+                    }
+                };
+                
+                reader.readAsText(file);
+            });
+
+            function sendImportRequest(jsonData) {
+                const apiUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/import.landing.php'); ?>';
+                const $button = $('#ntb-bulk-import-btn');
+                const originalButtonText = $button.html();
+
+                // Tampilkan status loading
+                $button.html('<span class="spinner is-active" style="float: left; margin-top: 4px;"></span> Mengimpor...');
+                $button.prop('disabled', true);
+
+                fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: jsonData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Sukses! ' + data.data.message);
+                        location.reload(); // Muat ulang halaman
+                    } else {
+                        alert('Gagal! ' + data.data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat mengimpor. Cek konsol untuk detail.');
+                })
+                .finally(() => {
+                    // Kembalikan tombol ke keadaan semula
+                    $button.html(originalButtonText);
+                    $button.prop('disabled', false);
+                });
+            }
         });
     </script>
     
