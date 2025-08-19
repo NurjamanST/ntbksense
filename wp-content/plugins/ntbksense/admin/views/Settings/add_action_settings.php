@@ -41,7 +41,19 @@ add_action('admin_footer', function () {
                     ads3: $("#kode_iklan_3").val().trim() !== "" ? 1 : 0,
                     ads4: $("#kode_iklan_4").val().trim() !== "" ? 1 : 0,
                     ads5: $("#kode_iklan_5").val().trim() !== "" ? 1 : 0,
-                    number_display_code: $("#jumlah_iklan").val()
+                    number_display_code: $("#jumlah_iklan").val(),
+                    jenis_pengalihan: $("#jenis_pengalihan").val(),
+                    akses_lokasi_mode: $("#akses_lokasi_mode").val(),
+                    akses_lokasi_countries: $("#akses_lokasi_countries").val() ? $("#akses_lokasi_countries").val().join(',') : '',
+                    blokir_ip_address: $("#blokir_ip_address").val().trim(),
+                    akses_asn_mode: $("#akses_asn_mode").val(),
+                    akses_asn_list: $("#akses_asn_list").val().trim(),
+                    detektor_perangkat_tinggi: $("#detektor_perangkat_tinggi").is(":checked") ? 1 : 0,
+                    detektor_perangkat_sedang: $("#detektor_perangkat_sedang").is(":checked") ? 1 : 0,
+                    detektor_perangkat_rendah: $("#detektor_perangkat_rendah").is(":checked") ? 1 : 0,
+                    simpan_log: $("#simpan_log").val(),
+                    simpan_durasi: $("#simpan_durasi").val(),
+                    interval_durasi: $("#interval_durasi").val(),
                 };
                 const previewUrl = `${ntbksense_data.ajaxUrl}?${new URLSearchParams(params).toString()}`;
                 $("#ad-preview-iframe").attr("src", previewUrl);
@@ -141,6 +153,40 @@ add_action('admin_footer', function () {
             // Inisialisasi preview iklan
             $(document).on("input change", "#opacity, #kode_iklan_1, #kode_iklan_2, #kode_iklan_3, #kode_iklan_4, #kode_iklan_5, #posisi, #margin_top, #margin_bottom, #mode_tampilan, #jumlah_iklan", updatePreview);
             updatePreview();
+
+            $("#advancesettingsForm").submit(function(e) {
+                e.preventDefault();
+                const $submitButton = $(".btn-advence-settings");
+                const originalButtonHtml = $submitButton.html();
+                $submitButton.prop("disabled", true).html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+
+                const formData = $(this).serialize() + "&security=" + ntbksense_data.nonce;
+
+                $.ajax({
+                        url: '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/setting/advance.setting.php'); ?>',
+                        type: "POST",
+                        data: formData,
+                        dataType: "json",
+                    })
+                    .done(function(response) {
+                        if (response.success) {
+                            showNotification(response.message || "Pengaturan berhasil disimpan.", "success");
+                        } else {
+                            showNotification(response.message || "Terjadi kesalahan.", "error");
+                        }
+                    })
+                    .fail(function(jqXHR) {
+                        const errorMessage = jqXHR.responseJSON?.message || "Koneksi gagal atau respon server tidak valid.";
+                        showNotification(errorMessage, "error");
+                    })
+                    .always(function() {
+                        $submitButton.prop("disabled", false).html(originalButtonHtml);
+                    });
+            });
+
+            // Inisialisasi preview iklan
+            $(document).on("input change", "#jenis_pengalihan, #akses_lokasi_mode, #akses_lokasi_countries, #blokir_ip_address, #akses_asn_mode, #akses_asn_list, #detektor_perangkat_tinggi, #detektor_perangkat_sedang, #detektor_perangkat_rendah, #simpan_log, #simpan_durasi, #interval_durasi", updatePreview);
+            updatePreview();
         });
     </script>
 <?php
@@ -187,5 +233,16 @@ $termasuk = isset($options['akses_lokasi_mode']) && $options['akses_lokasi_mode'
 $kecualikan = isset($options['akses_lokasi_mode']) && $options['akses_lokasi_mode'] === 'kecualikan';
 $selected_countries = isset($options['akses_lokasi_countries']) ? json_decode($options['akses_lokasi_countries'], true) : [];
 $countries = ["Indonesia", "Malaysia", "Singapore", "United States", "United Kingdom", "Australia", "Canada", "Germany", "France", "Japan", "South Korea", "India", "Brazil", "Mexico", "Russia", "Netherlands", "Italy", "Spain", "Sweden", "Norway", "Finland", "Denmark", "Poland", "Turkey", "South Africa", "Argentina", "Chile", "Colombia", "Peru", "Venezuela", "Philippines", "Thailand", "Vietnam", "New Zealand", "Taiwan", "Hong Kong", "United Arab Emirates", "Saudi Arabia", "Egypt", "Zimbabwe", "Nigeria", "Kenya", "Ghana", "Uganda", "Tanzania", "Rwanda", "Burundi", "Congo", "Cameroon", "Senegal", "Ivory Coast", "Mali", "Algeria", "Morocco", "Tunisia", "Libya"];
+$blokir_ip_address = isset($options['blokir_ip_address']) ? esc_textarea($options['blokir_ip_address']) : '';
+$akses_asn_mode = isset($options['akses_asn_mode']) ? $options['akses_asn_mode'] : 'off';
+$akses_asn_list = isset($options['akses_asn_list']) ? esc_textarea($options['akses_asn_list']) : '';
+$detektor_perangkat_tinggi = isset($options['detektor_perangkat_tinggi']) ? $options['detektor_perangkat_tinggi'] : 0;
+$detektor_perangkat_sedang = isset($options['detektor_perangkat_sedang']) ? $options['detektor_perangkat_sedang'] : 0;
+$detektor_perangkat_rendah = isset($options['detektor_perangkat_rendah']) ? $options['detektor_perangkat_rendah'] : 0;
+$simpan_log = isset($options['simpan_log']) ? $options['simpan_log'] : 'Aktifkan';
+$simpan_durasi = isset($options['simpan_durasi']) ? $options['simpan_durasi'] : 'Tidak (Default)';
+$interval_durasi = isset($options['interval_durasi']) ? $options['interval_durasi'] : 5;
+$jenis_pengalihan = isset($options['jenis_pengalihan']) ? $options['jenis_pengalihan'] : 'Mode 302 Temporary - PHP';
+
 
 ?>

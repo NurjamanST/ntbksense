@@ -3,6 +3,8 @@
 // FILE: ntbksense/admin/views/Settings/advance_settings.php
 // FUNGSI: Menampilkan konten untuk tab "Advance".
 // =========================================================================
+
+// include NTBKSENSE_PLUGIN_DIR . "admin/views/Settings/js/advence-setting.php";
 ?>
 <div class="tab-pane fade" id="advance" role="tabpanel">
     <form id="advancesettingsForm" method="post">
@@ -13,8 +15,8 @@
                 <div class="mb-3">
                     <label for="jenis_pengalihan" class="form-label">Jenis Pengalihan</label>
                     <select id="jenis_pengalihan" name="jenis_pengalihan" class="form-select">
-                        <option>Mode 302 Temporary - (PHP)</option>
-                        <option>Mode Javascript</option>
+                        <option value="Mode 302 Temporary - (PHP)" <?php selected($options['jenis_pengalihan'] ?? 'Mode 302 Temporary - (PHP)', 'Mode 302 Temporary - (PHP)') ?>>Mode 302 Temporary - (PHP)</option>
+                        <option value="Mode Javascript" <?php selected($options['jenis_pengalihan'] ?? '', 'Mode Javascript') ?>>Mode Javascript</option>
                     </select>
                     <small class="form-text text-muted">
                         <b>Mode 302 (Temporary - PHP) :</b> Pengalihan menggunakan header PHP, lebih cepat dan direkomendasikan untuk perubahan URL sementara.<br>
@@ -50,10 +52,10 @@
                     <label for="blokir_ip_address" class="form-label">Blokir IP address</label>
                     <textarea id="blokir_ip_address" name="blokir_ip_address" class="form-control" rows="4" placeholder="Masukkan satu IP per baris untuk memblokir akses dari IP tertentu, Contoh:&#10;192.168.1.1&#10;203.0.113.42"><?= esc_textarea($options['blokir_ip_address'] ?? ''); ?></textarea>
                     <small class="form-text text-muted">Masukkan satu IP per baris untuk memblokir akses dari IP tertentu.<br>
-                    Contoh:<br>
-                    192.168.1.1<br>
-                    203.0.113.42<br>
-                    Anda juga bisa memblokir rentang IP dengan format CIDR. Contoh: <code>192.0.2.0/24</code></small>
+                        Contoh:<br>
+                        192.168.1.1<br>
+                        203.0.113.42<br>
+                        Anda juga bisa memblokir rentang IP dengan format CIDR. Contoh: <code>192.0.2.0/24</code></small>
                 </div>
             </div>
             <!-- Akses ASN Section -->
@@ -108,7 +110,7 @@
                         <li><span class="dashicons dashicons-warning text-warning"></span> Menggunakan caching dapat mengurangi beban, tetapi perlu dikonfigurasi dengan benar.</li>
                     </ul>
                     <p class="mb-1"><strong>Catatan:</strong></p>
-                        <ul class="ntb-feature-list">
+                    <ul class="ntb-feature-list">
                         <li>- Jika diatur ke <strong>Tidak</strong>, sistem hanya akan mengandalkan metode deteksi bawaan yang lebih ringan tetapi kurang akurat.</li>
                         <li>- Jika mengalami masalah performa, pertimbangkan untuk menggunakan caching atau metode deteksi yang lebih sederhana.</li>
                     </ul>
@@ -138,7 +140,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="interval_durasi" class="form-label">Interval</label>
-                            <div class="input-group">
+                        <div class="input-group">
                             <input type="number" id="interval_durasi" name="interval_durasi" class="form-control" value="<?php echo esc_attr($options['interval_durasi'] ?? 5); ?>">
                             <span class="input-group-text">Detik</span>
                         </div>
@@ -148,11 +150,11 @@
             </div>
         </div>
         <!-- END: Form List -->
-        
+
         <!-- Tombol Aksi Form -->
         <div class="ntb-form-actions">
             <a href="#" class="button button-secondary prev-tab" data-prev="#pengaturan-iklan">&larr; Kembali</a>
-            <button type="submit" class="button button-primary btn-update-settings">Simpan Advance Pengaturan</button>
+            <button type="submit" class="button button-primary btn-advence-settings">Simpan Advance Pengaturan</button>
             <a href="#" class="button button-secondary next-tab" data-next="#header-footer">Selanjutnya &rarr;</a>
         </div>
     </form>

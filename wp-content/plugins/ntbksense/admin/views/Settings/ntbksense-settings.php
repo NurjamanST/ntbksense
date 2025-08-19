@@ -5,7 +5,7 @@
 // =========================================================================
 
 // Memuat logika, aset, dan persiapan variabel
-include "add_action_settings.php";
+
 ?>
 
 <div class="wrap" id="ntb-lp-builder">

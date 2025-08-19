@@ -3,6 +3,8 @@
 // FILE: ntbksense/admin/views/Settings/ads_settings.php
 // FUNGSI: Menampilkan konten untuk tab "Pengaturan Iklan".
 // =========================================================================
+
+include_once "add_action_settings.php";
 ?>
 <div class="tab-pane fade show active" id="pengaturan-iklan" role="tabpanel">
     <form id="settingsForm" method="post">
@@ -20,10 +22,10 @@
                     <div class="col-md-6"><label for="opacity" class="form-label">Opacity (%)</label><input type="number" id="opacity" name="opacity" class="form-control" value="<?= $opacity ?>"></div>
                     <div class="col-md-6"><label for="jumlah_iklan" class="form-label">Jumlah Iklan</label>
                         <select id="jumlah_iklan" name="jumlah_iklan" class="form-select">
-                            <?php 
-                                for ($i = 1; $i <= 5; $i++) {
-                                    echo '<option value="' . $i . '" ' . selected($jumlah_iklan_val, $i, false) . '>' . $i . '</option>';
-                                } 
+                            <?php
+                            for ($i = 1; $i <= 5; $i++) {
+                                echo '<option value="' . $i . '" ' . selected($jumlah_iklan_val, $i, false) . '>' . $i . '</option>';
+                            }
                             ?>
                         </select>
                     </div>
@@ -51,12 +53,12 @@
                     <?php for ($i = 1; $i <= 5; $i++): ?>
                         <div class="col-md-6 mb-3">
                             <label for="kode_iklan_<?= $i; ?>" class="form-label">Kode Iklan <?= $i; ?></label>
-                            <textarea id="kode_iklan_<?= $i; ?>" name="kode_iklan_<?= $i; ?>" class="form-control" rows="4"><?= $kode_iklan[$i-1]; ?></textarea>
+                            <textarea id="kode_iklan_<?= $i; ?>" name="kode_iklan_<?= $i; ?>" class="form-control" rows="4"><?= base64_decode($kode_iklan[$i - 1]); ?></textarea>
                         </div>
                     <?php endfor; ?>
                     <div class="col-md-6 mb-3">
                         <label for="refresh_blank" class="form-label">Refresh jika iklan blank</label>
-                        <div class="input-group"><input type="number" id="refresh_blank" name="refresh_blank" class="form-control" value="<?= $refresh?>"><span class="input-group-text">Detik</span></div>
+                        <div class="input-group"><input type="number" id="refresh_blank" name="refresh_blank" class="form-control" value="<?= $refresh ?>"><span class="input-group-text">Detik</span></div>
                     </div>
                 </div>
             </div>
@@ -84,7 +86,7 @@
             </div>
         </div>
         <!-- END: Form List -->
-        
+
         <!-- Tombol Aksi Form -->
         <div class="ntb-form-actions">
             <!-- <a href="#" class="button button-secondary prev-tab" data-prev="">&larr; Kembali</a> -->
