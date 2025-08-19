@@ -26,9 +26,8 @@
                 <span class="dashicons dashicons-plus-alt"></span>LP Baru
             </a>
             <a href="#" class="button ntb-btn-danger" id="ntb-bulk-delete-btn"><span class="dashicons dashicons-trash"></span>Hapus</a>
-            <a href="#" class="button ntb-btn-success"><span class="dashicons dashicons-upload"></span>Ekspor</a>
+            <a href="#" class="button ntb-btn-success" id="ntb-bulk-export-btn"><span class="dashicons dashicons-upload"></span>Ekspor</a>
             <a href="#" class="button"><span class="dashicons dashicons-download"></span>Impor</a>
-            <!-- <a href="#" class="button ntb-btn-warning"><span class="dashicons dashicons-admin-page"></span>Duplikat</a> -->
             <a href="#" class="button ntb-btn-warning" id="ntb-bulk-duplicate-btn"><span class="dashicons dashicons-admin-page"></span>Duplikat</a>
         </div>
 

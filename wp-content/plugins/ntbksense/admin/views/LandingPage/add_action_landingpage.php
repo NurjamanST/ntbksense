@@ -142,6 +142,8 @@ add_action('admin_footer', function () {
                     const allAreChecked = totalCheckboxes > 0 && totalCheckboxes === checkedCheckboxes;
                     $('#select-all-lp').prop('checked', allAreChecked);
                 });
+
+
             // [FUNGSI DIPERBARUI] Event listener untuk tombol DUPLIKAT (BULK & SINGLE)
             $(document).on('click', '#ntb-bulk-duplicate-btn, .ntb-duplicate-btn', function(e) {
                 e.preventDefault();
@@ -231,6 +233,82 @@ add_action('admin_footer', function () {
                         alert('Terjadi kesalahan. Silakan cek konsol browser untuk detail.');
                         $rowsToUpdate.forEach($row => $row.css('opacity', 1)); // Kembalikan opacity jika error
                     });
+            });
+
+            // [FUNGSI BARU] Event listener untuk tombol EKSPOR
+            $('#ntb-bulk-export-btn').on('click', function(e) {
+                e.preventDefault();
+
+                const idsToExport = [];
+                // Kumpulkan semua ID dari checkbox yang dicentang
+                $('input[name="lp[]"]:checked').each(function() {
+                    idsToExport.push($(this).val());
+                });
+
+                // Jika tidak ada yang dipilih, tampilkan peringatan
+                if (idsToExport.length === 0) {
+                    alert('Pilih dulu item yang mau diekspor.');
+                    return;
+                }
+
+                // Tentukan URL API untuk ekspor
+                const apiUrl = '<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'api/landing_page/export.landing.php'); ?>';
+                const $button = $(this);
+                const originalButtonText = $button.html();
+
+                // Tampilkan status loading
+                $button.html('<span class="spinner is-active" style="float: left; margin-top: 4px;"></span> Mengekspor...');
+                $button.prop('disabled', true);
+
+                // Kirim permintaan ke API menggunakan Fetch
+                fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ ids: idsToExport })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        // Jika ada error, coba baca sebagai JSON untuk pesan error
+                        return response.json().then(err => { throw new Error(err.data.message || 'Gagal mengekspor data.') });
+                    }
+                    // Dapatkan nama file dari header Content-Disposition
+                    const disposition = response.headers.get('content-disposition');
+                    let filename = 'LandingPage-ntbksense-export.json'; // Nama default
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                        const matches = filenameRegex.exec(disposition);
+                        if (matches != null && matches[1]) {
+                            filename = matches[1].replace(/['"]/g, '');
+                        }
+                    }
+                    return response.blob().then(blob => ({ blob, filename }));
+                })
+                .then(({ blob, filename }) => {
+                    // Buat URL sementara untuk file blob
+                    const url = window.URL.createObjectURL(blob);
+                    // Buat link sementara untuk memicu unduhan
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    // Hapus URL dan link sementara
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan: ' + error.message);
+                })
+                .finally(() => {
+                    // Kembalikan tombol ke keadaan semula
+                    $button.html(originalButtonText);
+                    $button.prop('disabled', false);
+                });
             });
         });
     </script>
