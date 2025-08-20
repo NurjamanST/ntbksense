@@ -844,4 +844,211 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
             text-decoration: none;
         }
+
+        /* ==========================================================================
+            Dashboard (Beranda) Specific Styles
+            ========================================================================== */
+        
+        /* Statistik Cards Layout */
+        .ntb-stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Individual Card Style */
+        .ntb-card {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        .ntb-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Card Icon */
+        .ntb-card-icon {
+            background-color: #eef5ff;
+            color: #2271b1;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ntb-card-icon .dashicons {
+            font-size: 28px;
+            width: auto;
+            height: auto;
+        }
+        .ntb-card-icon.ntb-icon-active {
+            background-color: #e5f5e8;
+            color: #00a32a;
+        }
+
+        /* Card Content */
+        .ntb-card-content .ntb-card-title {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #50575e;
+        }
+        .ntb-card-content .ntb-card-value {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1d2327;
+        }
+        
+        /* Disabled Card */
+        .ntb-card.ntb-card-disabled {
+            opacity: 0.6;
+            background-color: #f9f9f9;
+        }
+        .ntb-card.ntb-card-disabled:hover {
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Quick Actions */
+        .ntb-quick-actions {
+            margin-top: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .ntb-quick-actions .button {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* Recent Activity */
+        .ntb-recent-activity {
+            margin-top: 20px;
+        }
+        .ntb-recent-activity h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .ntb-recent-activity .dashicons {
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        
+        /* Status Indicators */
+        .ntb-status-active, .ntb-status-inactive {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #fff;
+        }
+        .ntb-status-active {
+            background-color: #28a745;
+        }
+        .ntb-status-inactive {
+            background-color: #6c757d;
+        }
+
+        /* ==========================================================================
+            Info Box & Tabs Styles (Beranda)
+            ========================================================================== */
+            .ntb-info-box {
+                margin-top: 30px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                background-color: #fdfdfd;
+            }
+
+            .ntb-info-nav {
+                display: flex;
+                gap: 1px;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 0 25px;
+            }
+
+            .ntb-info-nav a.ntb-tab-item {
+                padding: 12px 18px;
+                text-decoration: none;
+                color: #50575e;
+                font-weight: 500;
+                font-size: 14px;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                border-bottom: 3px solid transparent;
+                margin-bottom: -1px; /* Agar border bawah sejajar dengan border container */
+                transition: color 0.2s ease, border-color 0.2s ease;
+            }
+
+            .ntb-info-nav a.ntb-tab-item:hover {
+                color: #1d2327;
+            }
+
+            .ntb-info-nav a.ntb-tab-item.active {
+                color: #2271b1;
+                border-bottom-color: #2271b1;
+            }
+
+            .ntb-tab-content {
+                padding: 25px;
+            }
+
+            .ntb-tab-pane {
+                display: none; /* Sembunyikan semua panel secara default */
+            }
+
+            .ntb-tab-pane.active {
+                display: block; /* Tampilkan hanya panel yang aktif */
+            }
+
+            .ntb-tab-content h3 {
+                font-size: 1.6em;
+                margin-top: 0;
+                margin-bottom: 15px;
+            }
+            .ntb-tab-content h4 {
+                font-size: 1.2em;
+                margin-top: 25px;
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: #1d2327;
+            }
+            .ntb-tab-content h4 .dashicons {
+                color: #2271b1;
+            }
+            .ntb-tab-content p {
+                line-height: 1.6;
+                color: #3c434a;
+            }
+            .ntb-tab-content ul {
+                list-style: none;
+                padding-left: 0;
+                margin-top: 0;
+            }
+            .ntb-tab-content li {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 12px;
+                font-size: 14px;
+                color: #3c434a;
+            }
+            .ntb-tab-content li .dashicons {
+                margin-right: 10px;
+                color: #00a32a;
+                margin-top: 4px;
+            }
 </style>    
