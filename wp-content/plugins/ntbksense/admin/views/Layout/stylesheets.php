@@ -858,7 +858,7 @@
         }
 
         /* Individual Card Style */
-        .ntb-card {
+        .ntb-card-beranda {
             background-color: #fff;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
@@ -869,13 +869,13 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             transition: box-shadow 0.3s ease, transform 0.3s ease;
         }
-        .ntb-card:hover {
+        .ntb-card-beranda:hover {
             transform: translateY(-3px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         /* Card Icon */
-        .ntb-card-icon {
+        .ntb-card-beranda-icon {
             background-color: #eef5ff;
             color: #2271b1;
             border-radius: 50%;
@@ -885,23 +885,23 @@
             align-items: center;
             justify-content: center;
         }
-        .ntb-card-icon .dashicons {
+        .ntb-card-beranda-icon .dashicons {
             font-size: 28px;
             width: auto;
             height: auto;
         }
-        .ntb-card-icon.ntb-icon-active {
+        .ntb-card-beranda-icon.ntb-icon-active {
             background-color: #e5f5e8;
             color: #00a32a;
         }
 
         /* Card Content */
-        .ntb-card-content .ntb-card-title {
+        .ntb-card-beranda-content .ntb-card-beranda-title {
             margin: 0 0 5px 0;
             font-size: 14px;
             color: #50575e;
         }
-        .ntb-card-content .ntb-card-value {
+        .ntb-card-beranda-content .ntb-card-beranda-value {
             margin: 0;
             font-size: 24px;
             font-weight: 600;
@@ -909,11 +909,11 @@
         }
         
         /* Disabled Card */
-        .ntb-card.ntb-card-disabled {
+        .ntb-card-beranda.ntb-card-beranda-disabled {
             opacity: 0.6;
             background-color: #f9f9f9;
         }
-        .ntb-card.ntb-card-disabled:hover {
+        .ntb-card-beranda.ntb-card-beranda-disabled:hover {
             transform: none;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }

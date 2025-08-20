@@ -23,35 +23,35 @@ include "add_action_beranda.php";
         <!-- START: Kartu Statistik -->
         <div class="ntb-stats-cards">
             <!-- Card Total LP -->
-            <div class="ntb-card">
-                <div class="ntb-card-icon"><span class="dashicons dashicons-admin-page"></span></div>
-                <div class="ntb-card-content">
-                    <h3 class="ntb-card-title">Total Landing Page</h3>
-                    <p class="ntb-card-value" id="total-lp-value">...</p>
+            <div class="ntb-card-beranda">
+                <div class="ntb-card-beranda-icon"><span class="dashicons dashicons-admin-page"></span></div>
+                <div class="ntb-card-beranda-content">
+                    <h3 class="ntb-card-beranda-title">Total Landing Page</h3>
+                    <p class="ntb-card-beranda-value" id="total-lp-value">...</p>
                 </div>
             </div>
             <!-- Card LP Aktif -->
-            <div class="ntb-card">
-                <div class="ntb-card-icon ntb-icon-active"><span class="dashicons dashicons-yes-alt"></span></div>
-                <div class="ntb-card-content">
-                    <h3 class="ntb-card-title">LP Aktif</h3>
-                    <p class="ntb-card-value" id="active-lp-value">...</p>
+            <div class="ntb-card-beranda">
+                <div class="ntb-card-beranda-icon ntb-icon-active"><span class="dashicons dashicons-yes-alt"></span></div>
+                <div class="ntb-card-beranda-content">
+                    <h3 class="ntb-card-beranda-title">LP Aktif</h3>
+                    <p class="ntb-card-beranda-value" id="active-lp-value">...</p>
                 </div>
             </div>
             <!-- Card Auto Post -->
-            <div class="ntb-card ntb-card-disabled">
-                <div class="ntb-card-icon"><span class="dashicons dashicons-admin-post"></span></div>
-                <div class="ntb-card-content">
-                    <h3 class="ntb-card-title">Total Auto Post</h3>
-                    <p class="ntb-card-value" id="total-autopost-value">0</p>
+            <div class="ntb-card-beranda ntb-card-beranda-disabled">
+                <div class="ntb-card-beranda-icon"><span class="dashicons dashicons-admin-post"></span></div>
+                <div class="ntb-card-beranda-content">
+                    <h3 class="ntb-card-beranda-title">Total Auto Post</h3>
+                    <p class="ntb-card-beranda-value" id="total-autopost-value">0</p>
                 </div>
             </div>
             <!-- Card Laporan -->
-            <div class="ntb-card ntb-card-disabled">
-                <div class="ntb-card-icon"><span class="dashicons dashicons-chart-bar"></span></div>
-                <div class="ntb-card-content">
-                    <h3 class="ntb-card-title">Total Laporan</h3>
-                    <p class="ntb-card-value" id="total-laporan-value">0</p>
+            <div class="ntb-card-beranda ntb-card-beranda-disabled">
+                <div class="ntb-card-beranda-icon"><span class="dashicons dashicons-chart-bar"></span></div>
+                <div class="ntb-card-beranda-content">
+                    <h3 class="ntb-card-beranda-title">Total Laporan</h3>
+                    <p class="ntb-card-beranda-value" id="total-laporan-value">0</p>
                 </div>
             </div>
         </div>
@@ -125,7 +125,7 @@ include "add_action_beranda.php";
                 </div>
                 <!-- Tab Tutorial -->
                 <div id="tutorial" class="ntb-tab-pane">
-                    <h3>Video Tutorial</h3>
+                    <h3>Tutorial</h3>
                     <p>Konten tutorial akan segera tersedia di sini. Anda akan menemukan panduan langkah demi langkah tentang cara memaksimalkan penggunaan plugin NTBKSense.</p>
                 </div>
                 <!-- Tab FAQ -->
