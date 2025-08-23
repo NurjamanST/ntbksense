@@ -10,6 +10,7 @@
  * @subpackage Ntbksense/admin
  * @author     Nama Anda <email@example.com>
  */
+require_once NTBKSENSE_PLUGIN_DIR . 'includes/template-loader.php';
 class NTBKSense_Admin {
 
     private $plugin_name;

@@ -29,16 +29,26 @@ require_once('wp-load.php');
 
 // LANGKAH 2: Ambil pengaturan & data
 global $wpdb;
-$settings_table_name = $wpdb->prefix . 'ntbksense_ads_settings';
+$settings_table_name = $wpdb->prefix . 'ntbk_ads_settings';
 $global_settings = $wpdb->get_row("SELECT * FROM {$settings_table_name} LIMIT 1", ARRAY_A);
 if (!$global_settings) {
     $global_settings = [];
 }
 
-$slug = isset($_GET['slug']) ? $_GET['slug'] : null;
+// [PERBAIKAN] Ambil slug dan parameter dari URL
+$request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+$path = parse_url($request_uri, PHP_URL_PATH);
+$path_parts = explode('/', trim($path, '/'));
+$slug_candidate = isset($path_parts[0]) ? $path_parts[0] : null;
+
+$slug_parts = preg_split('/[?&]/', $slug_candidate, 2);
+$slug = $slug_parts[0];
+
+parse_str(parse_url($request_uri, PHP_URL_QUERY), $_GET);
+
 if (!$slug) {
-    http_response_code(400);
-    echo "Error: Parameter 'slug' wajib diisi.";
+    http_response_code(404);
+    echo "Halaman tidak ditemukan.";
     exit;
 }
 
@@ -53,14 +63,44 @@ if (!$templateData || $templateData['status'] == 0) {
     exit;
 }
 
-// [LOGIKA UTAMA] URL MASKING & REFRESH
-$secret_parameter = 'bila'; // Ganti sesuai kebutuhan
-$secret_value = 'nanti';     // Ganti sesuai kebutuhan
-$redirect_url_on_refresh = $templateData['cloaking_url']; // URL tujuan saat di-refresh
+// [LOGIKA UTAMA YANG DIPERBAIKI] Cek Kunci Masuk, Auto Refresh, dan Aturan Perangkat
+$secret_parameter = $templateData['parameter_key'] ?? 'bila';
+$secret_value = $templateData['parameter_value'] ?? 'nanti';
+$redirect_url = $templateData['cloaking_url'];
+$showSafePage = false; // Defaultnya, semua traffic akan di-redirect
 
-if (isset($_GET[$secret_parameter]) && $_GET[$secret_parameter] === $secret_value) {
+// Cek 1: Kunci sakti 'mode=ads'
+if (isset($_GET['mode']) && $_GET['mode'] === 'ads') {
+    $showSafePage = true;
+}
+// Cek 2: Kunci auto-refresh (dari JavaScript)
+elseif (isset($_GET['auto_refresh']) && $_GET['auto_refresh'] === '1') {
+    $showSafePage = true;
+}
+// Cek 3: Kunci biasa '?bila=nanti' DIIKUTI oleh cek perangkat
+elseif (isset($_GET[$secret_parameter]) && $_GET[$secret_parameter] === $secret_value) {
+    $device_rule = isset($templateData['device_view']) ? $templateData['device_view'] : 'semua';
+    switch ($device_rule) {
+        case 'fb_browser':
+            if (is_fb_or_ig_browser()) $showSafePage = true;
+            break;
+        case 'ponsel':
+            if (is_mobile_device()) $showSafePage = true;
+            break;
+        case 'desktop':
+            if (!is_mobile_device()) $showSafePage = true;
+            break;
+        case 'semua':
+        default:
+            $showSafePage = true; // Jika aturan 'semua' dan ada kunci, tampilkan
+            break;
+    }
+}
 
-    // --- KUNJUNGAN PERTAMA (DENGAN PARAMETER RAHASIA) ---
+
+if ($showSafePage) {
+
+    // --- KUNJUNGAN PERTAMA (DENGAN KUNCI YANG BENAR ATAU PERANGKAT SESUAI) ---
     // Tampilkan halaman "aman" (safe page)
 
     $video_urls = json_decode($templateData['video_urls'], true);
@@ -90,15 +130,16 @@ if (isset($_GET[$secret_parameter]) && $_GET[$secret_parameter] === $secret_valu
     header("Content-Type: text/html; charset=UTF-8");
     echo "<!DOCTYPE html><html><head><title>" . esc_html($templateData['title']) . "</title>";
 
+    // CSS lengkap
     echo "<style>
         body { margin: 0; padding: 0; font-family: sans-serif; background-color: #333; }
         .content-wrapper { text-align: center; padding: 20px; }
-        .main-image { width: 100%; max-width: 120%; height: auto; display: block; margin: 0 auto 20px; }
+        .main-image { width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto 20px; }
         .video-wrapper { position: relative; max-width: 100%; margin: 0 auto; }
         .video-ad-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: pointer; }
         .floating-video-container { 
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 1000; width: 90%; max-width: 480px; /* Ukuran default untuk mobile */
+            z-index: 1000; width: 95%; max-width: 720px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden;
         }
         .floating-video-container video, .video-wrapper video { width: 100%; height: auto; display: block; }
@@ -107,21 +148,13 @@ if (isset($_GET[$secret_parameter]) && $_GET[$secret_parameter] === $secret_valu
             background-color: rgba(0,0,0,0.7); color: white; border: none; 
             border-radius: 5px; padding: 10px 15px; cursor: pointer; z-index: 9999; 
         }
-
-        /* Aturan untuk Desktop (layar lebih besar dari 768px) */
-        @media (min-width: 768px) {
-            .main-image { max-width: 98%; }
-            .video-wrapper { max-width: 800px; }
-            .floating-video-container { max-width: 720px; }
+        @media (max-width: 767px) {
+            .main-image { width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto 20px; }
+            .floating-video-container { max-width: 480px; }
         }
     </style>";
 
     echo "</head><body>";
-
-    if (!empty($img_urls[0])) {
-        echo "<div class='fullscreen-bg'><img src='" . esc_url($img_urls[0]) . "' alt=''></div>";
-        echo "<div class='page-overlay'></div>";
-    }
 
     echo "<div class='content-wrapper'>";
     if (!empty($ads_code_1)) {
@@ -132,12 +165,19 @@ if (isset($_GET[$secret_parameter]) && $_GET[$secret_parameter] === $secret_valu
         echo "<div class='ad-container' style='opacity: " . ($ads_opacity / 100) . "; margin-top: " . $ads_margin_top . "px; margin-bottom: " . $ads_margin_bottom . "px;'>{$ads_code_2}</div>";
     }
 
+    if (!empty($img_urls)) {
+        $random_image_url = $img_urls[array_rand($img_urls)];
+        if (!empty($random_image_url)) {
+            echo "<img src='" . esc_url($random_image_url) . "' alt='Gambar' class='main-image'>";
+        }
+    }
+
     if (!empty($video_urls[0])) {
         $video_tag = "<video id='safe-page-video' controls autoplay muted loop playsinline><source src='" . esc_url($video_urls[0]) . "' type='video/webm'></video>";
         if ($is_video_floating) {
             echo "<div class='floating-video-container'>{$video_tag}</div>";
         } else {
-            echo $video_tag;
+            echo "<div class='video-wrapper'>{$video_tag}</div>";
         }
     }
 
@@ -148,7 +188,7 @@ if (isset($_GET[$secret_parameter]) && $_GET[$secret_parameter] === $secret_valu
 
     echo "<script>
         window.onload = function() {
-            const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?slug=" . urlencode($slug) . "';
+            const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
             window.history.pushState({}, '', cleanUrl);
         };
 
@@ -164,10 +204,16 @@ if (isset($_GET[$secret_parameter]) && $_GET[$secret_parameter] === $secret_valu
                     }
                 });
             }
+            
+            // [PERBAIKAN] Logika Auto Refresh
             const refreshTimeInMs = " . ($refresh_timer_sec * 1000) . ";
             if (refreshTimeInMs > 0) {
-                setTimeout(function() { location.reload(); }, refreshTimeInMs);
+                setTimeout(function() {
+                    // Tambahkan parameter khusus untuk menandai auto-refresh
+                    window.location.href = window.location.pathname + '?auto_refresh=1';
+                }, refreshTimeInMs);
             }
+
             const showCloseBtn = " . ($ads_show_close_btn ? 'true' : 'false') . ";
             if (showCloseBtn) {
                 const closeBtn = document.getElementById('ntb-close-ads-btn');
@@ -196,21 +242,8 @@ if (isset($_GET[$secret_parameter]) && $_GET[$secret_parameter] === $secret_valu
     echo "</body></html>";
 } else {
 
-    // --- KUNJUNGAN KEDUA (REFRESH ATAU TANPA PARAMETER RAHASIA) ---
-    // Cek apakah ini traffic biasa (bukan dari iklan)
-    $mode = isset($_GET['mode']) ? $_GET['mode'] : null;
-    $isFromAds = ($mode === 'ads');
-    if (!$isFromAds) {
-        $post_urls = preg_split("/\r\n|\n|\r/", $templateData['post_urls']);
-        if (!empty($post_urls) && !empty(trim($post_urls[0]))) {
-            $redirectTo = $post_urls[array_rand($post_urls)];
-            wp_redirect(trim($redirectTo));
-            exit;
-        }
-    }
-
-    // Jika ini adalah refresh dari safe page atau traffic iklan tanpa parameter rahasia
-    wp_redirect($redirect_url_on_refresh);
+    // --- KUNJUNGAN KEDUA (REFRESH MANUAL ATAU TANPA KUNCI) ---
+    wp_redirect($redirect_url);
     exit;
 }
 

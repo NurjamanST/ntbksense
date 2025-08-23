@@ -17,10 +17,10 @@ include "add_action_autopost.php";
         <span class="dashicons dashicons-admin-home"></span>
         <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense')); ?>">NTBKSense</a> &gt; <span>Auto Post</span>
     </div>
-    
+
     <!-- Main Content -->
     <div class="ntb-main-content">
-        <form action="" method="post">
+        <form action="" method="post" id="autoPostForm">
             <div class="row">
                 <!-- Kolom Kiri: Form -->
                 <div class="col-lg-7">
@@ -234,14 +234,14 @@ include "add_action_autopost.php";
                                         <i class="fas fa-magic"></i> Hasilkan Kata Kunci
                                     </button>
                                 </div>
-                                <!-- Monaco Editor Container -->
-                                <div id="kata_kunci_editor" style="width:100%;height:200px;border:1px solid #ddd;"></div>
-                                <!-- Hidden textarea to store editor content for form submission -->
-                                <textarea id="kata_kunci" name="kata_kunci" style="display:none;"></textarea>
+
+                                <!-- [PERBAIKAN] Gunakan textarea biasa yang terlihat -->
+                                <textarea id="kata_kunci" name="kata_kunci" class="form-control" style="width:100%; height:200px;"></textarea>
+
                                 <small class="form-text text-muted mt-2 d-block">Setiap baris akan dianggap sebagai satu kata kunci untuk pembuatan artikel.</small>
                             </div>
                             <div class="my-2">
-                                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit</button>
+                                <button type="submit" class="btn btn-primary" id="btn-post"><i class="fas fa-paper-plane"></i> Submit</button>
                             </div>
                         </div>
                     </div>
@@ -252,9 +252,9 @@ include "add_action_autopost.php";
                         <div class="ntb-card-header">
                             <h5 class="mb-0"><i class="fas fa-history"></i> Logs</h5>
                         </div>
-                        <div class="ntb-card-body ntb-logs-body">
+                        <div class="ntb-card-body ntb-logs-body" id="log-output">
                             <!-- Log content will appear here -->
-                            <p class="text-muted text-center mt-5">Belum ada log yang tersedia.</p>
+                            <!-- <p class="text-muted text-center mt-5">Belum ada log yang tersedia.</p> -->
                         </div>
                     </div>
                 </div>
@@ -272,12 +272,18 @@ include "add_action_autopost.php";
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
+                        <label for="api_key_selector" class="form-label">Gunakan Kunci API:</label>
+                        <select class="form-control" id="api_key_selector" name="api_key">
+                            <!-- Pilihan API key akan diisi oleh JavaScript -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="total_keyword" class="form-label">Total Keyword:</label>
-                        <input type="number" class="form-control" id="total_keyword" value="20">
+                        <input type="number" class="form-control" id="total_keyword" value="20" name="total_keyword">
                     </div>
                     <div class="mb-3">
                         <label for="base_keyword" class="form-label">Keyword:</label>
-                        <input type="text" class="form-control" id="base_keyword" placeholder="Enter Keyword">
+                        <input type="text" class="form-control" id="base_keyword" placeholder="Enter Keyword" name="base_keyword">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -289,6 +295,6 @@ include "add_action_autopost.php";
     </div>
 </div>
 
-<?php 
-    include NTBKSENSE_PLUGIN_DIR . "admin/views/Layout/stylesheets.php";
+<?php
+include NTBKSENSE_PLUGIN_DIR . "admin/views/Layout/stylesheets.php";
 ?>
