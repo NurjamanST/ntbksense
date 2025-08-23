@@ -9,11 +9,11 @@ if (!defined('ABSPATH')) {
 // =========================================================================
 /**
  * Plugin Name:       NTBKSense
- * Plugin URI:        https://yourwebsite.com/ntbksense
+ * Plugin URI:        https://ntbksense.id/plugin
  * Description:       Plugin dasar untuk sensasi pengguna di WordPress.
  * Version:           1.0.0
  * Author:            Kevin Ariodinoto
- * Author URI:        https://yourwebsite.com
+ * Author URI:        https://ntbksense.id
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       ntbksense

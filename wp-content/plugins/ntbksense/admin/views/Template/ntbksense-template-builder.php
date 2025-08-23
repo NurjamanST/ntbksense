@@ -1,4 +1,11 @@
-<?php include "add_action_template_builder.php"; ?>
+<?php 
+    // =========================================================================
+    // FILE: ntbksense/admin/views/Template/ntbksense-template-builder.php
+    // =========================================================================
+    
+    include "add_action_template_builder.php";
+
+?>
 <div class="wrap" id="ntb-lp-builder">
     <!-- Navbar -->
     <?php include NTBKSENSE_PLUGIN_DIR."admin/views/Layout/navbar.php"; ?>
@@ -15,7 +22,6 @@
         <hr>
         <!-- Tombol Aksi Utama -->
         <div class="ntb-actions-bar">
-           <!-- **MODIFIED:** Changed to button and added Bootstrap modal attributes -->
             <button type="button" class="button ntb-btn-primary" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
                 <span class="dashicons dashicons-plus-alt"></span> Template Baru
             </button>
@@ -29,41 +35,20 @@
                     <th>Template</th>
                     <th>Status</th>
                     <th>Versi Bootstrap</th>
-                    <th>Tanggal dibuat</th>
-                    <th>Tanggal update</th>
+                    <th>Tanggal Dibuat</th>
+                    <th>Tanggal Diperbarui</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
-                <?php if (!empty($template_data)) : ?>
-                    <?php foreach ($template_data as $item) : ?>
-                        <tr>
-                            <td><input type="checkbox" name="template_id[]" value="<?php echo esc_attr($item['id']); ?>" /></td>
-                            <td>
-                                <strong><a style="text-decoration:none;" href="#"><?php echo esc_html($item['name']); ?></a></strong>
-                                <div class="row-actions">
-                                    <a style="text-decoration:none;" href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-edit-tb&id=' . $item['id'])); ?>" class="text-primary">
-                                        <span class="dashicons dashicons-edit"></span>
-                                    </a>
-                                    <!-- <a style="text-decoration:none;" href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-duplicate-tb&id=' . $item['id'])); ?>" class="text-secondary">
-                                        <span class="dashicons dashicons-admin-page"></span>
-                                    </a> -->
-                                    <a style="text-decoration:none;" href="<?php echo esc_url(wp_nonce_url(admin_url('admin.php?page=ntbksense-template_builder&action=delete&id=' . $item['id']), 'ntb_delete_lp_nonce')); ?>" class="text-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus Template Builder ini?');">
-                                        <span class="dashicons dashicons-trash"></span>
-                                    </a>
-                                </div>
-                            </td>
-                            <td><?php echo $item['status']; // Badge HTML, tidak perlu di-escape ?></td>
-                            <td><?php echo esc_html($item['bootstrap_version']); ?></td>
-                            <td><?php echo esc_html($item['created_date']); ?></td>
-                            <td><?php echo esc_html($item['updated_date']); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+            <tbody id="ntb-templates-tbody">
+                <!-- Data akan dimuat secara dinamis oleh JavaScript -->
+                <tr>
+                    <td colspan="7" style="text-align: center;">Memuat data...</td>
+                </tr>
             </tbody>
         </table>
     </div>
     <!-- Modal untuk Tambah Template Baru -->
-    <!-- **NEW:** Modal for Creating a New Template -->
     <div class="modal fade" id="createTemplateModal" tabindex="-1" aria-labelledby="createTemplateModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -75,15 +60,14 @@
                     <form id="create-template-form">
                         <div class="mb-3">
                             <label for="template_name" class="form-label">Nama Template</label>
-                            <input type="text" class="form-control" id="template_name" name="template_name" placeholder="Xnxx New">
+                            <input type="text" class="form-control" id="template_name" name="template_name" placeholder="Contoh: Template Berita Modern" required>
                         </div>
                         <div class="mb-3">
-                            <label for="template_icon" class="form-label">Ikon Template</label>
+                            <label for="template_icon" class="form-label">URL Ikon</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="template_icon" name="template_icon" placeholder="https://example.com/icon.png">
-                                <!-- **NEW:** Hidden file input -->
-                                <input type="file" id="template_icon_file" name="template_icon_file" style="display: none;" accept="image/*">
-                                <button class="btn btn-primary" type="button" id="upload_icon_button">
+                                <input type="file" id="template_icon_file" style="display: none;" accept="image/*">
+                                <button class="btn btn-outline-secondary" type="button" id="upload_icon_button">
                                     <span class="dashicons dashicons-cloud-upload"></span>
                                 </button>
                             </div>
@@ -100,8 +84,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="ntb-create-draft-submit">
                         <span class="dashicons dashicons-arrow-right-alt2" style="vertical-align: middle; margin-top: -2px;"></span> Buat Draft
                     </button>
                 </div>

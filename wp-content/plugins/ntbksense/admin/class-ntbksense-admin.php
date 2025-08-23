@@ -207,7 +207,8 @@ class NTBKSense_Admin {
                 array($this, $callback_method)
             );
         }
-
+        
+        // Mendaftarkan halaman tersembunyi untuk "Buat LP Baru"
         add_submenu_page(
             null, 
             __('Buat LP Baru', 'ntbksense'),
@@ -216,7 +217,8 @@ class NTBKSense_Admin {
             'ntbksense-create-landing', 
             array($this, 'render_create_landing_page')
         );
-
+        
+        // Mendaftarkan halaman tersembunyi untuk "Edit Landing Page"
         add_submenu_page(
             null, 
             __('Edit Landing Page', 'ntbksense'),
@@ -224,6 +226,16 @@ class NTBKSense_Admin {
             'manage_options',
             'ntbksense-edit-lp',
             array($this, 'render_edit_landing_page')
+        );
+
+        // Mendaftarkan halaman tersembunyi untuk "Edit Template Builder"
+        add_submenu_page(
+            null,
+            'Edit Template',
+            'Edit Template',
+            'manage_options',
+            'ntbksense-edit-tb',
+            array($this, 'render_edit_template_builder_page')
         );
     }
 
@@ -275,6 +287,7 @@ class NTBKSense_Admin {
     public function render_create_landing_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/LandingPage/ntbksense-create-landing.php'; }
     public function render_edit_landing_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/LandingPage/ntbksense-edit-landing.php'; }
     public function render_template_builder_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Template/ntbksense-template-builder.php'; }
+    public function render_edit_template_builder_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Template/ntbksense-edit-tb.php'; }
     public function render_settings_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Settings/ntbksense-settings.php'; }
     public function render_laporan_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Laporan/ntbksense-laporan.php'; }
     public function render_auto_post_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/AutoPost/ntbksense-auto-post.php'; }
