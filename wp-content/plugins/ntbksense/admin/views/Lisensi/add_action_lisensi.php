@@ -5,8 +5,8 @@
 // =========================================================================
 
 // --- PENGATURAN PENTING ---
-// Ganti URL ini dengan alamat server lisensi Laravel Anda yang sebenarnya.
-define('NTBKSENSE_LICENSE_SERVER_URL', 'http://127.0.0.1:8000/licenses'); 
+// Pastikan URL ini adalah alamat dasar dari server Laravel Anda, tanpa path tambahan.
+define('NTBKSENSE_LICENSE_SERVER_URL', 'http://127.0.0.1:8000'); 
 
 /**
  * Fungsi untuk menangani aksi form (aktivasi/deaktivasi) dari halaman lisensi.
