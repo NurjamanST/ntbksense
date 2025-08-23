@@ -1051,4 +1051,22 @@
                 color: #00a32a;
                 margin-top: 4px;
             }
+
+            /* CSS Tambahan untuk Halaman Maintenance */
+            .ntb-form-row {
+                display: flex;
+                align-items: flex-end; /* PENTING: Menyejajarkan semua item ke bawah */
+                gap: 15px; /* Memberi jarak antar elemen */
+                flex-wrap: wrap; /* Agar responsif di layar kecil */
+            }
+
+            .ntb-form-row .ntb-form-group {
+                margin-bottom: 0; /* Hapus margin bawah default */
+            }
+
+            /* Mengatur agar tombol tidak terlalu tinggi */
+            .ntb-form-row .button {
+                height: 30px; /* Samakan tinggi dengan input field WordPress */
+                padding: 0 12px;
+            }
 </style>    

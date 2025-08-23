@@ -10,6 +10,7 @@
  * @subpackage Ntbksense/admin
  * @author     Nama Anda <email@example.com>
  */
+require_once NTBKSENSE_PLUGIN_DIR . 'includes/template-loader.php';
 class NTBKSense_Admin {
 
     private $plugin_name;
@@ -291,7 +292,6 @@ class NTBKSense_Admin {
     public function render_settings_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Settings/ntbksense-settings.php'; }
     public function render_laporan_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Laporan/ntbksense-laporan.php'; }
     public function render_auto_post_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/AutoPost/ntbksense-auto-post.php'; }
-
     public function render_lisensi_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Lisensi/ntbksense-lisensi.php'; }
     public function render_privacy_policy_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/PrivacyPolicy/ntbksense-privacy-policy.php'; }
     public function render_maintenance_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-maintenance.php'; }

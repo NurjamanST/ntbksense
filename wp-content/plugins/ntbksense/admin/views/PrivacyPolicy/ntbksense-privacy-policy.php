@@ -17,7 +17,7 @@ include "add_action_privacy_policy.php";
         <span class="dashicons dashicons-admin-home"></span>
         <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense')); ?>">NTBKSense</a> &gt; <span>Privacy Policy Generator</span>
     </div>
-    
+
     <!-- Main Content -->
     <div class="ntb-main-content">
         <h2 class="ntb-main-title">
@@ -25,33 +25,38 @@ include "add_action_privacy_policy.php";
         </h2>
         <hr>
 
-        <div class="alert alert-warning d-flex align-items-center" role="alert">
-            <i class="fas fa-info-circle fa-2x me-3"></i>
-            <div>
-                <strong>Semua halaman telah diposting.</strong> Anda tidak dapat mempostingnya lagi.
+        <?php
+        // Cek apakah halaman Privacy Policy sudah ada
+        if (get_page_by_title('Privacy Policy', OBJECT, 'page')) :
+        ?>
+            <!-- Tampilan JIKA halaman sudah ada -->
+            <div class="alert alert-success d-flex align-items-center justify-content-between" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle fa-2x me-3"></i>
+                    <div>
+                        <strong>Halaman Privacy Policy sudah ada.</strong> Anda bisa melihat atau mengeditnya.
+                    </div>
+                </div>
+                <!-- [PERBAIKAN] Tombol Reset yang benar -->
+                <button type="button" class="button button-secondary" id="reset-privacy-btn">
+                    <i class="fas fa-trash-alt"></i> Reset Privacy Policy
+                </button>
             </div>
-        </div>
 
-        <button type="button" class="button button-secondary">Reset Log</button>
-    </div>
-    
-    <center>Or</center>
-    
-    <!-- Main Content -->
-    <div class="ntb-main-content">
-        <h2 class="ntb-main-title">
-            <span class="dashicons dashicons-shield"></span> Privacy Policy Generator
-        </h2>
-        <hr>
+        <?php else : ?>
 
-        <button type="button" class="button button-primary d-flex align-items-center">
-            <span class="dashicons dashicons-shield "></span>
-            <span>Generate Privacy Policy</span>
-        </button>
+            <!-- Tampilan JIKA halaman belum ada -->
+            <p>Klik tombol di bawah untuk membuat halaman Privacy Policy secara otomatis menggunakan AI.</p>
+            <button type="button" class="button button-primary d-flex align-items-center" id="generate-privacy-btn">
+                <span class="dashicons dashicons-shield"></span>
+                <span>Generate Privacy Policy</span>
+            </button>
+
+        <?php endif; ?>
     </div>
 </div>
 
-<?php 
-    // Memuat stylesheet global
-    include NTBKSENSE_PLUGIN_DIR . "admin/views/Layout/stylesheets.php";
+<?php
+// Memuat stylesheet global
+include NTBKSENSE_PLUGIN_DIR . "admin/views/Layout/stylesheets.php";
 ?>
