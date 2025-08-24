@@ -159,6 +159,9 @@ if (!function_exists('ntbksense_get_branding')) {
         $judul_situs_otomatis = !empty($settings['judul_situs_otomatis']);
         $pengalihan_404 = !empty($settings['pengalihan_404']);
 
+        /* Header & Footer Section */
+        $header_code  = $settings['header_code'] ?? '';
+        $footer_code  = $settings['footer_code'] ?? '';
         return [ 
             'plugin_name' => $plugin_name, 
             'plugin_logo' => $plugin_logo, 
@@ -172,6 +175,8 @@ if (!function_exists('ntbksense_get_branding')) {
             'nonaktifkan_komentar' => $nonaktifkan_komentar,
             'judul_situs_otomatis' => $judul_situs_otomatis,
             'pengalihan_404' => $pengalihan_404,
+            'header_code' => $header_code,
+            'footer_code' => $footer_code,
         ];
     }
 }
@@ -420,3 +425,18 @@ add_action('template_redirect', function() {
 }, 1);
 /* End Tab: Setting - Optimasi */
 
+/* Tab: Setting - Header & Footer */
+// Header: masukkan seawal mungkin di head
+add_action('wp_head', function() {
+    if (!ntbk_is_public() || empty(ntbk_opt('header_code'))) return;
+
+    echo "\n<!-- NTBKSense Header Code -->\n". ntbk_opt('header_code'). "\n<!-- /NTBKSense Header Code -->\n"; 
+});
+
+// Footer: sebelum </body>
+add_action('wp_footer', function() {
+    if (!ntbk_is_public() || empty(ntbk_opt('footer_code'))) return;
+
+    echo "\n<!-- NTBKSense Footer Code -->\n". ntbk_opt('footer_code'). "\n<!-- /NTBKSense Footer Code -->\n";
+});
+/* End Tab: Setting - Header & Footer */
