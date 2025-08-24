@@ -21,6 +21,8 @@ add_action('admin_footer', function() {
     <!-- DataTables CSS & JS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    
 <?php
 });
 ?>

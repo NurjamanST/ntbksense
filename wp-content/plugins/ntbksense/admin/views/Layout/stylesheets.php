@@ -1069,4 +1069,18 @@
                 height: 30px; /* Samakan tinggi dengan input field WordPress */
                 padding: 0 12px;
             }
+
+        /* CSS untuk Monaco Editor Container */
+        #geo-editor-container{
+            height: 250px; /* PENTING: Tentukan tinggi editor di sini */
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden; /* Menghindari elemen aneh di sudut */
+        }
+        #device-editor-container{
+            height: 850px; /* PENTING: Tentukan tinggi editor di sini */
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden; /* Menghindari elemen aneh di sudut */
+        }
 </style>    
