@@ -15,7 +15,7 @@
     <!-- Breadcrumb -->
     <div class="ntb-breadcrumb">
         <span class="dashicons dashicons-admin-home"></span>
-        <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense')); ?>">NTBKSense</a> &gt; <span>Settings</span>
+        <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense')); ?>"><?php echo esc_html($plugin_name) ?></a> &gt; <span>Settings</span>
     </div>
 
     <div class="ntb-main-content">

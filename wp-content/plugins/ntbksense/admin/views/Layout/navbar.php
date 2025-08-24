@@ -1,9 +1,31 @@
+<?php
+$plugin = ntbksense_get_branding();
+$plugin_name  = $plugin['plugin_name'] ?? 'NTBKSense';
+$plugin_logo = isset($plugin['plugin_logo']) && filter_var($plugin['plugin_logo'], FILTER_VALIDATE_URL) ? $plugin['plugin_logo'] : NTBKSENSE_PLUGIN_URL . 'assets/images/NTBKsense.png';
+?>
+<style>
+  .ntbksense-navbar {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; padding:12px 16px; border:1px solid #dcdcde; border-radius:8px;
+    background:#fff; margin:16px 0;
+  }
+  .ntbksense-brand {
+    display:flex; align-items:center; gap:10px;
+    font-weight:600; font-size:16px; line-height:1.2;
+  }
+  .ntbksense-brand img {
+    max-height:28px; width:auto; display:block; border-radius:4px;
+  }
+  .ntbksense-actions {
+    display:flex; align-items:center; gap:8px;
+  }
+</style>
 <!-- START: Navbar Kustom -->
     <div class="ntb-navbar">
         <div class="ntb-navbar-left">
             <!-- Logo -->
-            <img src="<?php echo esc_url(NTBKSENSE_PLUGIN_URL . 'assets/images/NTBKsense.png'); ?>" alt="Logo" class="ntb-navbar-logo">
-            <span class="ntb-navbar-title">NTBKSense</span>
+            <img src="<?php echo esc_url($plugin_logo); ?>" alt="Logo" class="ntb-navbar-logo">
+        <span class="ntb-navbar-title"><?php echo esc_html($plugin_name); ?></span>
             <span class="ntb-navbar-version">v1.0.0</span>
         </div>
         <div class="ntb-navbar-right">
