@@ -294,5 +294,5 @@ class NTBKSense_Admin {
     public function render_auto_post_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/AutoPost/ntbksense-auto-post.php'; }
     public function render_lisensi_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Lisensi/ntbksense-lisensi.php'; }
     public function render_privacy_policy_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/PrivacyPolicy/ntbksense-privacy-policy.php'; }
-    public function render_maintenance_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/ntbksense-maintenance.php'; }
+    public function render_maintenance_page() { require_once NTBKSENSE_PLUGIN_DIR . 'admin/views/Maintenance/ntbksense-maintenance.php'; }
 }
