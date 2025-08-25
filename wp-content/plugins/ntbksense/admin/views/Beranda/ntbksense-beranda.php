@@ -2,6 +2,10 @@
 // File: wp-content/plugins/ntbksense/admin/views/Beranda/ntbksense-beranda.php
 
 include "add_action_beranda.php";
+
+$plugin = ntbksense_get_branding();
+$license_status = $plugin["license_status"];
+$license_data = $plugin["license_data"];
 ?>
 
 <div class="wrap" id="ntb-lp-builder">
@@ -57,6 +61,7 @@ include "add_action_beranda.php";
         </div>
         <!-- END: Kartu Statistik -->
 
+        <?php if ($license_status === 'active' && !empty($license_data)) { ?>
         <!-- START: Aksi Cepat -->
         <div class="ntb-quick-actions ">
             <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense-create-landing')); ?>" class="button ntb-btn-primary">
@@ -86,7 +91,7 @@ include "add_action_beranda.php";
             </table>
         </div>
         <!-- END: Aktivitas Terbaru -->
-
+        <?php } ?>
         <!-- START: Info Box / Tabs -->
         <div class="ntb-info-box">
             <nav class="ntb-info-nav">
