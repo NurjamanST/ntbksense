@@ -15,7 +15,6 @@
         </thead>
         <tbody>
             <?php
-            // Kodingan cURL Disini...
             for ($i = 0; $i < 2; $i++) {
             ?>
                 <tr>

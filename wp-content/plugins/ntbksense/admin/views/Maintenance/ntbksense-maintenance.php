@@ -6,6 +6,8 @@
 
 // Memasukkan file yang berisi logika untuk maintenance
 include "add_action_maintenance.php";
+$plugin = ntbksense_get_branding();
+$plugin_name  = $plugin['plugin_name'] ?? 'NTBKSense';
 ?>
 <div class="wrap" id="ntb-lp-builder">
     <!-- Navbar -->
@@ -14,7 +16,7 @@ include "add_action_maintenance.php";
     <!-- Breadcrumb -->
     <div class="ntb-breadcrumb">
         <span class="dashicons dashicons-admin-home"></span>
-        <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense')); ?>">NTBKSense</a> &gt; <span>Maintenance</span>
+        <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense')); ?>"><?php echo esc_html($plugin_name); ?></a> &gt; <span>Maintenance</span>
     </div>
     
     <!-- Box Database GEO IP -->
