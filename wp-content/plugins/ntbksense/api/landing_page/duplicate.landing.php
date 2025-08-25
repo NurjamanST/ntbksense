@@ -69,7 +69,7 @@ foreach ($ids_to_duplicate as $index => $id) {
 
     $new_data['slug'] = $final_slug;
     $new_data['title'] = $new_title;
-    $new_data['status'] = '0'; // Set duplikat sebagai tidak aktif secara default
+    $new_data['status'] = '1'; // Set duplikat sebagai tidak aktif secara default
 
     // 4. Masukkan data baru ke dalam database
     $result = $wpdb->insert($table_name, $new_data);

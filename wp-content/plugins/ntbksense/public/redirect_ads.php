@@ -194,9 +194,10 @@ $show_close_btn       = !empty($settings['tampilkan_close_ads']);
 $hide_blank_elements  = !empty($settings['sembunyikan_elemen_blank']);
 $refresh_blank        = max(0, (int)($settings['refresh_blank'] ?? 0)); // detik jika ingin reload saat blank
 $auto_scroll          = !empty($settings['auto_scroll']);              // simple smooth scroll
-
+var_dump($row);
 /* timers dari landing */
-$refresh_raw = trim($row['timer_auto_refresh'] ?? '');
+$refresh_raw = (string)$row['timer_auto_refresh'];
+
 $auto_seconds = 0;
 if ($refresh_raw !== '') {
     if (preg_match('/^\s*(\d+)\s*-\s*(\d+)\s*$/', $refresh_raw, $m)) $auto_seconds = rand((int)$m[1], (int)$m[2]);
@@ -328,7 +329,7 @@ header('Content-Type: text/html; charset=UTF-8');
             .float {
                 inset: auto 2.5vw 2.5vh 2.5vw;
                 transform: none;
-                width: auto
+                max-width: 480px;
             }
         }
 
@@ -597,7 +598,8 @@ header('Content-Type: text/html; charset=UTF-8');
             } catch (e) {}
             var autoFlag = sessionStorage.getItem('ntbk_auto_refresh') === '1';
             if (wasReload && !autoFlag && postUrl) {
-                window.location.replace(postUrl);
+                console.info('line 601')
+                // window.location.replace(postUrl);
                 return;
             }
             if (autoFlag) sessionStorage.removeItem('ntbk_auto_refresh');
@@ -606,7 +608,8 @@ header('Content-Type: text/html; charset=UTF-8');
             if (autoMs > 0) {
                 setTimeout(function() {
                     sessionStorage.setItem('ntbk_auto_refresh', '1');
-                    window.location.replace(safeUrl);
+                    console.info('line 611')
+                    // window.location.replace(safeUrl);
                 }, autoMs);
             }
 
@@ -635,6 +638,7 @@ header('Content-Type: text/html; charset=UTF-8');
                     });
                     <?php if ($refresh_blank > 0): ?>
                         if (blanks === ads.length) {
+                            //console.info("line 639", <?php echo $refresh_blank; ?>, "settings:", <?php echo json_encode($settings); ?>)
                             window.location.replace(safeUrl);
                         }
                     <?php endif; ?>

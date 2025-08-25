@@ -338,7 +338,7 @@ add_action('admin_footer', function () {
                     landing_image_urls: '[]', // Ganti jika ada inputnya
                     number_images_displayed: parseInt($('input[name="ntb_jumlah_gambar"]').val(), 10) || 0,
                     redirect_post_option: $('#url_pengalihan option:selected').val(),
-                    timer_auto_refresh: $('input[name="ntb_timer_auto_refresh"]').val() || '0',
+                    timer_auto_refresh: `${$('input[name="ntb_waktu_refresh_min"]').val()}-${$('input[name="ntb_waktu_refresh_max"]').val()}`,
                     auto_refresh_option: $('#auto_refresh option:selected').val(),
                     protect_elementor: $('#proteksi_fitur option:selected').val(),
                     referrer_option: $('#kontrol_penujuk option:selected').val(),
@@ -378,7 +378,7 @@ add_action('admin_footer', function () {
                         }
                     })
                     .catch(error => {
-                        console.error('Error:', error);
+                        console.error(error);
                         alert('Terjadi kesalahan. Cek console untuk detail.');
                     })
                     .finally(() => {
@@ -420,7 +420,27 @@ add_action('admin_footer', function () {
         $response = curl_exec($ch);
         curl_close($ch);
         $data = json_decode($response, true);
+// var_dump($data);
+        
+        $mRefresh = $data['timer_auto_refresh'];
+        $mValue = $data['timer_auto_pause_video'];
 
+        if (isset($mRefresh) and $mRefresh != "0") {
+            list($min_refresh, $max_refresh) = explode('-', $mRefresh);
+        } else {
+            $min_refresh = 0;
+            $max_refresh = 0;
+        }
+
+        if (isset($mValue) and $mValue != '0') {
+            list($min_value, $max_value) = explode('-', $mValue);
+        } else {
+            $min_value = 0;
+            $max_value = 0;
+        }
+
+        // var_dump($min_refresh, $max_refresh);
+        // var_dump($min_value, $max_value);
         ?>
 
         <?php if (!$lp_data): ?>
@@ -687,7 +707,7 @@ add_action('admin_footer', function () {
                                             <div class="ntb-range-slider">
                                                 <div class="slider-track" data-min="0" data-max="30"></div>
                                                 <div class="slider-inputs">
-                                                    <?php include "ntb_jeda_video.php"; ?>
+                                                    <?php //include "ntb_jeda_video.php"; ?>
                                                     <input type="number" name="ntb_jeda_video_min" class="form-control range-value-min" value="<?php echo esc_attr($min_value); ?>">
                                                     <span class="range-separator"><-></span>
                                                     <input type="number" name="ntb_jeda_video_max" class="form-control range-value-max" value="<?php echo esc_attr($max_value); ?>">
@@ -699,7 +719,7 @@ add_action('admin_footer', function () {
                                             <div class="ntb-range-slider">
                                                 <div class="slider-track" data-min="0" data-max="30"></div>
                                                 <div class="slider-inputs">
-                                                    <?php include "ntb_waktu_refresh.php"; ?>
+                                                    <?php //include "ntb_waktu_refresh.php"; ?>
                                                     <input type="number" name="ntb_waktu_refresh_min" class="form-control range-value-min" value="<?php echo esc_attr($min_refresh); ?>">
                                                     <span class="range-separator"><-></span>
                                                     <input type="number" name="ntb_waktu_refresh_max" class="form-control range-value-max" value="<?php echo esc_attr($max_refresh); ?>">

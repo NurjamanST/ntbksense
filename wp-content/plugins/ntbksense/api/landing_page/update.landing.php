@@ -21,7 +21,8 @@ require_once($template_class_path);
 
 // Ambil data JSON dari body request
 $data = json_decode(file_get_contents('php://input'), true);
-
+// echo "result data". $data;
+// var_dump(json_encode($data));
 // Validasi ID
 $landing_page_id = isset($data['id']) ? (int)$data['id'] : 0;
 if ($landing_page_id <= 0) {
