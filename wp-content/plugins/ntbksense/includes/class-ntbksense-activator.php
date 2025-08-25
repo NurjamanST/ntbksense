@@ -18,6 +18,30 @@ class NTBKSense_Activator {
      * @since    1.0.0
      */
     public static function activate() {
+        global $wpdb;
+        
+        // Path ke file SQL Anda
+        $sql_file = plugin_dir_path( dirname( __FILE__ ) ) . 'database/ntbksense.sql';
+
+        // Periksa apakah file SQL ada
+        if ( ! file_exists( $sql_file ) ) {
+            // Berikan notifikasi error jika file tidak ditemukan
+            deactivate_plugins( plugin_basename( __FILE__ ) );
+            wp_die( 'File database ntbksense.sql tidak ditemukan.' );
+            return;
+        }
+
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+        // Baca isi file SQL
+        $sql = file_get_contents( $sql_file );
+
+        // Ganti placeholder prefix tabel jika ada (misal: wp_) dengan prefix database yang sebenarnya
+        // $sql = str_replace( '`wp_', 'ntbk_' . $wpdb->prefix, $sql );
+
+        // Jalankan perintah SQL
+        dbDelta( $sql );
+
         // Menambahkan opsi versi plugin ke database.
         add_option('ntbksense_version', NTBKSENSE_VERSION);
 

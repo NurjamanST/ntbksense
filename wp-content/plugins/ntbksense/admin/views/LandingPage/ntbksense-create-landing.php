@@ -413,19 +413,22 @@ add_action('admin_footer', function () {
                                 <div class="ntb-form-group">
                                     <label for="url_pengalihan">URL Pengalihan <span class="text-danger">*</span></label>
                                     <select id="url_pengalihan" name="ntb_url_pengalihan" class="form-select" required>
-                                        <option value="custom">isi Manual (Rekomendasi)</option>
+                                        <option value="custom';">Gunakan URL dari Daftar Artikel (Acak)</option>
+                                        <option value="cloaking_url">Gunakan URL Cloaking Utama</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="deskripsi">Deskripsi <span class="text-danger">*</span></label>
                                     <select id="deskripsi" name="ntb_deskripsi" class="form-select" required>
                                         <option value="custom">isi Manual (Rekomendasi)</option>
+                                        <option value="auto">Deskripsi Otomatis</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="kontrol_penujuk">Kontrol Penujuk <span class="text-danger">*</span></label>
                                     <select id="kontrol_penujuk" name="ntb_kontrol_penujuk" class="form-select" required>
-                                        <option value="off">Izinkan Semua Trafik</option>
+                                        <option value="on">Izinkan Semua Trafik</option>
+                                        <option value="off">Blokir Trafik Tanpa Penunjuk</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
@@ -440,7 +443,8 @@ add_action('admin_footer', function () {
                                         Proteksi fitur inspeksi elemen <small class="text-danger">{Margin if error 1.2%}</small>
                                     </label>
                                     <select id="proteksi_fitur" name="ntb_proteksi_fitur" class="form-select">
-                                        <option value="Pause Debugger">Pause Debugger</option>
+                                        <option value="on">Aktifkan (Pause Debugger)</option>
+                                        <option value="off">Nonaktifkan</option>
                                     </select>
                                 </div>
                             </div>
@@ -454,19 +458,24 @@ add_action('admin_footer', function () {
                                 <div class="ntb-form-group">
                                     <label for="judul">Judul <span class="text-danger">*</span></label>
                                     <select id="judul" name="ntb_judul" class="form-select" required>
-                                        <option value="random">isi Manual (Rekomendasi)</option>
+                                        <option value="manual">Isi Manual (rekomendasi)</option>
+                                        <option value="auto">Judul Otomatis</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="auto_refresh">Auto Refresh <span class="text-danger">*</span></label>
                                     <select id="auto_refresh" name="ntb_auto_refresh" class="form-select" required>
-                                        <option value="Ketika halaman dimuat">Ketika halaman dimuat</option>
+                                        <option value="on_load">Ketika halaman dimuat</option>
+                                        <option value="off">Jangan Refresh</option>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">
                                     <label for="tampilan_perangkat">Tampilan Perangkat <span class="text-danger">*</span></label>
                                     <select id="tampilan_perangkat" name="ntb_tampilan_perangkat" class="form-select" required>
-                                        <option value="Semua Perangkat (kecuali Bot)">Semua Perangkat (kecuali Bot)</option>
+                                        <option value="semua" >Semua Perangkat (kecuali Bot)</option>
+                                        <option value="fb_browser">Hanya Browser FB/IG</option>
+                                        <option value="ponsel">Hanya Ponsel</option>
+                                        <option value="desktop">Hanya Desktop</option></div>
                                     </select>
                                 </div>
                                 <div class="ntb-form-group">

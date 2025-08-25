@@ -271,16 +271,19 @@ include "add_action_autopost.php";
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+
                     <div class="mb-3">
                         <label for="api_key_selector" class="form-label">Gunakan Kunci API:</label>
-                        <select class="form-control" id="api_key_selector" name="api_key">
+                        <select class="form-select" id="api_key_selector" name="api_key">
                             <!-- Pilihan API key akan diisi oleh JavaScript -->
                         </select>
                     </div>
+
                     <div class="mb-3">
                         <label for="total_keyword" class="form-label">Total Keyword:</label>
                         <input type="number" class="form-control" id="total_keyword" value="20" name="total_keyword">
                     </div>
+
                     <div class="mb-3">
                         <label for="base_keyword" class="form-label">Keyword:</label>
                         <input type="text" class="form-control" id="base_keyword" placeholder="Enter Keyword" name="base_keyword">

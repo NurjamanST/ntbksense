@@ -306,6 +306,7 @@
         .form-select {
             font-size: 13px;
         }
+        
         .form-text a {
             text-decoration: none;
         }
@@ -361,6 +362,11 @@
         }
 
         .ntb-btn-danger {
+            background: var(--danger-color) !important;
+            border-color: var(--danger-color) !important;
+            color: white !important;
+        }
+        .button-link-delete{
             background: var(--danger-color) !important;
             border-color: var(--danger-color) !important;
             color: white !important;

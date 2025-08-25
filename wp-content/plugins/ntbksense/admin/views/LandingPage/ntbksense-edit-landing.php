@@ -447,7 +447,7 @@ add_action('admin_footer', function () {
                                         <label for="template">Template <span class="text-danger">*</span></label>
                                         <select id="template" name="ntb_template" class="form-select">
                                             <option value="<?= $data['template_name'] ?>"><?= $data['template_name'] ?></option>
-                                            <!-- <option>Video (Long screenshot)</option> -->
+                                            <option>Video (Long screenshot)</option>
                                         </select>
                                     </div>
                                     <div class="ntb-form-group">
@@ -499,7 +499,9 @@ add_action('admin_footer', function () {
                                         </select>
                                     </div>
                                     <div class="ntb-form-group">
-                                        <label for="proteksi_fitur">Proteksi fitur inspeksi elemen</label>
+                                        <label for="proteksi_fitur">
+                                            Proteksi fitur inspeksi elemen <small class="text-danger">{Margin if error 1.2%}</small>
+                                        </label>
                                         <select id="proteksi_fitur" name="ntb_proteksi_fitur" class="form-select">
                                             <?php
                                             // Ambil nilai yang tersimpan di database.
