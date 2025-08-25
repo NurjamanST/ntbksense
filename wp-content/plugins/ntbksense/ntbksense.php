@@ -980,3 +980,109 @@ add_action('wp_ajax_ntbksense_geoip_lookup', function () {
     wp_send_json_success(['geo' => $json, 'ua' => $ua]);
 });
 /* End Tab: Maintenance */
+
+// hendel redirect ads
+// require_once plugin_dir_path(__FILE__) . 'rewrite-handler.php';
+
+/* =========================================================
+ * REWRITE & QUERY VAR
+ * =======================================================*/
+if (!defined('ABSPATH')) exit;
+
+define('NTBKSENSE_PATH', plugin_dir_path(__FILE__));
+define('NTBKSENSE_VER',  '1.0.0');
+
+/* ---------------------------- REWRITE ---------------------------- */
+function ntbk_register_rewrite()
+{
+    add_rewrite_tag('%ntbksense_lp_slug%', '([^&]+)');
+
+    // /go/<slug>
+    add_rewrite_rule('^go/([^/]+)/?$', 'index.php?ntbksense_lp_slug=$matches[1]', 'top');
+
+    // alias masking: /x/<slug>/host/path...
+    add_rewrite_rule('^x/([^/]+)/(.*)?$', 'index.php?ntbksense_lp_slug=$matches[1]', 'top');
+}
+add_action('init', 'ntbk_register_rewrite', 5);
+
+add_filter('query_vars', function ($vars) {
+    $vars[] = 'ntbksense_lp_slug';
+    return $vars;
+}, 5);
+
+/* Flush saat aktivasi/deaktivasi */
+register_activation_hook(__FILE__, function () {
+    ntbk_register_rewrite();
+    flush_rewrite_rules(false);
+    update_option('ntbksense_autoflush_done', 1);
+});
+register_deactivation_hook(__FILE__, function () {
+    flush_rewrite_rules(false);
+});
+
+/* AUTO-FLUSH sekali jika rules hilang (tanpa buka Permalinks) */
+add_action('init', function () {
+    if (get_option('ntbksense_autoflush_done')) return;
+    $rules = get_option('rewrite_rules');
+    $ok = (is_array($rules) && preg_grep('#^go/\(\[\^/\]\+\)/\?\$#', array_keys($rules)));
+    if (!$ok) {
+        ntbk_register_rewrite();
+        flush_rewrite_rules(false);
+    }
+    update_option('ntbksense_autoflush_done', 1);
+}, 1);
+
+/* ----------------------- Fallback tanpa rewrite ------------------ */
+add_filter('request', function ($qv) {
+    if (empty($qv['ntbksense_lp_slug'])) {
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        if ($uri && preg_match('#^/(?:go|x)/([^/?]+)#', $uri, $m)) {
+            $qv['ntbksense_lp_slug'] = sanitize_title($m[1]);
+        }
+    }
+    return $qv;
+}, 0);
+
+/* Matikan canonical di jalur kita */
+add_filter('redirect_canonical', function ($redirect, $requested) {
+    if (is_string($requested) && preg_match('#/(?:go|x)/[^/?]+#', $requested)) return false;
+    if (!empty(get_query_var('ntbksense_lp_slug'))) return false;
+    return $redirect;
+}, 10, 2);
+
+/* ------------------------------ Router --------------------------- */
+add_action('parse_request', function ($wp) {
+    if (empty($wp->query_vars['ntbksense_lp_slug'])) return;
+
+    // lempar slug ke redirect_ads.php via global
+    $GLOBALS['ntbksense_slug'] = sanitize_title($wp->query_vars['ntbksense_lp_slug']);
+
+    // include file safe-page
+    $candidates = [
+        NTBKSENSE_PATH . 'public/redirect_ads.php',
+        NTBKSENSE_PATH . 'redirect_ads.php',
+        NTBKSENSE_PATH . 'includes/redirect_ads.php',
+    ];
+    foreach ($candidates as $file) {
+        if (is_file($file)) {
+            require $file;
+            exit;
+        }
+    }
+    status_header(500);
+    header('Content-Type: text/plain; charset=UTF-8');
+    echo "redirect_ads.php tidak ditemukan.\nCek:\n- " . implode("\n- ", $candidates);
+    exit;
+}, 0);
+
+/* --------------- Kompat: WP Force Login whitelist ---------------- */
+add_filter('v_forcelogin_whitelist', function ($whitelist) {
+    // izinkan semua jalur /go/... dan /x/...
+    $home = home_url('/');
+    $whitelist[] = $home . 'go/';
+    $whitelist[] = $home . 'x/';
+    // pola penuh
+    $whitelist[] = '#^' . preg_quote($home . 'go/', '#') . '.*#';
+    $whitelist[] = '#^' . preg_quote($home . 'x/',  '#') . '.*#';
+    return $whitelist;
+});
