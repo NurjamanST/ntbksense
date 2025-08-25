@@ -59,7 +59,7 @@ $license_data = $plugin["license_data"];
 
             <form>
                 <input type="hidden" name="ntbksense_action" value="deactivate_license">
-                <button type="submit" class="btn btn-danger">Nonaktifkan Lisensi</button>
+                <button type="submit" class="btn btn-danger btn-sm mt-3">Nonaktifkan Lisensi</button>
             </form>
         </div>
         <?php else : ?>
