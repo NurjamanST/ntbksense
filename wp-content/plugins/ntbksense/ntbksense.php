@@ -139,19 +139,19 @@ if (!function_exists('ntbksense_get_branding')) {
     function ntbksense_get_branding() {
         $settings = get_option('ntbksense_settings');
 
-        /* Plugin Tab Section */
+        /* Setting - Plugin Tab Section */
         $plugin_name = $settings['plugin_name'] ?? 'NTBKSense';
         $plugin_logo = (isset($settings['plugin_logo']) && filter_var($settings['plugin_logo'], FILTER_VALIDATE_URL))
             ? $settings['plugin_logo']
             : NTBKSENSE_PLUGIN_URL . 'assets/images/NTBKsense.png';
         $plugin_lang = $settings['plugin_language'] ?? '';
 
-        /* Security Tab Section */
+        /* Setting - Security Tab Section */
         $hidden_login_form = !empty($settings['hidden_login_form']);
         $url_login = $settings['url_login'] ?? 'custom-login';
         $aksi_login = $settings['aksi_login'] ?? '403';
 
-        /* Optimization Tab Section */
+        /* Setting - Optimization Tab Section */
         $hapus_tag_meta = !empty($settings['hapus_tag_meta']);
         $hapus_script_emoji = !empty($settings['hapus_script_emoji']);
         $hapus_versi_query = !empty($settings['hapus_versi_query']);
@@ -159,9 +159,14 @@ if (!function_exists('ntbksense_get_branding')) {
         $judul_situs_otomatis = !empty($settings['judul_situs_otomatis']);
         $pengalihan_404 = !empty($settings['pengalihan_404']);
 
-        /* Header & Footer Section */
+        /* Setting - Header & Footer Section */
         $header_code  = $settings['header_code'] ?? '';
         $footer_code  = $settings['footer_code'] ?? '';
+
+        /* Lisensi */
+        $license_key = $settings['license_key'] ?? '';
+        $license_data = $settings['license_data'] ?? [];
+        $license_status = $settings['license_status'] ?? 'inactive'; // active|inactive
         return [ 
             'plugin_name' => $plugin_name, 
             'plugin_logo' => $plugin_logo, 
@@ -177,6 +182,9 @@ if (!function_exists('ntbksense_get_branding')) {
             'pengalihan_404' => $pengalihan_404,
             'header_code' => $header_code,
             'footer_code' => $footer_code,
+            'license_key' => $license_key,
+            'license_data' => $license_data,
+            'license_status' => $license_status,
         ];
     }
 }
@@ -223,6 +231,122 @@ if (!function_exists('ntbk_strip_ver_query')) {
         if (!ntbk_is_public() || empty(ntbk_opt('hapus_versi_query', 0))) return $src;
         if (strpos($src, 'admin-ajax.php') !== false) return $src;
         return explode('?', $src)[0];
+    }
+}
+
+if (!function_exists('ntbksense_license_is_active')) {
+    function ntbksense_license_is_active(): bool {
+        return ntbk_opt('license_status', 'inactive') === 'active';
+    }
+}
+
+if (!function_exists('ntb_license_page_slug')) {
+    function ntb_license_page_slug(): string {
+      return 'ntbksense-license';
+    }
+}
+if (!function_exists('ntbksense_current_domain')) {
+    function ntbksense_current_domain(): string {
+        $host = parse_url(site_url(), PHP_URL_HOST) ?: '';
+        return preg_replace('/^www\./i', '', $host);
+    }
+}
+
+if (!function_exists('ntbk_license_bypass_active')) {
+    function ntbk_license_bypass_active(): bool {
+        if (defined('NTBKSENSE_LICENSE_BYPASS') && NTBKSENSE_LICENSE_BYPASS) return true;
+        if (isset($_GET['ntbkallow']) && $_GET['ntbkallow'] == '1') return true;
+        return false;
+    }
+}
+
+if (!function_exists('ntbksense_enqueue_assets')) {
+    function ntbksense_enqueue_assets() {
+        $screen = get_current_screen();
+        
+        if (strpos($screen->id, 'ntbksense-lisensi') === false) {
+            return;
+        }
+        
+        wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css');
+        wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js', [], null, true);
+        wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
+    }
+}
+if (!function_exists('ntbksense_validate_license')) {
+    function ntbksense_validate_license($force = false): array {
+        $cached = get_transient('ntbksense_license_valid_cache');
+        if (!$force && $cached && is_array($cached)) {
+            return $cached;
+        }
+
+        $license_key = ntbk_opt('license_key', '');
+        if ($license_key === '') {
+            $result = ['valid' => false, 'message' => 'License kosong'];
+            set_transient('ntbksense_license_valid_cache', $result, HOUR_IN_SECONDS);
+            return $result;
+        }
+
+        $body = [
+            'license_key' => $license_key,
+            'domain'      => ntbksense_current_domain(),
+        ];
+
+        $resp = wp_remote_post(
+            NTBKSENSE_LICENSE_API_BASE . '/license/validate-license',
+            [
+                'timeout'   => 15,
+                'headers'   => ['Accept' => 'application/json'],
+                'body'      => $body,
+                'sslverify' => false,
+            ]
+        );
+
+        if (is_wp_error($resp)) {
+            $result = ['valid' => false, 'message' => $resp->get_error_message()];
+            set_transient('ntbksense_license_valid_cache', $result, HOUR_IN_SECONDS);
+            return $result;
+        }
+
+        $code = wp_remote_retrieve_response_code($resp);
+        $json = json_decode(wp_remote_retrieve_body($resp), true);
+
+        $options = get_option('ntbksense_settings', []);
+        if ($code >= 200 && $code < 300 && !empty($json['valid'])) {
+            $options['license_status'] = 'active';
+            update_option('ntbksense_settings', $options);
+
+            $result = ['valid' => true, 'expires_at' => $json['expires_at'] ?? null];
+            set_transient('ntbksense_license_valid_cache', $result, DAY_IN_SECONDS);
+            return $result;
+        }
+
+        // invalid / expired
+        $options['license_status'] = 'inactive';
+        update_option('ntbksense_settings', $options);
+        $result = ['valid' => false, 'message' => $json['message'] ?? 'Invalid or expired'];
+        set_transient('ntbksense_license_valid_cache', $result, HOUR_IN_SECONDS);
+        return $result;
+    }
+}
+
+if (!function_exists('ntbk_find_license_page_slug')) {
+    function ntbk_find_license_page_slug(): ?string {
+        $candidates = [
+            'ntbksense-license', 'ntbksense_lisensi', 'ntbksense-lisensi',
+            'ntbksense_license', 'ntbksense-lisence', 'ntbksense-lisensi-page'
+        ];
+
+        foreach ($candidates as $slug) {
+            $url = menu_page_url($slug, false);
+            if ($url) return $slug;
+        }
+
+        $possible_parent = 'ntbksense';
+        $url = menu_page_url($possible_parent, false);
+        if ($url && stripos($url, 'lisens') !== false) return $possible_parent;
+
+        return null;
     }
 }
 
@@ -440,3 +564,227 @@ add_action('wp_footer', function() {
     echo "\n<!-- NTBKSense Footer Code -->\n". ntbk_opt('footer_code'). "\n<!-- /NTBKSense Footer Code -->\n";
 });
 /* End Tab: Setting - Header & Footer */
+
+/* Tab: Lisensi */
+if (!defined('NTBKSENSE_LICENSE_API_BASE')) {
+    define('NTBKSENSE_LICENSE_API_BASE', 'http://localhost:8000/api'); // ganti jika beda host
+}
+
+// ====== AKTIVASI LISENSI ======
+add_action('wp_ajax_ntbksense_license_activate', function () {
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(['message' => 'Unauthorized'], 403);
+    }
+    check_ajax_referer('ntbksense_license_nonce', 'security');
+
+    $license_key = isset($_POST['license_key']) ? sanitize_text_field($_POST['license_key']) : '';
+    if ($license_key === '') {
+        wp_send_json_error(['message' => 'License key kosong.'], 400);
+    }
+
+    $body = [
+        'license_key' => $license_key,
+        'domain'      => ntbksense_current_domain(),
+    ];
+
+    $resp = wp_remote_post(
+        NTBKSENSE_LICENSE_API_BASE . '/license/activate',
+        [
+            'timeout'   => 15,
+            'headers'   => ['Accept' => 'application/json'],
+            'body'      => $body,
+            'sslverify' => false, // dev HTTP/localhost aman; matikan jika pakai HTTPS valid
+        ]
+    );
+
+    if (is_wp_error($resp)) {
+        wp_send_json_error(['message' => $resp->get_error_message()], 500);
+    }
+
+    $code = wp_remote_retrieve_response_code($resp);
+    $json = json_decode(wp_remote_retrieve_body($resp), true);
+
+    if ($code >= 200 && $code < 300 && !empty($json['success'])) {
+        // simpan option
+        $options = get_option('ntbksense_settings', []);
+        $options['license_key'] = $license_key;
+        $options['license_status'] = 'active'; 
+
+        $data = [
+            'email' => $json['data']['email'] ?? '',
+            'registration_date' => $json['registration_date'] ?? '',
+            'expiry_date' => $json['data']['expires_at'] ?? null,
+            'raw' => $json,
+        ];
+        $options['license_data'] = $data;
+        update_option('ntbksense_settings', $options);
+
+        set_transient('ntbksense_license_valid_cache', ['valid' => true, 'checked_at' => time()], DAY_IN_SECONDS);
+
+        wp_send_json_success(['message' => 'Lisensi berhasil diaktivasi.', 'data' => $data]);
+    }
+
+    $msg = $json['message'] ?? ('License server error (HTTP '.$code.')');
+    wp_send_json_error(['message' => $msg], $code ?: 400);
+});
+
+// ====== NONAKTIFKAN LISENSI ======
+add_action('wp_ajax_ntbksense_license_deactivate', function () {
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(['message' => 'Unauthorized'], 403);
+    }
+    check_ajax_referer('ntbksense_license_nonce', 'security');
+
+    $license_key = ntbk_opt('license_key', '');
+    if ($license_key === '') {
+        wp_send_json_error(['message' => 'Belum ada license key tersimpan.'], 400);
+    }
+
+    $body = [
+        'license_key' => $license_key,
+        'domain'      => ntbksense_current_domain(),
+    ];
+
+    $resp = wp_remote_post(
+        NTBKSENSE_LICENSE_API_BASE . '/license/deactivate',
+        [
+            'timeout'   => 15,
+            'headers'   => ['Accept' => 'application/json'],
+            'body'      => $body,
+            'sslverify' => false,
+        ]
+    );
+ 
+    if (is_wp_error($resp)) {
+        wp_send_json_error(['message' => $resp->get_error_message()], 500);
+    } 
+
+    $code = wp_remote_retrieve_response_code($resp);
+    $json = json_decode(wp_remote_retrieve_body($resp), true);
+    if ($code >= 200 && $code < 300 && !empty($json['success'])) { 
+        $options = get_option('ntbksense_settings', []);
+        $options['license_key'] = '';
+        $options['license_status'] = 'inactive';
+        $options['license_data'] = [];
+        update_option('ntbksense_settings', $options);
+
+        delete_transient('ntbksense_license_valid_cache');
+        wp_send_json_success(['message' => 'Lisensi berhasil di-deaktivasi.']);
+    }
+    $msg = $json['message'] ?? ('License server error (HTTP '.$code.')');
+    wp_send_json_error(['message' => $msg], $code ?: 400);
+});
+
+/* add_action('current_screen', function ($screen) { */
+/*     // contoh: kalau nonaktif, tampilkan notice di halaman plugin kamu */
+/*     if (!ntbksense_license_is_active() && strpos($screen->id ?? '', 'ntbksense') !== false) { */
+/*         add_action('admin_notices', function () { */
+/*             echo '<div class="notice notice-warning"><p><b>NTBKSense:</b> Lisensi belum aktif. Beberapa fitur mungkin terbatas.</p></div>'; */
+/*         }); */
+/*     } */
+/* }); */
+
+add_action('admin_footer', 'ntbksense_enqueue_assets');
+
+add_action('admin_init', function () {
+    ntbksense_validate_license(false);
+});
+
+add_action('ntbksense_license_validate_event', function () {
+    ntbksense_validate_license(true);
+});
+
+add_filter('cron_schedules', function ($schedules) {
+    $schedules['every_minute'] = [
+        'interval' => 60,
+        'display'  => 'Every Minute',
+    ];
+    return $schedules;
+});
+
+add_action('admin_init', function () {
+    if (!wp_next_scheduled('ntbksense_license_validate_event')) {
+        wp_schedule_event(time() + 60, 'every_minute', 'ntbksense_license_validate_event');
+    } else {
+        $ts = wp_next_scheduled('ntbksense_license_validate_event');
+        $cr = _get_cron_array();
+        $sched = 'daily';
+        foreach ($cr as $t => $hooks) {
+            if (isset($hooks['ntbksense_license_validate_event'])) {
+                foreach ($hooks['ntbksense_license_validate_event'] as $sig => $args) {
+                    $sched = $args['schedule'] ?? $sched;
+                }
+            }
+        }
+        if ($sched !== 'every_minute') {
+            wp_unschedule_event($ts, 'ntbksense_license_validate_event');
+            wp_schedule_event(time() + 60, 'every_minute', 'ntbksense_license_validate_event');
+        }
+    }
+});
+
+/* add_action('current_screen', function ($screen) { */
+/*     if (ntbksense_license_is_active() || ntbk_license_bypass_active()) return; */
+/*     if (!$screen || empty($screen->id)) return; */
+/**/
+/*     $is_ntb = (strpos($screen->id, 'ntbksense') !== false); */
+/*     if (!$is_ntb) return; */
+/**/
+/*     $license_slug = ntbk_find_license_page_slug(); */
+/*     if (!$license_slug) { */
+/*         return; */
+/*     } */
+/**/
+/*     $current_page = isset($_GET['page']) ? sanitize_key($_GET['page']) : ''; */
+/*     if ($current_page === $license_slug) return;  */
+/**/
+/*     add_action('admin_notices', function () { */
+/*         echo '<div class="notice notice-warning"><p><b>NTBKSense:</b> Lisensi belum aktif / kedaluwarsa. Anda dialihkan ke halaman Lisensi.</p></div>'; */
+/*     }); */
+/**/
+/*     $url = menu_page_url($license_slug, false); */
+/*     if (!$url) {  */
+/*         $url = admin_url('admin.php?page=' . $license_slug); */
+/*     } */
+/*     wp_safe_redirect($url); */
+/*     exit; */
+/* }, 20); */
+
+add_action('admin_menu', function () {
+    if (ntbksense_license_is_active()) return;
+
+    $parent_slug = 'ntbksense'; 
+    $license_slug= ntb_license_page_slug();
+
+    $subpages = [
+        'ntbksense-landing-page',
+        'ntbksense-template-builder', 
+        'ntbksense-settings',
+        'ntbksense-laporan',
+        'ntbksense-auto-post',
+        'ntbksense-privacy-policy',
+        'ntbksense-maintenance',
+    ];
+
+    foreach ($subpages as $slug) {
+        if ($slug !== $license_slug) {
+          remove_submenu_page($parent_slug, $slug);
+        }
+    }
+}, 99);
+
+/**
+* (Opsional keras) Batasi AJAX NTBKSense jika lisensi nonaktif
+* Boleh dihapus kalau belum perlu.
+*/
+/* add_action('admin_init', function () { */
+/*     if (ntbksense_license_is_active()) return; */
+/**/
+/*     $is_ntb_ajax = isset($_POST['action']) && is_string($_POST['action']) && strpos($_POST['action'], 'ntbksense_') === 0; */
+/*     if ($is_ntb_ajax) { */
+/*         wp_send_json_error(['message' => 'Lisensi tidak aktif.'], 403); */
+/*     } */
+/* }); */
+
+/* End Tab: Lisensi */
+
