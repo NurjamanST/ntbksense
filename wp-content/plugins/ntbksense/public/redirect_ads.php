@@ -317,7 +317,7 @@ header('Content-Type: text/html; charset=UTF-8');
             inset: auto 50% 5dvh 50%;
             transform: translateX(-50%);
             z-index: 1000;
-            width: min(900px, 96vw);
+            width: 90%;
             background: #000;
             border-radius: var(--radius);
             box-shadow: 0 10px 32px rgba(0, 0, 0, .55);
