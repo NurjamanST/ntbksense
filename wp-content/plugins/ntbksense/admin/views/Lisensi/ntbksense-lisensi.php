@@ -4,14 +4,11 @@
 // FUNGSI: Menampilkan dan mengelola halaman lisensi.
 // =========================================================================
 
-// Memasukkan file yang berisi logika untuk aktivasi/deaktivasi
-include "add_action_lisensi.php";
-
-// Mengambil data lisensi dari database WordPress
-$license_key    = get_option('ntbksense_license_key');
-$license_status = get_option('ntbksense_license_status');
-$license_data   = get_option('ntbksense_license_data', []);
-
+$plugin = ntbksense_get_branding();
+$plugin_name  = $plugin['plugin_name'] ?? 'NTBKSense';
+$license_key = $plugin["license_key"];
+$license_status = $plugin["license_status"];
+$license_data = $plugin["license_data"];
 ?>
 <div class="wrap" id="ntb-lp-builder">
     <!-- Navbar -->
@@ -20,7 +17,7 @@ $license_data   = get_option('ntbksense_license_data', []);
     <!-- Breadcrumb -->
     <div class="ntb-breadcrumb">
         <span class="dashicons dashicons-admin-home"></span>
-        <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense')); ?>">NTBKSense</a> &gt; <span>Lisensi</span>
+        <a href="<?php echo esc_url(admin_url('admin.php?page=ntbksense')); ?>"><?php echo esc_html($plugin_name); ?></a> &gt; <span>Lisensi</span>
     </div>
     
     <!-- Main Content -->
@@ -29,6 +26,7 @@ $license_data   = get_option('ntbksense_license_data', []);
         <hr>
 
         <?php if ($license_status === 'active' && !empty($license_data)) : ?>
+        <div class="license-active">
             <!-- TAMPILAN JIKA LISENSI AKTIF -->
             <div class="alert alert-success" role="alert">
                 <i class="fas fa-check-circle"></i> Lisensi sah. Terima kasih telah menggunakan Plugin NTBKSense Beta Version.
@@ -59,21 +57,20 @@ $license_data   = get_option('ntbksense_license_data', []);
                 </div>
             </div>
 
-            <form action="" method="post" class="mt-4">
-                <?php wp_nonce_field('ntbksense_deactivate_license_nonce', 'ntbksense_deactivate_license_nonce'); ?>
+            <form>
                 <input type="hidden" name="ntbksense_action" value="deactivate_license">
                 <button type="submit" class="btn btn-danger">Nonaktifkan Lisensi</button>
             </form>
-
+        </div>
         <?php else : ?>
+        <div class="license-inactive">
             <!-- TAMPILAN JIKA LISENSI TIDAK AKTIF -->
             <div class="alert alert-warning" role="alert">
                 <i class="fas fa-exclamation-triangle"></i> Lisensi tidak aktif. Silakan aktivasi untuk menikmati semua fitur.
             </div>
 
             <div class="ntb-settings-box mb-4">
-                <form action="" method="post">
-                    <?php wp_nonce_field('ntbksense_activate_license_nonce', 'ntbksense_activate_license_nonce'); ?>
+                <form>
                     <!-- INI BAGIAN PENTING YANG HILANG -->
                     <input type="hidden" name="ntbksense_action" value="activate_license">
                     <div class="mb-3">
@@ -85,6 +82,7 @@ $license_data   = get_option('ntbksense_license_data', []);
                     </div>
                 </form>
             </div>
+        </div>
         <?php endif; ?>
 
     </div>
@@ -93,3 +91,64 @@ $license_data   = get_option('ntbksense_license_data', []);
 <?php 
     include NTBKSENSE_PLUGIN_DIR . "admin/views/Layout/stylesheets.php";
 ?>
+
+<script>
+jQuery(function($){
+  // initial toggle berdasarkan status dari PHP
+  (function initToggle() {
+    var status = <?php echo json_encode(ntbk_opt('license_status', 'inactive')); ?>;
+    if (status === 'active') {
+      $('.license-active').removeClass('hidden');
+      $('.license-inactive').addClass('hidden');
+    } else {
+      $('.license-active').addClass('hidden');
+      $('.license-inactive').removeClass('hidden');
+    }
+  })();
+
+  function ajaxPost(data, doneCb) {
+    $.post(ajaxurl, data)
+      .done(function(resp){
+        if (resp && resp.success) {
+          alert(resp.data?.message || 'Sukses.');
+          if (typeof doneCb === 'function') doneCb(resp);
+        } else {
+          alert(resp?.data?.message || 'Gagal.');
+        }
+      })
+            .fail(function(xhr){
+                console.error('gagal banh:', xhr)
+        alert('Koneksi gagal: ' + (xhr?.responseJSON?.data?.message || ''));
+      });
+  }
+
+  // Form Aktivasi
+  $('.license-inactive form').on('submit', function(e){
+    e.preventDefault();
+    var key = $.trim($(this).find('input[name="ntbksense_license_key"]').val() || '');
+    if (!key) { alert('Masukkan kode lisensi.'); return; }
+
+    ajaxPost({
+      action:   'ntbksense_license_activate',
+      security: '<?php echo wp_create_nonce("ntbksense_license_nonce"); ?>',
+      license_key: key
+    }, function(){
+      // refresh UI
+      location.reload();
+    });
+  });
+
+  // Form Nonaktifkan
+  $('.license-active form').on('submit', function(e){
+    e.preventDefault();
+    if (!confirm('Nonaktifkan lisensi untuk domain ini?')) return;
+    ajaxPost({
+      action:   'ntbksense_license_deactivate',
+      security: '<?php echo wp_create_nonce("ntbksense_license_nonce"); ?>'
+    }, function(){
+      location.reload();
+    });
+  });
+});
+</script>
+
