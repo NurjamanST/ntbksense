@@ -145,8 +145,9 @@ if ($asn && $asn_mode === 'allow' && $asn_list && !in_array($asn, $asn_list, tru
 
 /* device rules dari landing */
 $show = false;
+$cloaking_url = $row['cloaking_url'] ?? home_url('/'); 
 if (isset($_GET['mode']) && $_GET['mode'] === 'test') $show = true;
-else {
+else { 
     $rule = $row['device_view'] ?? 'semua';
     $show = ($rule === 'semua')
         || ($rule === 'desktop' && !ntbk_is_mobile())
@@ -154,7 +155,14 @@ else {
         || ($rule === 'fb_browser' && ntbk_is_fb_or_ig());
 }
 if (!$show) {
-    wp_safe_redirect(esc_url_raw($row['cloaking_url'] ?? home_url('/')));
+    $host = parse_url($cloaking_url, PHP_URL_HOST);
+    if ($host) {
+        add_filter('allowed_redirect_hosts', function($hosts) use ($host) {
+            $hosts[] = $host;
+            return $hosts;
+        });
+    }
+    wp_safe_redirect(esc_url_raw($cloaking_url));
     exit;
 }
 
