@@ -764,11 +764,38 @@ add_action('admin_menu', function () {
         'ntbksense-auto-post',
         'ntbksense-privacy-policy',
         'ntbksense-maintenance',
+        'ntbksense-create-landing',
     ];
 
     foreach ($subpages as $slug) {
         if ($slug !== $license_slug) {
           remove_submenu_page($parent_slug, $slug);
+        }
+    }
+ 
+    $orphans = [
+        'ntbksense-create-landing',
+        'ntbksense-edit-lp',
+        'ntbksense-edit-tb',
+    ];
+    global $submenu;
+    if (!empty($submenu['']) && is_array($submenu[''])) {
+        foreach ($submenu[''] as $i => $item) {
+            $slug = $item[2] ?? '';
+            if (in_array($slug, $orphans, true)) {
+                unset($submenu[''][$i]);
+            }
+        }
+    }
+
+    global $_registered_pages;
+    if (!is_array($_registered_pages)) return;
+
+    foreach ($orphans as $slug) {
+        // Untuk orphan submenu, hookname biasanya 'admin_page_<slug>'
+        $hook = 'admin_page_' . $slug;
+        if (isset($_registered_pages[$hook])) {
+            unset($_registered_pages[$hook]);
         }
     }
 }, 99);
