@@ -233,9 +233,11 @@ add_action('admin_footer', function () {
                         .done(function(response) {
                             if (response.success) {
                                 successCount++;
-                                appendLog(response.data.log, 'success');
+                                console.info('Response:', response);
+                                appendLog(response.data.message, 'success');
                             } else {
-                                appendLog(response.data.log, 'error');
+                                console.error('Error Response:', response);
+                                appendLog(response.data.message, 'error');
                             }
                         })
                         .fail(function(jqXHR) {
