@@ -788,3 +788,168 @@ add_action('admin_menu', function () {
 
 /* End Tab: Lisensi */
 
+/* Tab: Maintenance */
+if (!function_exists('ntb_hsize')) {
+    function ntb_hsize($bytes) {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $i = 0;
+        $bytes = max(0, (float)$bytes);
+        while ($bytes >= 1024 && $i < count($units) - 1) { 
+            $bytes /= 1024; 
+            $i++; 
+        }
+        return sprintf('%.2f %s', $bytes, $units[$i]);
+    }
+}
+
+if (!function_exists('ntb_check_user_permission')) {
+    function ntb_check_user_permission() {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Unauthorized'], 403);
+        }
+    }
+}
+
+if (!function_exists('ntb_check_ajax_nonce')) {
+    function ntb_check_ajax_nonce() {
+        check_ajax_referer('ntbksense_maintenance_nonce', 'security');
+    }
+}
+
+if (!function_exists('ntb_get_tables_status')) {
+    function ntb_get_tables_status() {
+        global $wpdb;
+        $rows = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A);
+
+        if ($rows === null) {
+            $schema = $wpdb->get_var('SELECT DATABASE()');
+            $rows = $wpdb->get_results($wpdb->prepare(
+                "SELECT TABLE_NAME as Name, ENGINE as Engine,
+                        DATA_LENGTH as Data_length, INDEX_LENGTH as Index_length, DATA_FREE as Data_free,
+                        TABLE_ROWS as `Rows`
+                 FROM information_schema.TABLES
+                 WHERE TABLE_SCHEMA=%s", $schema
+            ), ARRAY_A);
+        }
+
+        return $rows;
+    }
+}
+
+if (!function_exists('ntb_format_table_data')) {
+    function ntb_format_table_data($rows) {
+        global $wpdb;
+        $out = [];
+
+        foreach ($rows as $r) {
+            $name = $r['Name'] ?? $r['TABLE_NAME'] ?? '';
+            if (!$name || strpos($name, $wpdb->prefix) !== 0) continue;
+
+            $data = (float)($r['Data_length'] ?? $r['DATA_LENGTH'] ?? 0);
+            $index = (float)($r['Index_length'] ?? $r['INDEX_LENGTH'] ?? 0);
+            $overhead = (float)($index);
+            $rowsCount = (int)($r['Rows'] ?? $r['TABLE_ROWS'] ?? 0);
+
+            $out[] = [
+                'name' => $name,
+                'engine' => $r['Engine'] ?? $r['ENGINE'] ?? '-',
+                'size' => ntb_hsize(max(0, $data + $index)),
+                'overhead' => ntb_hsize($overhead),
+                'rows' => $rowsCount,
+            ];
+        }
+
+        return $out;
+    }
+}
+
+add_action('wp_ajax_ntbksense_maint_tables', function () {
+    ntb_check_user_permission();
+    ntb_check_ajax_nonce();
+
+    $rows = ntb_get_tables_status();
+    $out = ntb_format_table_data($rows);
+
+    wp_send_json_success(['tables' => $out]);
+});
+
+add_action('wp_ajax_ntbksense_maint_optimize', function () {
+    ntb_check_user_permission();
+    ntb_check_ajax_nonce();
+
+    global $wpdb;
+    $tables = $wpdb->get_col($wpdb->prepare("SHOW TABLES LIKE %s", $wpdb->esc_like($wpdb->prefix) . '%'));
+    
+    $ok = $fail = 0;
+    $detail = [];
+
+    foreach ($tables as $t) {
+        $res = $wpdb->query("OPTIMIZE TABLE `$t`");
+        if ($res === false) {
+            $fail++;
+            $detail[] = "OPTIMIZE $t gagal";
+        } else {
+            $ok++;
+        }
+    }
+
+    wp_send_json_success(['message' => "OPTIMIZE selesai: $ok ok, $fail gagal", 'detail' => $detail]);
+});
+
+add_action('wp_ajax_ntbksense_maint_del_revisions', function () {
+    ntb_check_user_permission();
+    ntb_check_ajax_nonce();
+
+    global $wpdb;
+    $count = (int)$wpdb->get_var("SELECT COUNT(1) FROM {$wpdb->posts} WHERE post_type='revision'");
+    
+    $wpdb->query("DELETE FROM {$wpdb->posts} WHERE post_type='revision'");
+    $wpdb->query("DELETE pm FROM {$wpdb->postmeta} pm LEFT JOIN {$wpdb->posts} p ON p.ID=pm.post_id WHERE p.ID IS NULL");
+
+    wp_send_json_success(['message' => "Hapus revisi selesai ($count dihapus)."]);
+});
+
+add_action('wp_ajax_ntbksense_maint_reset_traffic', function () {
+    ntb_check_user_permission();
+    ntb_check_ajax_nonce();
+
+    global $wpdb;
+    $log_table = $wpdb->prefix . 'ntbksense_traffic';
+    $exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $log_table));
+
+    if (!$exists) {
+        wp_send_json_error(['message' => "Tabel log tidak ditemukan: $log_table"], 404);
+    }
+
+    $wpdb->query("TRUNCATE TABLE `$log_table`");
+    wp_send_json_success(['message' => "Log trafik direset (TRUNCATE $log_table)."]);
+});
+
+add_action('wp_ajax_ntbksense_geoip_lookup', function () {
+    ntb_check_user_permission();
+    ntb_check_ajax_nonce();
+
+    $ip = isset($_POST['ip']) ? sanitize_text_field($_POST['ip']) : '';
+    $ua = isset($_POST['ua']) ? substr(wp_unslash($_POST['ua']), 0, 1000) : '';
+
+    if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+        wp_send_json_error(['message' => 'IP tidak valid'], 400);
+    }
+
+    $resp = wp_remote_get("http://ip-api.com/json/" . rawurlencode($ip) . "?fields=status,message,continent,continentCode,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query", [
+        'timeout' => 15,
+        'headers' => ['Accept' => 'application/json']
+    ]);
+
+    if (is_wp_error($resp)) {
+        wp_send_json_error(['message' => $resp->get_error_message()], 500);
+    }
+
+    $json = json_decode(wp_remote_retrieve_body($resp), true);
+    if (($json['status'] ?? 'fail') !== 'success') {
+        wp_send_json_error(['message' => $json['message'] ?? 'Lookup gagal'], 400);
+    }
+
+    wp_send_json_success(['geo' => $json, 'ua' => $ua]);
+});
+/* End Tab: Maintenance */

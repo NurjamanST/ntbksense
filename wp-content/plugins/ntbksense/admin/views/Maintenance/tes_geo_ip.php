@@ -5,7 +5,7 @@
     <div class="ntb-card">
         <div class="ntb-card-body">
             <!-- Form Input -->
-            <form action="#ntb-geo-ip-results">
+            <form action="#ntb-geo-ip-results" data-geoip-form>
                 <div class="ntb-form-row">
                     <!-- IP Address Input -->
                     <div class="ntb-form-group" style="flex: 1;">
@@ -30,6 +30,8 @@
             <!-- Hasil -->
             <div id="ntb-geo-ip-results" class="ntb-results-wrapper">
                 <hr>
+                
+                Negara: <span class="country">-</span> • Region: <span class="region">-</span> • Kota: <span class="city">-</span> • ISP: <span class="isp">-</span> • Koordinat: <span class="lat">-</span>, <span class="lon">-</span>      
                 <div class="ntb-results-container">
                     <!-- Info Database GEO -->
                     <div class="ntb-result-column">
@@ -51,93 +53,5 @@
     </div>
 </div>
 
-<!-- Monaco Editor Loader & Initializer -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // --- Contoh Data JSON Sesuai Gambar ---
-        const geoIpData = {
-            "country": {
-                "continent": "AS",
-                "continent_name": "Asia",
-                "country": "ID",
-                "country_name": "Indonesia"
-            },
-            "asn": {
-                "asn": "AS23693",
-                "domain": "telkomsel.com",
-                "name": "PT. Telekomunikasi Selular"
-            }
-        };
 
-        const deviceInfoData = {
-            "is_bot": false,
-            "bot_info": null,
-            "client": {
-                "type": "browser",
-                "name": "Chrome",
-                "short_name": "CH",
-                "version": "138.0.0.0",
-                "engine": "Blink",
-                "engine_version": "138.0.0.0",
-                "family": "Chrome"
-            },
-            "os": {
-                "name": "Windows",
-                "short_name": "WIN",
-                "version": "10",
-                "platform": "x64",
-                "family": "Windows"
-            },
-            "device": "desktop",
-            "brand": "",
-            "model": "",
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-            "is_smartphone": false,
-            "is_feature_phone": false,
-            "is_tablet": false,
-            "is_phablet": false,
-            "is_console": false,
-            "is_portable_media": false,
-            "is_car_browser": false,
-            "is_tv": false,
-            "is_smart_display": false,
-            "is_smart_speaker": false,
-            "is_camera": false,
-            "is_wearable": false,
-            "is_peripheral": false,
-            "is_browser": true,
-            "is_feed_reader": false,
-            "is_mobile_app": false,
-            "is_pim": false,
-            "is_library": false,
-            "is_media_player": false,
-            "is_facebook_browser": false
-        };
-        // --- Akhir Contoh Data JSON ---
 
-        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' }});
-        
-        require(['vs/editor/editor.main'], function() {
-            // Inisialisasi Editor untuk Database GEO
-            monaco.editor.create(document.getElementById('geo-editor-container'), {
-                value: JSON.stringify(geoIpData, null, 4), // Menggunakan data contoh baru
-                language: 'json',
-                theme: 'vs-dark',
-                readOnly: true,
-                automaticLayout: true,
-                minimap: { enabled: false }
-            });
-
-            // Inisialisasi Editor untuk Info Perangkat
-            monaco.editor.create(document.getElementById('device-editor-container'), {
-                value: JSON.stringify(deviceInfoData, null, 4),
-                language: 'json',
-                theme: 'vs-dark',
-                readOnly: true,
-                automaticLayout: true,
-                minimap: { enabled: false }
-            });
-        });
-    });
-</script>
